@@ -81,10 +81,9 @@ class Scene {
         this._mixers = [];
         this._previousRAF = null;
     
+        this._LoadStars();
         this._LoadAnimatedModel();
-        this.stars = this._LoadStars();
         this._RAF();
-
     }
   
     _LoadAnimatedModel() {
@@ -101,11 +100,10 @@ class Scene {
     }
   
     _LoadStars() {
-      const stars = new StarsSpawner({
+      this._starsSpawner = new StarsSpawner({
         scene: this._scene,
         N: 100,
-      });
-      return stars;
+      });   
     }
 
     _OnWindowResize() {
@@ -140,10 +138,11 @@ class Scene {
   
       this._thirdPersonCamera.Update(timeElapsedS);
 
-      if (this.stars) {
-        this.stars.Update(timeElapsedS);
+      if (this._starsSpawner) {
+        this._starsSpawner.Update(timeElapsedS);
       }
 
+      this._stars = this._starsSpawner.stars;
     }
 }
 

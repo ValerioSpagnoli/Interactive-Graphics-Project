@@ -45,6 +45,10 @@ export class StarsSpawner {
             }            
         });
     }
+
+    get stars() {
+        return this._stars;
+    }
 }
 
 function getRandomSign() {
