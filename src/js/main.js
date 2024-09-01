@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import { BasicCharacterController } from './characterControls';
 import { ThirdPersonCamera } from './thirdPersonCamera';
@@ -89,6 +90,26 @@ class Scene {
         this._LoadStars();
         this._LoadAnimatedModel();
         this._RAF();
+
+
+        // load the gltf model wall in scene_objects folder
+        const loader2 = new GLTFLoader();
+        loader2.load('./models/scene_objects/wall.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(1, 1, 1);
+            gltf.scene.scale.set(10, 10, 10);
+            this._scene.add(gltf.scene);
+        });
+        loader2.load('./models/scene_objects/wall.glb', (gltf) => {
+          gltf.scene.traverse(c => {
+              c.castShadow = true;
+          });
+          gltf.scene.position.set(20, 1, 1);
+          gltf.scene.scale.set(10, 10, 10);
+          this._scene.add(gltf.scene);
+      });
     }
   
     _LoadAnimatedModel() {
