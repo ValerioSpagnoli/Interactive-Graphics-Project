@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import { BasicCharacterController } from './characterControls';
 import { ThirdPersonCamera } from './thirdPersonCamera';
@@ -55,6 +55,10 @@ class Scene {
     
         light = new THREE.AmbientLight(0xFFFFFF, 0.25);
         this._scene.add(light);
+
+        this._orbitControls = new OrbitControls(this._camera, this._threejs.domElement);
+        this._orbitControls.target.set(0, 0, 0);
+        this._orbitControls.update();
 
         const loader = new THREE.CubeTextureLoader();
         const texture = loader.load([
@@ -136,12 +140,24 @@ class Scene {
         this._controls.Update(timeElapsedS);
       }
   
-      this._thirdPersonCamera.Update(timeElapsedS);
+      //* Switch between orbit controls and third person camera
+      const lastTimeCtrlPressed = this._controls._lastTimeCtrlPressed;
+      const currentTime = new Date().getTime();
+      const timeDiff = currentTime - lastTimeCtrlPressed;
+      if (this._controls._input._keys.ctrl && timeDiff > 500) {
+        this._orbitControls.enabled = !this._orbitControls.enabled;
+        this._controls._lastTimeCtrlPressed = currentTime
+      }
+      if(this._orbitControls.enabled) this._orbitControls.update();
+      else this._thirdPersonCamera.Update(timeElapsedS);
+      
 
+      //* Update stars
       if (this._starsSpawner) {
         this._starsSpawner.Update(timeElapsedS);
       }
 
+      //* Handle star collection
       this._stars = this._starsSpawner.stars;
       this._characterPosition = this._controls.Position;
       this._stars.map(s => {

@@ -22,6 +22,8 @@ export class BasicCharacterController {
             new BasicCharacterControllerProxy(this._animations)
         );
 
+        this._lastTimeCtrlPressed = 0;
+
         this._LoadModels();
     }
 
@@ -72,6 +74,14 @@ export class BasicCharacterController {
         }
         return this._target.quaternion;
     }   
+
+    get lastTimeCtrlPressed() {
+        return this._lastTimeCtrlPressed;
+    }
+
+    set lastTimeCtrlPressed(value) {
+        this._lastTimeCtrlPressed = value;
+    }
 
     Update(timeInSeconds) {
         if (!this._stateMachine._currentState) {
@@ -169,6 +179,7 @@ class BasicCharacterControllerInput {
         right: false,
         space: false,
         shift: false,
+        ctrl: false,
       };
       document.addEventListener('keydown', (e) => this._onKeyDown(e), false);
       document.addEventListener('keyup', (e) => this._onKeyUp(e), false);
@@ -194,6 +205,9 @@ class BasicCharacterControllerInput {
         case 16: // SHIFT
           this._keys.shift = true;
           break;
+        case 17: // CTRL
+          this._keys.ctrl = true;
+          break
       }
     }
   
@@ -216,6 +230,9 @@ class BasicCharacterControllerInput {
           break;
         case 16: // SHIFT
           this._keys.shift = false;
+          break;
+        case 17: // CTRL
+          this._keys.ctrl = false;
           break;
       }
     }
