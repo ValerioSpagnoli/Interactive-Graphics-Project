@@ -59,6 +59,7 @@ class Scene {
         this._orbitControls = new OrbitControls(this._camera, this._threejs.domElement);
         this._orbitControls.target.set(0, 0, 0);
         this._orbitControls.update();
+        this._orbitControls.enabled = false;
 
         const loader = new THREE.CubeTextureLoader();
         const texture = loader.load([
@@ -136,26 +137,30 @@ class Scene {
         this._mixers.map(m => m.update(timeElapsedS));
       }
   
-      if (this._controls) {
-        this._controls.Update(timeElapsedS);
-      }
-  
-      //* Switch between orbit controls and third person camera
-      const lastTimeCtrlPressed = this._controls._lastTimeCtrlPressed;
-      const currentTime = new Date().getTime();
-      const timeDiff = currentTime - lastTimeCtrlPressed;
-      if (this._controls._input._keys.ctrl && timeDiff > 500) {
-        this._orbitControls.enabled = !this._orbitControls.enabled;
-        this._controls._lastTimeCtrlPressed = currentTime
-      }
-      if(this._orbitControls.enabled) this._orbitControls.update();
-      else this._thirdPersonCamera.Update(timeElapsedS);
-      
+      //* Update character controls
+      if (this._controls) this._controls.Update(timeElapsedS);
 
-      //* Update stars
+      //* Update stars position
       if (this._starsSpawner) {
         this._starsSpawner.Update(timeElapsedS);
       }
+      
+      //* Switch between orbit controls and third person camera
+      const lastTimeFPressed = this._controls._lastTimeFPressed;
+      const currentTime = new Date().getTime();
+      const timeDiff = currentTime - lastTimeFPressed;
+      if (this._controls._input._keys.f && timeDiff > 500) {
+        this._orbitControls.enabled = !this._orbitControls.enabled;
+        this._controls._lastTimeFPressed = currentTime
+
+        if (this._orbitControls.enabled) {
+          this._orbitControls.target = this._thirdPersonCamera._params.target.Position;
+          this._orbitControls.object.position.copy(this._thirdPersonCamera._currentPosition);
+          this._orbitControls.object.lookAt(this._controls.Position);
+        }
+      }
+      if(this._orbitControls.enabled) this._orbitControls.update();
+      else this._thirdPersonCamera.Update(timeElapsedS);
 
       //* Handle star collection
       this._stars = this._starsSpawner.stars;

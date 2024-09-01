@@ -22,7 +22,7 @@ export class BasicCharacterController {
             new BasicCharacterControllerProxy(this._animations)
         );
 
-        this._lastTimeCtrlPressed = 0;
+        this._lastTimeFPressed = 0;
 
         this._LoadModels();
     }
@@ -75,12 +75,12 @@ export class BasicCharacterController {
         return this._target.quaternion;
     }   
 
-    get lastTimeCtrlPressed() {
-        return this._lastTimeCtrlPressed;
+    get lastTimeFPressed() {
+        return this._lastTimeFPressed;
     }
 
-    set lastTimeCtrlPressed(value) {
-        this._lastTimeCtrlPressed = value;
+    set lastTimeFPressed(value) {
+        this._lastTimeFPressed = value;
     }
 
     Update(timeInSeconds) {
@@ -180,6 +180,7 @@ class BasicCharacterControllerInput {
         space: false,
         shift: false,
         ctrl: false,
+        f: false,
       };
       document.addEventListener('keydown', (e) => this._onKeyDown(e), false);
       document.addEventListener('keyup', (e) => this._onKeyUp(e), false);
@@ -208,6 +209,9 @@ class BasicCharacterControllerInput {
         case 17: // CTRL
           this._keys.ctrl = true;
           break
+        case 70: // F
+          this._keys.f = true;
+          break;
       }
     }
   
@@ -233,6 +237,9 @@ class BasicCharacterControllerInput {
           break;
         case 17: // CTRL
           this._keys.ctrl = false;
+          break;
+        case 70: // F
+          this._keys.f = false;
           break;
       }
     }
