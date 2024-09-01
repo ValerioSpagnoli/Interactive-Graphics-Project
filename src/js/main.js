@@ -1,7 +1,9 @@
 import * as THREE from 'three';
-import { BasicCharacterController } from './characterControls';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
+import { BasicCharacterController } from './characterControls';
 import { ThirdPersonCamera } from './thirdPersonCamera';
+import { StarsSpawner } from './starsSpawner';
 
 
 class Scene {
@@ -30,7 +32,7 @@ class Scene {
         const near = 1.0;
         const far = 1000.0;
         this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-        this._camera.position.set(25, 10, 25);
+        this._camera.position.set(25, 15, 25);
     
         this._scene = new THREE.Scene();
     
@@ -80,7 +82,9 @@ class Scene {
         this._previousRAF = null;
     
         this._LoadAnimatedModel();
+        this.stars = this._LoadStars();
         this._RAF();
+
     }
   
     _LoadAnimatedModel() {
@@ -96,6 +100,14 @@ class Scene {
       });
     }
   
+    _LoadStars() {
+      const stars = new StarsSpawner({
+        scene: this._scene,
+        N: 100,
+      });
+      return stars;
+    }
+
     _OnWindowResize() {
       this._camera.aspect = window.innerWidth / window.innerHeight;
       this._camera.updateProjectionMatrix();
@@ -127,6 +139,11 @@ class Scene {
       }
   
       this._thirdPersonCamera.Update(timeElapsedS);
+
+      if (this.stars) {
+        this.stars.Update(timeElapsedS);
+      }
+
     }
 }
 
