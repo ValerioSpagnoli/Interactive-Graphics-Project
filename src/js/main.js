@@ -143,6 +143,15 @@ class Scene {
       }
 
       this._stars = this._starsSpawner.stars;
+      this._characterPosition = this._controls.Position;
+      this._stars.map(s => {
+        if (s.position.distanceTo(this._characterPosition) < 8) {
+          this._scene.remove(s);
+          this._stars = this._stars.filter(star => star !== s);
+          this._starsSpawner.stars = this._stars;
+        }
+      });
+
     }
 }
 

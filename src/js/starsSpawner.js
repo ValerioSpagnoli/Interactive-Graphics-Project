@@ -49,6 +49,10 @@ export class StarsSpawner {
     get stars() {
         return this._stars;
     }
+
+    set stars(value) {
+        this._stars = value;
+    }
 }
 
 function getRandomSign() {
