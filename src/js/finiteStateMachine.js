@@ -84,7 +84,7 @@ class IdleState extends State {
     Exit() {
     }
   
-    Update(_, input) {
+    Update(timeElapsed, input) {
       if (input._keys.forward || input._keys.backward) {
         this._parent.SetState('walk');
       } else if (input._keys.space) {

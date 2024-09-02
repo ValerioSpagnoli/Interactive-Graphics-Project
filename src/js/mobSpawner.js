@@ -37,7 +37,7 @@ export class MobSpawner {
         const k = mobPositions.length;
     
         for (let i = 0; i < k; i++) {
-            let mob_ = {'mob':[], 'mixer':[], 'action':[], 'velocity':[], 'time':0};  
+            let mob_ = {'mob':null, 'mixer':null, 'actions':[], 'currentAction':null, 'velocity':null, 'time':0};  
             loader.load('./models/mob/blue_demon.glb', (gltf) => {
                 gltf.scene.traverse(c => {
                     c.castShadow = true;
@@ -54,7 +54,11 @@ export class MobSpawner {
                 const action = mixer.clipAction(gltf.animations[11]); // Walk animation
                 action.play();
     
-                mob_.action = action;
+                mob_.actions.push(gltf.animations[0]); // Death animation
+                mob_.actions.push(gltf.animations[9]); // Run animation
+                mob_.actions.push(gltf.animations[11]); // Walk animation
+
+                mob_.currentAction = action;    
                 mob_.mixer = mixer;
 
                 this._mobs.push(mob_);
@@ -91,11 +95,10 @@ export class MobSpawner {
         }
         const playerPosition = this._params.playerPosition;
         for (const mob of this._mobs) {
-            if (playerPosition.distanceTo(mob.position) < 10) {
-                console.log('Player is near');
+            const distanceToPlayer = playerPosition.distanceTo(mob.position);
+            if (distanceToPlayer < 10) {
                 this.moveMobTowardsPlayer(mob, playerPosition);
-            }
-            else {
+            } else {
                 this.moveMobRandomly(mob);
             }
         }
