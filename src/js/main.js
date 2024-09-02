@@ -141,16 +141,17 @@ class Scene {
         }
       });
 
-      //* Handle collision between character and wall
-      if (this._glbBoundingBox && this._boundingBoxCharacter) {
-        if (this._glbBoundingBox.intersectsBox(this._boundingBoxCharacter)) {
-          console.log('collision detected');
-          this._controls._input._keys.w = false;
-          this._controls._input._keys.s = false;
-          this._controls._input._keys.a = false;
-          this._controls._input._keys.d = false;
+      this._worldboundingBoxes = this._world.BoundingBoxes;
+      this._characterPosition = this._controls.Position;
+      this._characterPreviousPosition = this._controls.PreviousPosition;
+      this._worldboundingBoxes.map(b => {
+        console.log(b.position.distanceTo(this._characterPosition));
+        if (b.position.distanceTo(this._characterPosition) < 35) {
+          this._controls._velocity = new THREE.Vector3(0, 0, 0);
+          this._controls._target.position.set(this._characterPreviousPosition.x, this._characterPreviousPosition.y, this._characterPreviousPosition.z);
         }
-      }
+      });
+
     }
 }
 

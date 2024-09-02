@@ -15,6 +15,7 @@ export class BasicCharacterController {
         this._acceleration = new THREE.Vector3(1, 0.25, 50.0);
         this._velocity = new THREE.Vector3(0, 0, 0);
         this._position = new THREE.Vector3();
+        this._previousPosition = new THREE.Vector3();
 
         this._animations = {};
         this._input = new BasicCharacterControllerInput();
@@ -25,6 +26,7 @@ export class BasicCharacterController {
         this._lastTimeFPressed = 0;
 
         this._LoadModels();
+        this._AddBoundingBox();
     }
 
     _LoadModels() {
@@ -62,11 +64,25 @@ export class BasicCharacterController {
           loader.load('run.fbx', (a) => { _OnLoad('run', a); });
           loader.load('idle.fbx', (a) => { _OnLoad('idle', a); });
         });
+    }
 
+    _AddBoundingBox(){
+      const geometry = new THREE.BoxGeometry(8, 14, 8);
+      const material = new THREE.MeshBasicMaterial({
+          color: 0xff0000,
+          wireframe: true,
+      });
+      this._cube = new THREE.Mesh(geometry, material);
+      this._cube.position.set(0, 7, 0);
+      this._params.scene.add(this._cube);
     }
 
     get Position(){
         return this._position;
+    }
+
+    get PreviousPosition(){
+        return this._previousPosition;
     }
 
     get Rotation(){
@@ -75,6 +91,10 @@ export class BasicCharacterController {
         }
         return this._target.quaternion;
     }   
+
+    get BoundingBox(){
+        return this._cube;
+    }
 
     get lastTimeFPressed() {
         return this._lastTimeFPressed;
@@ -149,7 +169,11 @@ export class BasicCharacterController {
         controlObject.position.add(forward);
         controlObject.position.add(sideways);
 
+        this._cube.position.copy(controlObject.position);
+        this._cube.position.y = 7;
+
         this._position.copy(controlObject.position);
+        this._previousPosition.copy(oldPosition);
 
         if (this._mixer) {
             this._mixer.update(timeInSeconds);
