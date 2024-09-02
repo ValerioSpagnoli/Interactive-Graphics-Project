@@ -145,8 +145,8 @@ class Scene {
       this._characterPosition = this._controls.Position;
       this._characterPreviousPosition = this._controls.PreviousPosition;
       this._worldboundingBoxes.map(b => {
-        console.log(b.position.distanceTo(this._characterPosition));
-        if (b.position.distanceTo(this._characterPosition) < 35) {
+        const box = new THREE.Box3().setFromObject(b);
+        if (box.containsPoint(this._characterPosition)) {
           this._controls._velocity = new THREE.Vector3(0, 0, 0);
           this._controls._target.position.set(this._characterPreviousPosition.x, this._characterPreviousPosition.y, this._characterPreviousPosition.z);
         }
