@@ -7,6 +7,7 @@ import { GUI } from './gui';
 import { BasicCharacterController } from './characterControls';
 import { ThirdPersonCamera } from './thirdPersonCamera';
 import { StarsSpawner } from './starsSpawner';
+import { MobSpawner } from './mobSpawner';
 
 
 class Scene {
@@ -52,6 +53,7 @@ class Scene {
         this._LoadGUI();
         this._LoadStars();
         this._LoadAnimatedModel();
+        this._LoadMobs();
         this._RAF();
 
         this._currentCollectedStars = 0;
@@ -85,6 +87,14 @@ class Scene {
         scene: this._scene,
         N: 100,
       });   
+    }
+
+    _LoadMobs() {
+      this._mobSpawner = new MobSpawner({
+        scene: this._scene,
+        world: this._world,
+        playerPosition: new THREE.Vector3(0, 0, 0),
+      });
     }
 
     _OnWindowResize() {
@@ -121,6 +131,11 @@ class Scene {
         this._starsSpawner.Update(timeElapsedS);
       }
       
+      //* Update mobs position
+      if (this._mobSpawner) {
+        this._mobSpawner.update(timeElapsedS);
+      }
+
       //* Switch between orbit controls and third person camera
       const lastTimeFPressed = this._controls._lastTimeFPressed;
       const currentTime = new Date().getTime();
@@ -139,8 +154,6 @@ class Scene {
       else this._thirdPersonCamera.Update(timeElapsedS);
 
       //* Handle star collection
-      console.log(this._currentCollectedStars);
-
       this._stars = this._starsSpawner.stars;
       this._characterPosition = this._controls.Position;
       this._stars.map(s => {
