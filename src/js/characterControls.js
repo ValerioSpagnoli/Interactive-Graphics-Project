@@ -107,6 +107,12 @@ export class BasicCharacterController {
         this._lastTimeFPressed = value;
     }
 
+    get keyPressed() {
+        const keys = this._input._keys;
+        const keyPressed = {'w': keys.forward, 'a': keys.left, 's': keys.backward, 'd': keys.right, 'shift': keys.shift, 'space': keys.space};
+        return keyPressed;
+    }
+
     Update(timeInSeconds) {
         if (!this._stateMachine._currentState) {
             return;

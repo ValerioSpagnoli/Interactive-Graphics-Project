@@ -12,7 +12,6 @@ export class StarsSpawner {
         const loader = new GLTFLoader();
 
         const starPositions = [];
-        starPositions.push(new THREE.Vector3(0, 1, 0));
         starPositions.push(new THREE.Vector3(0, 1, 50));
         starPositions.push(new THREE.Vector3(0, 1, 110));
         starPositions.push(new THREE.Vector3(0, 1, 170));

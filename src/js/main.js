@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import { World } from './world';
+import { GUI } from './gui';
 import { BasicCharacterController } from './characterControls';
 import { ThirdPersonCamera } from './thirdPersonCamera';
 import { StarsSpawner } from './starsSpawner';
@@ -48,15 +49,22 @@ class Scene {
         this._previousRAF = null;
         
         this._LoadWorld();
+        this._LoadGUI();
         this._LoadStars();
         this._LoadAnimatedModel();
         this._RAF();
+
+        this._currentCollectedStars = 0;
     }
   
     _LoadWorld(){
         this._world = new World({
             scene: this._scene,
         });
+    }
+
+    _LoadGUI(){
+        this._gui = new GUI();
     }
 
     _LoadAnimatedModel() {
@@ -131,6 +139,8 @@ class Scene {
       else this._thirdPersonCamera.Update(timeElapsedS);
 
       //* Handle star collection
+      console.log(this._currentCollectedStars);
+
       this._stars = this._starsSpawner.stars;
       this._characterPosition = this._controls.Position;
       this._stars.map(s => {
@@ -138,9 +148,11 @@ class Scene {
           this._scene.remove(s);
           this._stars = this._stars.filter(star => star !== s);
           this._starsSpawner.stars = this._stars;
+          this._currentCollectedStars += 1;
         }
       });
 
+      //* Handle collision with world bounding boxes
       this._worldboundingBoxes = this._world.BoundingBoxes;
       this._characterPosition = this._controls.Position;
       this._characterPreviousPosition = this._controls.PreviousPosition;
@@ -152,6 +164,12 @@ class Scene {
         }
       });
 
+      //* Update GUI
+      this._gui.updateKeys(this._controls.keyPressed);
+      if(this._currentCollectedStars === 2){
+        this._gui._powerBar.addSword();
+        this._currentCollectedStars = 0;
+      }
     }
 }
 
