@@ -70,7 +70,7 @@ export class MobSpawner {
         const mat_1 = new THREE.MeshBasicMaterial({
             color: 0x00ff00,
             wireframe: true,
-            visible: false,
+            visible: true,
         });
         const cube_1 = new THREE.Mesh(box_1, mat_1);
         cube_1.position.set(0, 25, 185);
@@ -81,7 +81,7 @@ export class MobSpawner {
         const mat_2 = new THREE.MeshBasicMaterial({
             color: 0x00ff00,
             wireframe: true,
-            visible: false,
+            visible: true,
         });
         const cube_2 = new THREE.Mesh(box_2, mat_2);
         cube_2.position.set(0, 25, -70);
@@ -96,7 +96,15 @@ export class MobSpawner {
         const playerPosition = this._params.playerPosition;
         for (const mob of this._mobs) {
             const distanceToPlayer = playerPosition.distanceTo(mob.position);
-            if (distanceToPlayer < 10) {
+            let playerInsideBoundingBoxes = false;
+            for (const b of this._worldBoundingBoxes) {
+                const box = new THREE.Box3().setFromObject(b);
+                if (box.containsPoint(playerPosition)) {
+                    playerInsideBoundingBoxes = true;
+                    break;
+                }
+            }
+            if (distanceToPlayer < 10 && !playerInsideBoundingBoxes) {
                 this.moveMobTowardsPlayer(mob, playerPosition);
             } else {
                 this.moveMobRandomly(mob);
