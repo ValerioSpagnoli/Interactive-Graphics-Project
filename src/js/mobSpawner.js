@@ -70,7 +70,7 @@ export class MobSpawner {
         const mat_1 = new THREE.MeshBasicMaterial({
             color: 0x00ff00,
             wireframe: true,
-            visible: true,
+            visible: false,
         });
         const cube_1 = new THREE.Mesh(box_1, mat_1);
         cube_1.position.set(0, 25, 185);
@@ -81,7 +81,7 @@ export class MobSpawner {
         const mat_2 = new THREE.MeshBasicMaterial({
             color: 0x00ff00,
             wireframe: true,
-            visible: true,
+            visible: false,
         });
         const cube_2 = new THREE.Mesh(box_2, mat_2);
         cube_2.position.set(0, 25, -70);
