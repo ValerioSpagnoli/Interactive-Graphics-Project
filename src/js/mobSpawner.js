@@ -37,7 +37,7 @@ export class MobSpawner {
         const k = mobPositions.length;
     
         for (let i = 0; i < k; i++) {
-            let mob_ = {'mob':[], 'mixer':[], 'action':[], 'position':[], 'velocity':[], 'time':0};  
+            let mob_ = {'mob':[], 'mixer':[], 'action':[], 'velocity':[], 'time':0};  
             loader.load('./models/mob/blue_demon.glb', (gltf) => {
                 gltf.scene.traverse(c => {
                     c.castShadow = true;
@@ -92,48 +92,48 @@ export class MobSpawner {
         const playerPosition = this._params.playerPosition;
         for (const mob of this._mobs) {
             if (playerPosition.distanceTo(mob.position) < 10) {
-                this.moveMobsTowardsPlayer(playerPosition);
+                console.log('Player is near');
+                this.moveMobTowardsPlayer(mob, playerPosition);
             }
             else {
-                this.moveMobsRandomly();
+                this.moveMobRandomly(mob);
             }
         }
     }
 
-    moveMobsTowardsPlayer(playerPosition) {
-        for (const mob of this._mobs) {
-            const mobPosition = mob.position;
-            const mobVelocity = mob.velocity;
-            mobVelocity.copy(playerPosition).sub(mobPosition).normalize().multiplyScalar(0.01);
-            mobPosition.add(mobVelocity);
-        }
+    moveMobTowardsPlayer(mob, playerPosition) {
+        const mobPosition = mob.position;
+        const mobVelocity = mob.velocity;
+        mobVelocity.copy(playerPosition).sub(mobPosition).normalize().multiplyScalar(0.1);
+        mobPosition.add(mobVelocity);
+        const angle = Math.atan2(mobVelocity.x, mobVelocity.z);
+        mob.mob.rotation.y = angle;
     }
 
-    moveMobsRandomly() {
-        for (const mob of this._mobs) {
-            const mobPosition = mob.position;
-            const mobVelocity = mob.velocity;
-            const mobTime = mob.time;
-            const currentTime = new Date().getTime();
-            const timeDiff = currentTime - mobTime;
-            if (timeDiff > 5000) {
+    moveMobRandomly(mob) {
+        const mobPosition = mob.position;
+        const mobVelocity = mob.velocity;
+        const mobTime = mob.time;
+        const currentTime = new Date().getTime();
+        const timeDiff = currentTime - mobTime;
+    
+        if (timeDiff > 5000) {
+            mobVelocity.set(Math.random() * 2 - 1, 0, Math.random() * 2 - 1);
+            mobVelocity.normalize().multiplyScalar(0.1);
+            mob.time = currentTime;
+        }
+    
+        for (const b of this._worldBoundingBoxes) {
+            const box = new THREE.Box3().setFromObject(b);
+            if (box.containsPoint(mobPosition)) {
                 mobVelocity.set(Math.random() * 2 - 1, 0, Math.random() * 2 - 1);
-                mobVelocity.normalize().multiplyScalar(0.01);
+                mobVelocity.normalize().multiplyScalar(0.1);
                 mob.time = currentTime;
             }
-            for (const b of this._worldBoundingBoxes) {
-                const box = new THREE.Box3().setFromObject(b);
-                if (box.containsPoint(mobPosition)) {
-                    mobVelocity.set(Math.random() * 2 - 1, 0, Math.random() * 2 - 1);
-                    mobVelocity.normalize().multiplyScalar(0.01);
-                    mob.time = currentTime;
-                }
-            }
-
-            mobPosition.add(mobVelocity);
-            const angle = Math.atan2(mobVelocity.x, mobVelocity.z);
-            mob.mob.rotation.y = angle;
         }
+    
+        mobPosition.add(mobVelocity);
+        const angle = Math.atan2(mobVelocity.x, mobVelocity.z);
+        mob.mob.rotation.y = angle;
     }
-
 }

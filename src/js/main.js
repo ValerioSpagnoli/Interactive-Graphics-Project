@@ -93,7 +93,7 @@ class Scene {
       this._mobSpawner = new MobSpawner({
         scene: this._scene,
         world: this._world,
-        playerPosition: new THREE.Vector3(0, 0, 0),
+        playerPosition: this._controls.Position,
       });
     }
 
