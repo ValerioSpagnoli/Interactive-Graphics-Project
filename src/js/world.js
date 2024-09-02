@@ -1,4 +1,3 @@
-// create a class that loads the world in "scene_objects/scene.glb"
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
@@ -10,7 +9,7 @@ export class World {
     
     _Init() {
         this._boundingBoxes = [];
-        this._boundingBoxesVisible = true;
+        this._boundingBoxesVisible = false;
         this._AddFloor();
         this._AddModel();
         this._AddLights();
@@ -18,10 +17,16 @@ export class World {
     }
 
     _AddFloor() {
+        const textureLoader = new THREE.TextureLoader();
+        const floorTexture = textureLoader.load('./textures/gray_rocks_floor.jpg');
+        floorTexture.wrapS = THREE.RepeatWrapping;
+        floorTexture.wrapT = THREE.RepeatWrapping;
+        floorTexture.repeat.set(15, 15);
+
         const floor = new THREE.Mesh(
             new THREE.PlaneGeometry(500, 500, 10, 10),
             new THREE.MeshStandardMaterial({
-                color: 0xFFFFFF,
+                map: floorTexture,
             }));
         floor.castShadow = false;
         floor.receiveShadow = true;
@@ -42,25 +47,42 @@ export class World {
     }
 
     _AddLights(){
-        let light = new THREE.DirectionalLight(0xFFFFFF, 1.0);
-        light.position.set(-100, 100, 100);
-        light.target.position.set(0, 0, 0);
-        light.castShadow = true;
-        light.shadow.bias = -0.001;
-        light.shadow.mapSize.width = 4096;
-        light.shadow.mapSize.height = 4096;
-        light.shadow.camera.near = 0.1;
-        light.shadow.camera.far = 500.0;
-        light.shadow.camera.near = 0.5;
-        light.shadow.camera.far = 500.0;
-        light.shadow.camera.left = 50;
-        light.shadow.camera.right = -50;
-        light.shadow.camera.top = 50;
-        light.shadow.camera.bottom = -50;
-        this._params.scene.add(light);
+        let light_1 = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+        light_1.position.set(100, 100, 0);
+        light_1.target.position.set(0, 0, 0);
+        light_1.castShadow = true;
+        light_1.shadow.bias = -0.001;
+        light_1.shadow.mapSize.width = 4096;
+        light_1.shadow.mapSize.height = 4096;
+        light_1.shadow.camera.near = 0.1;
+        light_1.shadow.camera.far = 500.0;
+        light_1.shadow.camera.near = 0.5;
+        light_1.shadow.camera.far = 500.0;
+        light_1.shadow.camera.left = 50;
+        light_1.shadow.camera.right = -50;
+        light_1.shadow.camera.top = 50;
+        light_1.shadow.camera.bottom = -50;
+        this._params.scene.add(light_1);
+
+        let light_2 = new THREE.DirectionalLight(0xd9c56c, 0.4);
+        light_2.position.set(0, 100, 50);
+        light_2.target.position.set(0, 0, 0);
+        light_2.castShadow = true;
+        light_2.shadow.bias = -0.001;
+        light_2.shadow.mapSize.width = 4096;
+        light_2.shadow.mapSize.height = 4096;
+        light_2.shadow.camera.near = 0.1;
+        light_2.shadow.camera.far = 500.0;
+        light_2.shadow.camera.near = 0.5;
+        light_2.shadow.camera.far = 500.0;
+        light_2.shadow.camera.left = 50;
+        light_2.shadow.camera.right = -50;
+        light_2.shadow.camera.top = 50;
+        light_2.shadow.camera.bottom = -50;
+        this._params.scene.add(light_2);
     
-        light = new THREE.AmbientLight(0xFFFFFF, 0.25);
-        this._params.scene.add(light);
+        let light_3 = new THREE.AmbientLight(0xe8e0ba, 0.35);
+        this._params.scene.add(light_3);
     }
 
     _AddBoundingBoxes() {
@@ -351,6 +373,54 @@ export class World {
         cube_24.position.set(170, 25, 180);
         this._params.scene.add(cube_24);
         this._boundingBoxes.push(cube_24);
+
+        //* Limit top
+        const box_25 = new THREE.BoxGeometry(480, 50, 10);
+        const mat_25 = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+            wireframe: true,
+            visible: this._boundingBoxesVisible,
+        });
+        const cube_25 = new THREE.Mesh(box_25, mat_25);
+        cube_25.position.set(0, 25, 240);
+        this._params.scene.add(cube_25);
+        this._boundingBoxes.push(cube_25);
+
+        //* Limit bottom
+        const box_26 = new THREE.BoxGeometry(480, 50, 10);
+        const mat_26 = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+            wireframe: true,
+            visible: this._boundingBoxesVisible,
+        });
+        const cube_26 = new THREE.Mesh(box_26, mat_26);
+        cube_26.position.set(0, 25, -240);
+        this._params.scene.add(cube_26);
+        this._boundingBoxes.push(cube_26);
+
+        //* Limit left
+        const box_27 = new THREE.BoxGeometry(10, 50, 480);
+        const mat_27 = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+            wireframe: true,
+            visible: this._boundingBoxesVisible,
+        });
+        const cube_27 = new THREE.Mesh(box_27, mat_27);
+        cube_27.position.set(-240, 25, 0);
+        this._params.scene.add(cube_27);
+        this._boundingBoxes.push(cube_27);
+
+        //* Limit right
+        const box_28 = new THREE.BoxGeometry(10, 50, 480);
+        const mat_28 = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+            wireframe: true,
+            visible: this._boundingBoxesVisible,
+        });
+        const cube_28 = new THREE.Mesh(box_28, mat_28);
+        cube_28.position.set(240, 25, 0);
+        this._params.scene.add(cube_28);
+        this._boundingBoxes.push(cube_28);
 
 
     }

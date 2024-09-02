@@ -1,3 +1,4 @@
+import * as THREE from 'three'; 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export class StarsSpawner {
@@ -5,20 +6,50 @@ export class StarsSpawner {
         this._params = params;
         this._stars = [];
         this._LoadModels();
-        this._goUp = true;
     }
 
     _LoadModels() {
         const loader = new GLTFLoader();
 
-        for (let i = 0; i < this._params.N; i++) {
+        const starPositions = [];
+        starPositions.push(new THREE.Vector3(0, 1, 0));
+        starPositions.push(new THREE.Vector3(0, 1, 50));
+        starPositions.push(new THREE.Vector3(0, 1, 110));
+        starPositions.push(new THREE.Vector3(0, 1, 170));
+        starPositions.push(new THREE.Vector3(0, 1, -50));
+        starPositions.push(new THREE.Vector3(-50, 1, 30));
+        starPositions.push(new THREE.Vector3(50, 1, 30));
+        starPositions.push(new THREE.Vector3(80, 1, 130));
+        starPositions.push(new THREE.Vector3(-80, 1, 130));
+        starPositions.push(new THREE.Vector3(100, 1, 100));
+        starPositions.push(new THREE.Vector3(-100, 1, 100));
+        starPositions.push(new THREE.Vector3(-130, 1, 150));
+        starPositions.push(new THREE.Vector3(130, 1, 150));
+        starPositions.push(new THREE.Vector3(-150, 1, 110));
+        starPositions.push(new THREE.Vector3(150, 1, 110));
+        starPositions.push(new THREE.Vector3(-120, 1, 50));
+        starPositions.push(new THREE.Vector3(120, 1, 50));
+        starPositions.push(new THREE.Vector3(-120, 1, 0));
+        starPositions.push(new THREE.Vector3(120, 1, 0));
+        starPositions.push(new THREE.Vector3(50, 1, -20));
+        starPositions.push(new THREE.Vector3(-50, 1, -20));
+        starPositions.push(new THREE.Vector3(-150, 1, -70));
+        starPositions.push(new THREE.Vector3(150, 1, -70));
+        starPositions.push(new THREE.Vector3(140, 1, -130));
+        starPositions.push(new THREE.Vector3(-140, 1, -130));
+
+
+        // const k = this._params.N;
+        const k = starPositions.length;
+
+        for (let i = 0; i < k; i++) {
             loader.load('./models/scene_objects/star.glb', (gltf) => {
                 gltf.scene.traverse(c => {
                     c.castShadow = true;
                 });
                 const star = gltf.scene;
                 star.scale.set(3, 3, 3);
-                star.position.set(Math.random()*500*getRandomSign(), 1, Math.random()*500*getRandomSign());
+                star.position.set(starPositions[i].x, starPositions[i].y, starPositions[i].z);  
                 this._params.scene.add(star);
                 this._stars.push(star);
             });
@@ -28,21 +59,7 @@ export class StarsSpawner {
     Update(timeInSeconds) {
         this._stars.map(s => {
             const rotationSpeed = 1;
-            s.rotation.y += rotationSpeed * timeInSeconds;    
-            
-            const floatingSpeed = 2;
-
-            if (this._goUp) {
-                s.position.y += floatingSpeed * timeInSeconds;
-            } else {
-                s.position.y -= floatingSpeed * timeInSeconds;
-            }
-
-            if (s.position.y > 5) {
-                this._goUp = false;
-            } else if (s.position.y < 1) {
-                this._goUp = true;
-            }            
+            s.rotation.y += rotationSpeed * timeInSeconds;             
         });
     }
 
@@ -53,8 +70,4 @@ export class StarsSpawner {
     set stars(value) {
         this._stars = value;
     }
-}
-
-function getRandomSign() {
-    return Math.random() < 0.5 ? -1 : 1;
 }

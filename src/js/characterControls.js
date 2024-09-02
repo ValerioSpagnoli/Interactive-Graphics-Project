@@ -37,6 +37,8 @@ export class BasicCharacterController {
           fbx.traverse(c => {
             c.castShadow = true;
           });
+          fbx.position.set(0, 0, 190);
+          fbx.rotation.y = Math.PI;
     
           this._target = fbx;
           this._params.scene.add(this._target);
@@ -71,6 +73,7 @@ export class BasicCharacterController {
       const material = new THREE.MeshBasicMaterial({
           color: 0xff0000,
           wireframe: true,
+          visible: false,
       });
       this._cube = new THREE.Mesh(geometry, material);
       this._cube.position.set(0, 7, 0);
