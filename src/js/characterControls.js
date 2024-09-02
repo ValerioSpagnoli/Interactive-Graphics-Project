@@ -62,6 +62,7 @@ export class BasicCharacterController {
           loader.load('run.fbx', (a) => { _OnLoad('run', a); });
           loader.load('idle.fbx', (a) => { _OnLoad('idle', a); });
         });
+
     }
 
     get Position(){

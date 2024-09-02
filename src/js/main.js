@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
+import { World } from './world';
 import { BasicCharacterController } from './characterControls';
 import { ThirdPersonCamera } from './thirdPersonCamera';
 import { StarsSpawner } from './starsSpawner';
@@ -33,85 +34,31 @@ class Scene {
         const near = 1.0;
         const far = 1000.0;
         this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-        this._camera.position.set(25, 15, 25);
+        //this._camera.position.set(25, 15, 25);
+        this._camera.position.set(200, 300, 200);
     
         this._scene = new THREE.Scene();
     
-        let light = new THREE.DirectionalLight(0xFFFFFF, 1.0);
-        light.position.set(-100, 100, 100);
-        light.target.position.set(0, 0, 0);
-        light.castShadow = true;
-        light.shadow.bias = -0.001;
-        light.shadow.mapSize.width = 4096;
-        light.shadow.mapSize.height = 4096;
-        light.shadow.camera.near = 0.1;
-        light.shadow.camera.far = 500.0;
-        light.shadow.camera.near = 0.5;
-        light.shadow.camera.far = 500.0;
-        light.shadow.camera.left = 50;
-        light.shadow.camera.right = -50;
-        light.shadow.camera.top = 50;
-        light.shadow.camera.bottom = -50;
-        this._scene.add(light);
-    
-        light = new THREE.AmbientLight(0xFFFFFF, 0.25);
-        this._scene.add(light);
-
         this._orbitControls = new OrbitControls(this._camera, this._threejs.domElement);
         this._orbitControls.target.set(0, 0, 0);
         this._orbitControls.update();
-        this._orbitControls.enabled = false;
+        this._orbitControls.enabled = true;
 
-        const loader = new THREE.CubeTextureLoader();
-        const texture = loader.load([
-            './textures/desert/posx.jpg',
-            './textures/desert/negx.jpg',
-            './textures/desert/posy.jpg',
-            './textures/desert/negy.jpg',
-            './textures/desert/posz.jpg',
-            './textures/desert/negz.jpg',
-        ]);
-        texture.encoding = THREE.sRGBEncoding;
-        this._scene.background = texture;
-    
-        const plane = new THREE.Mesh(
-            new THREE.PlaneGeometry(1000, 1000, 10, 10),
-            new THREE.MeshStandardMaterial({
-                color: 0xFFFFFF,
-                }));
-        plane.castShadow = false;
-        plane.receiveShadow = true;
-        plane.rotation.x = -Math.PI / 2;
-        this._scene.add(plane);
-    
         this._mixers = [];
         this._previousRAF = null;
-    
+        
+        this._LoadWorld();
         this._LoadStars();
         this._LoadAnimatedModel();
         this._RAF();
-
-
-        // load the gltf model wall in scene_objects folder
-        const loader2 = new GLTFLoader();
-        loader2.load('./models/scene_objects/wall.glb', (gltf) => {
-            gltf.scene.traverse(c => {
-                c.castShadow = true;
-            });
-            gltf.scene.position.set(1, 1, 1);
-            gltf.scene.scale.set(10, 10, 10);
-            this._scene.add(gltf.scene);
-        });
-        loader2.load('./models/scene_objects/wall.glb', (gltf) => {
-          gltf.scene.traverse(c => {
-              c.castShadow = true;
-          });
-          gltf.scene.position.set(20, 1, 1);
-          gltf.scene.scale.set(10, 10, 10);
-          this._scene.add(gltf.scene);
-      });
     }
   
+    _LoadWorld(){
+        this._world = new World({
+            scene: this._scene,
+        });
+    }
+
     _LoadAnimatedModel() {
       const params = {
         camera: this._camera,
@@ -194,6 +141,16 @@ class Scene {
         }
       });
 
+      //* Handle collision between character and wall
+      if (this._glbBoundingBox && this._boundingBoxCharacter) {
+        if (this._glbBoundingBox.intersectsBox(this._boundingBoxCharacter)) {
+          console.log('collision detected');
+          this._controls._input._keys.w = false;
+          this._controls._input._keys.s = false;
+          this._controls._input._keys.a = false;
+          this._controls._input._keys.d = false;
+        }
+      }
     }
 }
 
