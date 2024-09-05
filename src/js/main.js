@@ -10,6 +10,7 @@ import { StarsSpawner } from './starsSpawner';
 import { HeartSpawner } from './heartSpawner';
 import { SwordSpawner } from './swordSpawner';
 import { MobSpawner } from './mobSpawner';
+import { MonsterSpawner } from './monsterSpawner';
 
 
 class Scene {
@@ -58,6 +59,7 @@ class Scene {
         this._LoadSwords();
         this._LoadAnimatedModel();
         this._LoadMobs();
+        this._LoadMonster();
         this._RAF();
 
         this._currentCollectedStars = 0;
@@ -118,6 +120,14 @@ class Scene {
       });
     }
 
+    _LoadMonster() {
+      this._monsterSpawner = new MonsterSpawner({
+        scene: this._scene,
+        world: this._world,
+        playerPosition: this._controls.Position,
+      });
+    }
+
     _OnWindowResize() {
       this._camera.aspect = window.innerWidth / window.innerHeight;
       this._camera.updateProjectionMatrix();
@@ -169,6 +179,11 @@ class Scene {
       //* Update mobs 
       if (this._mobSpawner && !this._gameOver) {
         this._mobSpawner.update(timeElapsedS);
+      }
+
+      //* Update monster
+      if (this._monsterSpawner && !this._gameOver) {
+        this._monsterSpawner.update(timeElapsedS);
       }
 
       //* Switch between orbit controls and third person camera

@@ -89,7 +89,6 @@ class IdleState extends State {
       if (input._keys.forward || input._keys.backward) {
         this._parent.SetState('walk');
       } else if (input._keys.space) {
-        // attck animation
         this._parent.SetState('attack');
       }
     }
