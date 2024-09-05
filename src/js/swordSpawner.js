@@ -7,6 +7,7 @@ export class SwordSpawner {
         this._swords = [];
         this._lastSpawnTime = 0;
         this._spawnInterval = 30;
+        this._maxSwords = 5;    
         this._worldBoundingBoxes = this._params.world.BoundingBoxes;
     }
 
@@ -55,7 +56,7 @@ export class SwordSpawner {
     }
 
     Update(timeInSeconds) {
-        if(Date.now() - this._lastSpawnTime > this._spawnInterval*1000) {
+        if(Date.now() - this._lastSpawnTime > this._spawnInterval*1000 && this._swords.length < this._maxSwords) {
             this._lastSpawnTime = Date.now();
             this._LoadModels();
         }

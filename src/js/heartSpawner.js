@@ -7,6 +7,7 @@ export class HeartSpawner {
         this._hearts = [];
         this._lastSpawnTime = 0;
         this._spawnInterval = 30;
+        this._maxHearts = 5;
         this._worldBoundingBoxes = this._params.world.BoundingBoxes;
     }
 
@@ -54,7 +55,7 @@ export class HeartSpawner {
     }
 
     Update(timeInSeconds) {
-        if(Date.now() - this._lastSpawnTime > this._spawnInterval*1000) {
+        if(Date.now() - this._lastSpawnTime > this._spawnInterval*1000 && this._hearts.length < this._maxHearts) {
             this._lastSpawnTime = Date.now();
             this._LoadModels();
         }
