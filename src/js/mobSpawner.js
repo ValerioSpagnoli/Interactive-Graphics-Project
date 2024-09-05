@@ -36,12 +36,21 @@ export class MobSpawner {
         mobPositions.push(new THREE.Vector3(0, 1, 110));
         mobPositions.push(new THREE.Vector3(0, 1, 150));
         mobPositions.push(new THREE.Vector3(0, 1, -50));
+        mobPositions.push(new THREE.Vector3(0, 1, -20));
         mobPositions.push(new THREE.Vector3(-50, 1, 30));
         mobPositions.push(new THREE.Vector3(50, 1, 30));
         mobPositions.push(new THREE.Vector3(80, 1, 130));
         mobPositions.push(new THREE.Vector3(-80, 1, 130));
         mobPositions.push(new THREE.Vector3(100, 1, 100));
         mobPositions.push(new THREE.Vector3(-100, 1, 100));
+        mobPositions.push(new THREE.Vector3(-150, 1, 100));
+        mobPositions.push(new THREE.Vector3(150, 1, 100));
+        mobPositions.push(new THREE.Vector3(-150, 1, 140));
+        mobPositions.push(new THREE.Vector3(150, 1, 140));
+        mobPositions.push(new THREE.Vector3(-110, 1, 50));
+        mobPositions.push(new THREE.Vector3(110, 1, 50));
+        mobPositions.push(new THREE.Vector3(-120, 1, 0));
+        mobPositions.push(new THREE.Vector3(120, 1, 0));
     
         const k = mobPositions.length;
     
@@ -75,7 +84,6 @@ export class MobSpawner {
             });
         }
 
-        //* Left tower
         const box_1 = new THREE.BoxGeometry(60, 50, 40);
         const mat_1 = new THREE.MeshBasicMaterial({
             color: 0x00ff00,
@@ -142,13 +150,13 @@ export class MobSpawner {
                 mob.currentAction = mob.attack; 
                 mob.currentAction.play();
             }
-        } else {
+        } 
+        else {
             mobVelocity.copy(playerPosition).sub(mobPosition).normalize().multiplyScalar(0.1);
             mobPosition.add(mobVelocity);
             const angle = Math.atan2(mobVelocity.x, mobVelocity.z);
             mob.mob.rotation.y = angle;
 
-            // if mob is too close to player, stop walking
             if (distanceToPlayer < this._mobAttackDistance) {
                 mob.currentAction.stop();
             }
