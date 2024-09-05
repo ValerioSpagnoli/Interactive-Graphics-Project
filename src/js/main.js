@@ -191,7 +191,7 @@ class Scene {
       this._mobAttackDistance = this._mobSpawner.MobAttackDistance;
       for (const mob of this._mobs) {
         const distanceToPlayer = this._characterPosition.distanceTo(mob.position);
-        if (distanceToPlayer < this._mobAttackDistance && (Date.now() - mob.lastHit) > 1000) {
+        if (distanceToPlayer < this._mobAttackDistance && (Date.now() - mob.lastHit) > 1000 && !mob.deadFlag) {
           mob.lastHit = new Date().getTime();
           this._currentHitFromMobs += 1;
         }
@@ -201,19 +201,16 @@ class Scene {
         this._currentHitFromMobs = 0;
       }
 
-      // if the player is playing attack animation, check if the player hits the mob
-      if (this._controls._stateMachine._currentState && this._controls._stateMachine._currentState.Name === 'attack') {
+      //* Handle attacks on mobs
+      if (this._controls._stateMachine._currentState && this._controls._stateMachine._currentState.Name === 'attack' && (Date.now() - this._lastAttackTime) > 1000) {
         for (const mob of this._mobs) {
           const distanceToPlayer = this._characterPosition.distanceTo(mob.position);
-          if (distanceToPlayer < 10 && (Date.now() - this._lastAttackTime) > 1000) {
+          if (distanceToPlayer < 10 && !mob.deadFlag) {
             mob.life -= 1;
             this._lastAttackTime = new Date().getTime();
+            console.log(mob.life);
           }
         }
-      }
-
-      for(const mob of this._mobs){
-        console.log(mob.life);
       }
     }
 }

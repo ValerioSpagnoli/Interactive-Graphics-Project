@@ -46,7 +46,7 @@ export class MobSpawner {
         const k = mobPositions.length;
     
         for (let i = 0; i < k; i++) {
-            let mob_ = {'mob':null, 'mixer':null, 'walk':null, 'attack':null, 'dead':null, 'currentAction':null, 'velocity':null, 'time':0, 'life':10, 'lastHit':0};      
+            let mob_ = {'mob':null, 'mixer':null, 'walk':null, 'attack':null, 'dead':null, 'currentAction':null, 'velocity':null, 'time':0, 'life':10, 'lastHit':0, 'deadFlag':false};      
             loader.load('./models/mob/blue_demon.glb', (gltf) => {
                 gltf.scene.traverse(c => {
                     c.castShadow = true;
@@ -189,10 +189,16 @@ export class MobSpawner {
     }
 
     dead(mob) {
-        if(mob.currentAction !== mob.dead) {
+        if(!mob.deadFlag){
             mob.currentAction.stop();
             mob.currentAction = mob.dead;
             mob.currentAction.play();
+            mob.deadFlag = true;
+        }
+        else{
+            if (mob.currentAction.time > mob.currentAction.getClip().duration - 0.1) {
+                mob.currentAction.paused = true;
+            }
         }
     }
 }
