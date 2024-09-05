@@ -16,6 +16,7 @@ export class MobSpawner {
             this._worldBoundingBoxes.push(b);
         }
         this._mobAttackDistance = 8;
+        this._mobAttackTime = 600;
 
         this._LoadModels();
     }
@@ -26,6 +27,10 @@ export class MobSpawner {
 
     get MobAttackDistance() {
         return this._mobAttackDistance;
+    }
+
+    get MobAttackTime() {
+        return this._mobAttackTime;
     }
 
     _LoadModels() {

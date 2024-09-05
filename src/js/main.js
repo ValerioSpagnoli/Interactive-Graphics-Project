@@ -232,9 +232,11 @@ class Scene {
       //* Handle mob attack
       this._mobs = this._mobSpawner.Mobs;
       this._mobAttackDistance = this._mobSpawner.MobAttackDistance;
+      this._mobAttackTime = this._mobSpawner.MobAttackTime;
       for (const mob of this._mobs) {
         const distanceToPlayer = this._characterPosition.distanceTo(mob.position);
-        if (distanceToPlayer < this._mobAttackDistance && (Date.now() - mob.lastHit) > 1000 && !mob.deadFlag) {
+        if (distanceToPlayer < this._mobAttackDistance && (Date.now() - mob.lastHit) > this._mobAttackTime && !mob.deadFlag) {
+          console.log('mob attack');
           mob.lastHit = new Date().getTime();
           this._currentHitFromMobs += 1;
         }
