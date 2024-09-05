@@ -108,6 +108,41 @@ class PowerBar {
     }
 }
 
+class StarCounter {
+    constructor() {
+        this._numOfStars = 0;
+        this._starCounter = document.createElement('div');
+        this._starCounter.style.position = 'absolute';
+        this._starCounter.style.right = '150px';
+        this._starCounter.style.top = '50px';
+        this._starCounter.style.color = 'white';
+        this._starCounter.style.fontSize = '50px';
+        this._starCounter.innerHTML = `<img src="./textures/star.png" style="width: 60px; height: 60px; margin: 0 5px;"> ${this._numOfStars}`;
+        document.body.appendChild(this._starCounter);
+    }
+
+    set stars(value) {
+        this._numOfStars = value;
+        this._starCounter.innerHTML = `<img src="./textures/star.png" style="width: 60px; height: 60px; margin: 0 4px;"> ${this._numOfStars}`;
+    }
+
+    get stars() {
+        return this._numOfStars;
+    }
+
+    addStar() {
+        this.stars = this.stars + 1
+    }
+
+    removeStar() {
+        this.stars = this.stars - 1;
+    }
+
+    reset() {
+        this.stars = 0;
+    }
+}
+
 export class GUI {
     constructor() {
         this._keys = {
@@ -121,6 +156,7 @@ export class GUI {
 
         this._healthBar = new HealtBar();
         this._powerBar = new PowerBar();
+        this._starCounter = new StarCounter();  
     }
 
     get healtBar() {
@@ -129,6 +165,10 @@ export class GUI {
 
     get powerBar() {
         return this._powerBar;
+    }
+
+    get starCounter() {
+        return this._starCounter;
     }
 
     setKeyColor(key, color) {

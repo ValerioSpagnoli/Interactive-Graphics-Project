@@ -189,7 +189,7 @@ class Scene {
           this._scene.remove(s);
           this._stars = this._stars.filter(star => star !== s);
           this._starsSpawner.stars = this._stars;
-          this._currentCollectedStars += 1;
+          this._gui._starCounter.addStar();
         }
       });
 
