@@ -15,8 +15,17 @@ export class MobSpawner {
         for (const b of this._params.world.BoundingBoxes) {
             this._worldBoundingBoxes.push(b);
         }
+        this._mobAttackDistance = 6;
 
         this._LoadModels();
+    }
+
+    get Mobs() {
+        return this._mobs;
+    }
+
+    get MobAttackDistance() {
+        return this._mobAttackDistance;
     }
 
     _LoadModels() {
@@ -37,7 +46,7 @@ export class MobSpawner {
         const k = mobPositions.length;
     
         for (let i = 0; i < k; i++) {
-            let mob_ = {'mob':null, 'mixer':null, 'actions':[], 'currentAction':null, 'velocity':null, 'time':0};  
+            let mob_ = {'mob':null, 'mixer':null, 'walk':null, 'attack':null, 'dead':null, 'currentAction':null, 'velocity':null, 'time':0, 'life':10, 'lastHit':0};      
             loader.load('./models/mob/blue_demon.glb', (gltf) => {
                 gltf.scene.traverse(c => {
                     c.castShadow = true;
@@ -51,14 +60,15 @@ export class MobSpawner {
                 mob_.velocity = new THREE.Vector3(0, 0, 1);
     
                 const mixer = new THREE.AnimationMixer(mob);
-                const action = mixer.clipAction(gltf.animations[11]); // Walk animation
-                action.play();
-    
-                mob_.actions.push(gltf.animations[0]); // Death animation
-                mob_.actions.push(gltf.animations[9]); // Run animation
-                mob_.actions.push(gltf.animations[11]); // Walk animation
-
-                mob_.currentAction = action;    
+                const walk = mixer.clipAction(gltf.animations[11]); // Walk animation
+                const attack = mixer.clipAction(gltf.animations[13]); // Attack animation
+                const dead = mixer.clipAction(gltf.animations[0]); // Death animation
+                walk.play();
+                
+                mob_.walk = walk;
+                mob_.attack = attack;
+                mob_.dead = dead;
+                mob_.currentAction = walk;
                 mob_.mixer = mixer;
 
                 this._mobs.push(mob_);
@@ -109,16 +119,39 @@ export class MobSpawner {
             } else {
                 this.moveMobRandomly(mob);
             }
+
+            if (mob.life <= 0) {
+                mob.currentAction.stop();
+                mob.currentAction = mob.dead;
+                mob.currentAction.play();
+            }
         }
     }
 
     moveMobTowardsPlayer(mob, playerPosition) {
         const mobPosition = mob.position;
         const mobVelocity = mob.velocity;
-        mobVelocity.copy(playerPosition).sub(mobPosition).normalize().multiplyScalar(0.1);
-        mobPosition.add(mobVelocity);
-        const angle = Math.atan2(mobVelocity.x, mobVelocity.z);
-        mob.mob.rotation.y = angle;
+        const distanceToPlayer = playerPosition.distanceTo(mobPosition);
+        
+    
+        if (distanceToPlayer < this._mobAttackDistance) {
+            if (mob.currentAction !== mob.attack) {
+                mob.currentAction.stop();
+                mob.currentAction = mob.attack; 
+                mob.currentAction.play();
+            }
+        } else {
+            mobVelocity.copy(playerPosition).sub(mobPosition).normalize().multiplyScalar(0.1);
+            mobPosition.add(mobVelocity);
+            const angle = Math.atan2(mobVelocity.x, mobVelocity.z);
+            mob.mob.rotation.y = angle;
+    
+            if (mob.currentAction !== mob.walk) {
+                mob.currentAction.stop();
+                mob.currentAction = mob.walk;
+                mob.currentAction.play();
+            }
+        }
     }
 
     moveMobRandomly(mob) {

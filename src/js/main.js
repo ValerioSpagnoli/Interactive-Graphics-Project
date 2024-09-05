@@ -57,6 +57,7 @@ class Scene {
         this._RAF();
 
         this._currentCollectedStars = 0;
+        this._currentHitFromMobs = 0;
     }
   
     _LoadWorld(){
@@ -183,6 +184,23 @@ class Scene {
         this._gui._powerBar.addSword();
         this._currentCollectedStars = 0;
       }
+
+      //* Handle mob attack
+      this._mobs = this._mobSpawner.Mobs;
+      this._mobAttackDistance = this._mobSpawner.MobAttackDistance;
+      for (const mob of this._mobs) {
+        const distanceToPlayer = this._characterPosition.distanceTo(mob.position);
+        if (distanceToPlayer < this._mobAttackDistance && (Date.now() - mob.lastHit) > 1000) {
+          mob.lastHit = new Date().getTime();
+          this._currentHitFromMobs += 1;
+        }
+      }
+      if(this._currentHitFromMobs === 5){
+        this._gui._healthBar.removeHeart();
+        this._currentHitFromMobs = 0;
+      }
+
+      
     }
 }
 
