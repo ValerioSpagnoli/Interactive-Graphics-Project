@@ -260,7 +260,7 @@ class Scene {
       }
 
       //* Handle attacks on mobs
-      const damage = this._gui._powerBar.swords.length;
+      const damage = Math.ceil(this._gui._powerBar.swords.length / 2);
       if (this._controls._stateMachine._currentState && this._controls._stateMachine._currentState.Name === 'attack' && (Date.now() - this._lastAttackTime) > 1000) {
         for (const mob of this._mobs) {
           const distanceToPlayer = this._characterPosition.distanceTo(mob.position);

@@ -6,7 +6,7 @@ export class SwordSpawner {
         this._params = params;
         this._swords = [];
         this._lastSpawnTime = 0;
-        this._spawnInterval = 30;
+        this._spawnInterval = 20;
         this._maxSwords = 5;    
         this._worldBoundingBoxes = this._params.world.BoundingBoxes;
     }

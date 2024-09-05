@@ -6,7 +6,7 @@ export class StarsSpawner {
         this._params = params;
         this._stars = [];
         this._lastSpawnTime = 0;
-        this._spawnInterval = 30;
+        this._spawnInterval = 12;
         this._maxstars = 5;
         this._worldBoundingBoxes = this._params.world.BoundingBoxes;
     }

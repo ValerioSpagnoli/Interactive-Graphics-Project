@@ -6,7 +6,7 @@ export class HeartSpawner {
         this._params = params;
         this._hearts = [];
         this._lastSpawnTime = 0;
-        this._spawnInterval = 30;
+        this._spawnInterval = 18;
         this._maxHearts = 5;
         this._worldBoundingBoxes = this._params.world.BoundingBoxes;
     }

@@ -93,8 +93,8 @@ class StarCounter {
         this._numOfStars = 0;
         this._starCounter = document.createElement('div');
         this._starCounter.style.position = 'absolute';
-        this._starCounter.style.right = '150px';
-        this._starCounter.style.top = '50px';
+        this._starCounter.style.left = '100px';
+        this._starCounter.style.top = '70px';
         this._starCounter.style.color = 'white';
         this._starCounter.style.fontSize = '70px';
         this._starCounter.style.fontFamily = 'Handjet';
@@ -136,7 +136,6 @@ class GameOver {
         this._gameOver.style.fontFamily = 'Handjet';
         this._gameOver.innerHTML = 'Game Over';
 
-        // add a layer on the screen red and semi-transparent to hide the game when it's over
         this._layer = document.createElement('div');
         this._layer.style.position = 'absolute';
         this._layer.style.left = '0';
