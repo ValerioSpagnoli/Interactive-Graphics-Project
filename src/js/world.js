@@ -11,6 +11,7 @@ export class World {
         this._boundingBoxes = [];
         this._boundingBoxesVisible = false;
         this._AddFloor();
+        this._AddSky();
         this._AddModel();
         this._AddLights();
         this._AddBoundingBoxes();
@@ -24,7 +25,7 @@ export class World {
         floorTexture.repeat.set(15, 15);
 
         const floor = new THREE.Mesh(
-            new THREE.PlaneGeometry(500, 500, 10, 10),
+            new THREE.PlaneGeometry(600, 600, 10, 10),
             new THREE.MeshStandardMaterial({
                 map: floorTexture,
             }));
@@ -32,6 +33,25 @@ export class World {
         floor.receiveShadow = true;
         floor.rotation.x = -Math.PI / 2;
         this._params.scene.add(floor);
+    }
+
+    _AddSky() {
+        const textureLoader = new THREE.TextureLoader();
+        const skyTexture = textureLoader.load('./textures/sky.jpg', (texture) => {
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(1, 1); // Adjust the repeat values as needed
+        });
+        const skyGeometry = new THREE.SphereGeometry(300, 32, 32);
+
+        const skyMaterial = new THREE.MeshBasicMaterial({
+            map: skyTexture,
+            side: THREE.BackSide,
+            color: 0x333333 // Darker color multiplier
+        });
+
+        const skySphere = new THREE.Mesh(skyGeometry, skyMaterial);
+        this._params.scene.add(skySphere);
     }
 
     _AddModel() {
