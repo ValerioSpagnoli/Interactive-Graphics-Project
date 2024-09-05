@@ -63,6 +63,7 @@ class Scene {
         this._currentCollectedStars = 0;
         this._currentHitFromMobs = 0;
         this._lastAttackTime = 0; 
+        this._gameOver = false;
     }
   
     _LoadWorld(){
@@ -139,28 +140,34 @@ class Scene {
   
     _Step(timeElapsed) {
       const timeElapsedS = timeElapsed * 0.001;
-      if (this._mixers) {
+
+      //* Update mixers
+      if (this._mixers && !this._gameOver) {
         this._mixers.map(m => m.update(timeElapsedS));
       }
   
       //* Update character controls
-      if (this._controls) this._controls.Update(timeElapsedS);
+      if (this._controls && !this._gameOver) {
+        this._controls.Update(timeElapsedS);
+      }
 
-      //* Update stars position
-      if (this._starsSpawner) {
+      //* Update stars 
+      if (this._starsSpawner && !this._gameOver) {
         this._starsSpawner.Update(timeElapsedS);
       }
       
-      if (this._heartSpawner) {
+      //* Update hearts 
+      if (this._heartSpawner && !this._gameOver) {
         this._heartSpawner.Update(timeElapsedS);
       }
 
-      if (this._swordSpawner) {
+      //* Update swords 
+      if (this._swordSpawner && !this._gameOver) {
         this._swordSpawner.Update(timeElapsedS);
       }
 
-      //* Update mobs position
-      if (this._mobSpawner) {
+      //* Update mobs 
+      if (this._mobSpawner && !this._gameOver) {
         this._mobSpawner.update(timeElapsedS);
       }
 
@@ -180,6 +187,13 @@ class Scene {
       }
       if(this._orbitControls.enabled) this._orbitControls.update();
       else this._thirdPersonCamera.Update(timeElapsedS);
+
+      //* Handle game over
+      if (this._gui._healthBar.hearts.length === 0) {
+        this._gameOver = true;
+        this._gui._gameOver.show();
+      }
+
 
       //* Handle star collection
       this._stars = this._starsSpawner.stars;
@@ -236,7 +250,6 @@ class Scene {
       for (const mob of this._mobs) {
         const distanceToPlayer = this._characterPosition.distanceTo(mob.position);
         if (distanceToPlayer < this._mobAttackDistance && (Date.now() - mob.lastHit) > this._mobAttackTime && !mob.deadFlag) {
-          console.log('mob attack');
           mob.lastHit = new Date().getTime();
           this._currentHitFromMobs += 1;
         }

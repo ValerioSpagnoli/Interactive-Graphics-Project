@@ -140,7 +140,7 @@ export class BasicCharacterController {
 
         const acc = this._acceleration.clone();
         if (this._input._keys.shift) {
-            acc.multiplyScalar(2.0);
+            acc.multiplyScalar(3.0);
         }
 
         if (this._input._keys.forward) {

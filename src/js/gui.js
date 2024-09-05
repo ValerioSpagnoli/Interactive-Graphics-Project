@@ -1,23 +1,3 @@
-class Key {
-    constructor(key, x, y) {
-        this._key = key;
-        this._x = x;
-        this._y = y;
-        this._keyElement = document.createElement('div');
-        this._keyElement.style.position = 'absolute';
-        this._keyElement.style.left = `${this._x}px`;
-        this._keyElement.style.top = `${this._y}px`;
-        this._keyElement.style.color = 'white';
-        this._keyElement.style.fontSize = '30px';
-        this._keyElement.innerHTML = this._key;
-        document.body.appendChild(this._keyElement);
-    }
-
-    set color(color) {
-        this._keyElement.style.color = color;
-    }
-}
-
 class HealtBar {
     constructor() {
         this._hearts = [];
@@ -116,7 +96,8 @@ class StarCounter {
         this._starCounter.style.right = '150px';
         this._starCounter.style.top = '50px';
         this._starCounter.style.color = 'white';
-        this._starCounter.style.fontSize = '50px';
+        this._starCounter.style.fontSize = '70px';
+        this._starCounter.style.fontFamily = 'Handjet';
         this._starCounter.innerHTML = `<img src="./textures/star.png" style="width: 60px; height: 60px; margin: 0 5px;"> ${this._numOfStars}`;
         document.body.appendChild(this._starCounter);
     }
@@ -143,20 +124,49 @@ class StarCounter {
     }
 }
 
+class GameOver {
+    constructor() {
+        this._gameOver = document.createElement('div');
+        this._gameOver.style.position = 'absolute';
+        this._gameOver.style.left = '50%';
+        this._gameOver.style.top = '50%';
+        this._gameOver.style.transform = 'translate(-50%, -50%)';
+        this._gameOver.style.color = 'white';
+        this._gameOver.style.fontSize = '400px';
+        this._gameOver.style.fontFamily = 'Handjet';
+        this._gameOver.innerHTML = 'Game Over';
+
+        // add a layer on the screen red and semi-transparent to hide the game when it's over
+        this._layer = document.createElement('div');
+        this._layer.style.position = 'absolute';
+        this._layer.style.left = '0';
+        this._layer.style.top = '0';
+        this._layer.style.width = '100%';
+        this._layer.style.height = '100%';
+        this._layer.style.backgroundColor = 'rgba(30, 0, 0, 0.5)';
+        this._layer.style.display = 'none';
+        document.body.appendChild(this._layer);
+        document.body.appendChild(this._gameOver);
+    }
+
+    show() {
+        this._gameOver.style.display = 'block';
+        this._layer.style.display = 'block';
+    }
+
+    hide() {
+        this._gameOver.style.display = 'none';
+        this._layer.style.display = 'none';
+    }
+}
+
 export class GUI {
     constructor() {
-        this._keys = {
-            w: new Key('w', 60, 50),
-            a: new Key('a', 30, 80),
-            s: new Key('s', 60, 80),
-            d: new Key('d', 90, 80),
-            shift: new Key('shift', 130, 50),
-            space: new Key('space', 130, 80),
-        };
-
         this._healthBar = new HealtBar();
         this._powerBar = new PowerBar();
-        this._starCounter = new StarCounter();  
+        this._starCounter = new StarCounter(); 
+        this._gameOver = new GameOver(); 
+        this._gameOver.hide();
     }
 
     get healtBar() {
@@ -171,40 +181,7 @@ export class GUI {
         return this._starCounter;
     }
 
-    setKeyColor(key, color) {
-        this._keys[key].color = color;
+    get gameOver() {
+        return this._gameOver;
     }
-
-    updateKey(key, isPressed) {
-        if (isPressed) {
-            this.setKeyColor(key, 'red');
-        } else {
-            this.setKeyColor(key, 'white');
-        }
-    }
-
-    updateKeys(keys) {
-        for (const key in keys) {
-            this.updateKey(key, keys[key]);
-        }
-    }
-
-    show() {
-        for (const key in this._keys) {
-            this._keys[key];
-        }
-    }
-
-    hide() {
-        for (const key in this._keys) {
-            this._keys[key];
-        }
-    }
-
-    remove() {
-        for (const key in this._keys) {
-            this._keys[key].remove();
-        }
-    }
-
 }
