@@ -43,6 +43,7 @@ export class CharacterFSM extends FiniteStateMachine {
       this._AddState('idle', IdleState);
       this._AddState('walk', WalkState);
       this._AddState('run', RunState);
+      this._AddState('attack', AttackState);
     }
 };
 
@@ -88,7 +89,8 @@ class IdleState extends State {
       if (input._keys.forward || input._keys.backward) {
         this._parent.SetState('walk');
       } else if (input._keys.space) {
-        // Special State
+        // attck animation
+        this._parent.SetState('attack');
       }
     }
 };
@@ -182,7 +184,47 @@ class RunState extends State {
         }
         return;
       }
-  
       this._parent.SetState('idle');
     }
 };
+
+
+class AttackState extends State {
+    constructor(parent) {
+      super(parent);
+    }
+  
+    get Name() {
+      return 'attack';
+    }
+  
+    Enter(prevState) {
+      const curAction = this._parent._proxy._animations['attack'].action;
+      if (prevState) {
+        const prevAction = this._parent._proxy._animations[prevState.Name].action;
+  
+        curAction.enabled = true;
+  
+        curAction.time = 0.0;
+        curAction.setEffectiveTimeScale(1.0);
+        curAction.setEffectiveWeight(1.0);
+  
+        curAction.crossFadeFrom(prevAction, 0.5, true);
+        curAction.play();
+      } else {
+        curAction.play();
+      }
+    }
+  
+    Exit() {
+    }
+  
+    Update(timeElapsed, input) {
+      if (input._keys.space) {
+        this._parent.SetState('attack');
+      }
+      else {
+        this._parent.SetState('idle');
+      }
+    }
+}

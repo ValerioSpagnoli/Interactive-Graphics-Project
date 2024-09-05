@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { CharacterFSM } from './finiteStateMachine';
 
 
@@ -31,9 +31,9 @@ export class BasicCharacterController {
 
     _LoadModels() {
         const loader = new FBXLoader();
-        loader.setPath('./models/white_stickman/');
-        loader.load('stickman.fbx', (fbx) => {
-          fbx.scale.setScalar(0.1);
+        loader.setPath('./models/knight/');
+        loader.load('knight.fbx', (fbx) => {
+          fbx.scale.setScalar(0.06);
           fbx.traverse(c => {
             c.castShadow = true;
           });
@@ -61,10 +61,11 @@ export class BasicCharacterController {
           };
     
           const loader = new FBXLoader(this._manager);
-          loader.setPath('./models/white_stickman/');
+          loader.setPath('./models/knight/');
           loader.load('walk.fbx', (a) => { _OnLoad('walk', a); });
           loader.load('run.fbx', (a) => { _OnLoad('run', a); });
           loader.load('idle.fbx', (a) => { _OnLoad('idle', a); });
+          loader.load('attack.fbx', (a) => { _OnLoad('attack', a); });
         });
     }
 

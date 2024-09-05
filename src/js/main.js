@@ -58,6 +58,7 @@ class Scene {
 
         this._currentCollectedStars = 0;
         this._currentHitFromMobs = 0;
+        this._lastAttackTime = 0; 
     }
   
     _LoadWorld(){
@@ -200,7 +201,20 @@ class Scene {
         this._currentHitFromMobs = 0;
       }
 
-      
+      // if the player is playing attack animation, check if the player hits the mob
+      if (this._controls._stateMachine._currentState && this._controls._stateMachine._currentState.Name === 'attack') {
+        for (const mob of this._mobs) {
+          const distanceToPlayer = this._characterPosition.distanceTo(mob.position);
+          if (distanceToPlayer < 10 && (Date.now() - this._lastAttackTime) > 1000) {
+            mob.life -= 1;
+            this._lastAttackTime = new Date().getTime();
+          }
+        }
+      }
+
+      for(const mob of this._mobs){
+        console.log(mob.life);
+      }
     }
 }
 

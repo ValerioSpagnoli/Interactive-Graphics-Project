@@ -15,7 +15,7 @@ export class MobSpawner {
         for (const b of this._params.world.BoundingBoxes) {
             this._worldBoundingBoxes.push(b);
         }
-        this._mobAttackDistance = 6;
+        this._mobAttackDistance = 8;
 
         this._LoadModels();
     }
@@ -114,16 +114,18 @@ export class MobSpawner {
                     break;
                 }
             }
-            if (distanceToPlayer < 10 && !playerInsideBoundingBoxes) {
-                this.moveMobTowardsPlayer(mob, playerPosition);
-            } else {
-                this.moveMobRandomly(mob);
+
+            if(mob.currentAction !== mob.dead) {
+                if (distanceToPlayer < 20 && !playerInsideBoundingBoxes) {
+                    this.moveMobTowardsPlayer(mob, playerPosition);
+                } else {
+                    this.moveMobRandomly(mob);
+                }
             }
+            
 
             if (mob.life <= 0) {
-                mob.currentAction.stop();
-                mob.currentAction = mob.dead;
-                mob.currentAction.play();
+                this.dead(mob);
             }
         }
     }
@@ -145,6 +147,11 @@ export class MobSpawner {
             mobPosition.add(mobVelocity);
             const angle = Math.atan2(mobVelocity.x, mobVelocity.z);
             mob.mob.rotation.y = angle;
+
+            // if mob is too close to player, stop walking
+            if (distanceToPlayer < this._mobAttackDistance) {
+                mob.currentAction.stop();
+            }
     
             if (mob.currentAction !== mob.walk) {
                 mob.currentAction.stop();
@@ -179,5 +186,13 @@ export class MobSpawner {
         mobPosition.add(mobVelocity);
         const angle = Math.atan2(mobVelocity.x, mobVelocity.z);
         mob.mob.rotation.y = angle;
+    }
+
+    dead(mob) {
+        if(mob.currentAction !== mob.dead) {
+            mob.currentAction.stop();
+            mob.currentAction = mob.dead;
+            mob.currentAction.play();
+        }
     }
 }
