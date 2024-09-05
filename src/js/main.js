@@ -7,6 +7,7 @@ import { GUI } from './gui';
 import { BasicCharacterController } from './characterControls';
 import { ThirdPersonCamera } from './thirdPersonCamera';
 import { StarsSpawner } from './starsSpawner';
+import { HeartSpawner } from './heartSpawner';
 import { MobSpawner } from './mobSpawner';
 
 
@@ -52,6 +53,7 @@ class Scene {
         this._LoadWorld();
         this._LoadGUI();
         this._LoadStars();
+        this._LoadHearts();
         this._LoadAnimatedModel();
         this._LoadMobs();
         this._RAF();
@@ -87,8 +89,14 @@ class Scene {
     _LoadStars() {
       this._starsSpawner = new StarsSpawner({
         scene: this._scene,
-        N: 100,
       });   
+    }
+
+    _LoadHearts() {
+      this._heartSpawner = new HeartSpawner({
+        scene: this._scene,
+        world: this._world,
+      });
     }
 
     _LoadMobs() {
@@ -133,6 +141,10 @@ class Scene {
         this._starsSpawner.Update(timeElapsedS);
       }
       
+      if (this._heartSpawner) {
+        this._heartSpawner.Update(timeElapsedS);
+      }
+
       //* Update mobs position
       if (this._mobSpawner) {
         this._mobSpawner.update(timeElapsedS);
@@ -164,6 +176,18 @@ class Scene {
           this._stars = this._stars.filter(star => star !== s);
           this._starsSpawner.stars = this._stars;
           this._currentCollectedStars += 1;
+        }
+      });
+
+      //* Handle heart collection
+      this._hearts = this._heartSpawner.hearts;
+      this._characterPosition = this._controls.Position;
+      this._hearts.map(h => {
+        if (h.position.distanceTo(this._characterPosition) < 8) {
+          this._scene.remove(h);
+          this._hearts = this._hearts.filter(heart => heart !== h);
+          this._heartSpawner.hearts = this._hearts;
+          this._gui._healthBar.addHeart();
         }
       });
 

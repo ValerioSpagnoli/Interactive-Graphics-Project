@@ -37,10 +37,7 @@ export class StarsSpawner {
         starPositions.push(new THREE.Vector3(140, 1, -130));
         starPositions.push(new THREE.Vector3(-140, 1, -130));
 
-
-        // const k = this._params.N;
         const k = starPositions.length;
-
         for (let i = 0; i < k; i++) {
             loader.load('./models/scene_objects/star.glb', (gltf) => {
                 gltf.scene.traverse(c => {

@@ -158,7 +158,7 @@ export class World {
         this._params.scene.add(cube_6);
         this._boundingBoxes.push(cube_6);
 
-        //* Bottom side wall
+        //* Bottom wall
         const box_7 = new THREE.BoxGeometry(400, 50, 20);
         const mat_7 = new THREE.MeshBasicMaterial({
             color: 0x00ff00,
