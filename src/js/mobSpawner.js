@@ -200,7 +200,7 @@ export class MobSpawner {
         for (const b of this._worldBoundingBoxes) {
             const box = new THREE.Box3().setFromObject(b);
             if (box.containsPoint(mobPosition)) {
-                mobVelocity.set(Math.random() * 2 - 1, 0, Math.random() * 2 - 1);
+                mobVelocity.set(-mobVelocity.x, 0, -mobVelocity.z);
                 mobVelocity.normalize().multiplyScalar(0.1);
                 mob.time = currentTime;
             }
