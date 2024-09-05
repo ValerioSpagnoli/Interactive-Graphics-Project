@@ -8,6 +8,7 @@ import { BasicCharacterController } from './characterControls';
 import { ThirdPersonCamera } from './thirdPersonCamera';
 import { StarsSpawner } from './starsSpawner';
 import { HeartSpawner } from './heartSpawner';
+import { SwordSpawner } from './swordSpawner';
 import { MobSpawner } from './mobSpawner';
 
 
@@ -54,6 +55,7 @@ class Scene {
         this._LoadGUI();
         this._LoadStars();
         this._LoadHearts();
+        this._LoadSwords();
         this._LoadAnimatedModel();
         this._LoadMobs();
         this._RAF();
@@ -94,6 +96,13 @@ class Scene {
 
     _LoadHearts() {
       this._heartSpawner = new HeartSpawner({
+        scene: this._scene,
+        world: this._world,
+      });
+    }
+
+    _LoadSwords() { 
+      this._swordSpawner = new SwordSpawner({
         scene: this._scene,
         world: this._world,
       });
@@ -145,6 +154,10 @@ class Scene {
         this._heartSpawner.Update(timeElapsedS);
       }
 
+      if (this._swordSpawner) {
+        this._swordSpawner.Update(timeElapsedS);
+      }
+
       //* Update mobs position
       if (this._mobSpawner) {
         this._mobSpawner.update(timeElapsedS);
@@ -191,6 +204,18 @@ class Scene {
         }
       });
 
+      //* Handle sword collection
+      this._swords = this._swordSpawner.swords;
+      this._characterPosition = this._controls.Position;
+      this._swords.map(s => {
+        if (s.position.distanceTo(this._characterPosition) < 8) {
+          this._scene.remove(s);
+          this._swords = this._swords.filter(sword => sword !== s);
+          this._swordSpawner.swords = this._swords;
+          this._gui._powerBar.addSword();
+        }
+      });
+
       //* Handle collision with world bounding boxes
       this._worldboundingBoxes = this._world.BoundingBoxes;
       this._characterPosition = this._controls.Position;
@@ -202,13 +227,6 @@ class Scene {
           this._controls._target.position.set(this._characterPreviousPosition.x, this._characterPreviousPosition.y, this._characterPreviousPosition.z);
         }
       });
-
-      //* Update GUI
-      this._gui.updateKeys(this._controls.keyPressed);
-      if(this._currentCollectedStars === 2){
-        this._gui._powerBar.addSword();
-        this._currentCollectedStars = 0;
-      }
 
       //* Handle mob attack
       this._mobs = this._mobSpawner.Mobs;
