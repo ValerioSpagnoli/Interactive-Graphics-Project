@@ -40,14 +40,14 @@ export class World {
         const skyTexture = textureLoader.load('./textures/sky.jpg', (texture) => {
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
-            texture.repeat.set(1, 1); // Adjust the repeat values as needed
+            texture.repeat.set(1, 1);
         });
         const skyGeometry = new THREE.SphereGeometry(300, 32, 32);
 
         const skyMaterial = new THREE.MeshBasicMaterial({
             map: skyTexture,
             side: THREE.BackSide,
-            color: 0x333333 // Darker color multiplier
+            color: 0x333333
         });
 
         const skySphere = new THREE.Mesh(skyGeometry, skyMaterial);

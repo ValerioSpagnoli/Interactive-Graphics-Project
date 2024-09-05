@@ -44,6 +44,8 @@ export class CharacterFSM extends FiniteStateMachine {
       this._AddState('walk', WalkState);
       this._AddState('run', RunState);
       this._AddState('attack', AttackState);
+      this._AddState('death', DeathState);
+      this._AddState('hit', HitState);
     }
 };
 
@@ -225,5 +227,73 @@ class AttackState extends State {
       else {
         this._parent.SetState('idle');
       }
+    }
+}
+
+class DeathState extends State {
+    constructor(parent) {
+      super(parent);
+    }
+  
+    get Name() {
+      return 'death';
+    }
+  
+    Enter(prevState) {
+      const curAction = this._parent._proxy._animations['death'].action;
+      if (prevState) {
+        const prevAction = this._parent._proxy._animations[prevState.Name].action;
+  
+        curAction.enabled = true;
+  
+        curAction.time = 0.0;
+        curAction.setEffectiveTimeScale(1.0);
+        curAction.setEffectiveWeight(1.0);
+  
+        curAction.crossFadeFrom(prevAction, 0.5, true);
+        curAction.play();
+      } else {
+        curAction.play();
+      }
+    }
+  
+    Exit() {
+    }
+  
+    Update(timeElapsed, input) {
+    }
+}
+
+class HitState extends State {
+    constructor(parent) {
+      super(parent);
+    }
+  
+    get Name() {
+      return 'hit';
+    }
+  
+    Enter(prevState) {
+      const curAction = this._parent._proxy._animations['hit'].action;
+      if (prevState) {
+        const prevAction = this._parent._proxy._animations[prevState.Name].action;
+  
+        curAction.enabled = true;
+  
+        curAction.time = 0.0;
+        curAction.setEffectiveTimeScale(1.0);
+        curAction.setEffectiveWeight(1.0);
+  
+        curAction.crossFadeFrom(prevAction, 1, true);
+        curAction.play();
+      } else {
+        curAction.play();
+      }
+    }
+  
+    Exit() {
+    }
+  
+    Update(timeElapsed, input) {
     }
 }

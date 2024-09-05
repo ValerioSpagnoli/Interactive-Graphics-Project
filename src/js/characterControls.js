@@ -27,6 +27,8 @@ export class BasicCharacterController {
 
         this._LoadModels();
         this._AddBoundingBox();
+
+        this._hitFlag = false;
     }
 
     _LoadModels() {
@@ -66,6 +68,8 @@ export class BasicCharacterController {
           loader.load('run.fbx', (a) => { _OnLoad('run', a); });
           loader.load('idle.fbx', (a) => { _OnLoad('idle', a); });
           loader.load('attack.fbx', (a) => { _OnLoad('attack', a); });
+          loader.load('death.fbx', (a) => { _OnLoad('death', a); });
+          loader.load('hit.fbx', (a) => { _OnLoad('hit', a); });
         });
     }
 
@@ -114,12 +118,23 @@ export class BasicCharacterController {
         return keyPressed;
     }
 
+    get hitFlag() {
+        return this._hitFlag;
+    }
+
+    set hitFlag(value) {
+        this._hitFlag = value;
+    }
+
     Update(timeInSeconds) {
         if (!this._stateMachine._currentState) {
             return;
         }
         this._stateMachine._currentState.Update(timeInSeconds, this._input);
         
+        if (this._params.healthBar.hearts.length === 0) {
+          this._stateMachine.SetState('death');
+        }
 
         const velocity = this._velocity;
         const frameDecceleration = new THREE.Vector3(

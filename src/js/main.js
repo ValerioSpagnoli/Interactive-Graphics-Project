@@ -57,7 +57,7 @@ class Scene {
         this._LoadStars();
         this._LoadHearts();
         this._LoadSwords();
-        this._LoadAnimatedModel();
+        this._LoadPlayer();
         this._LoadMobs();
         this._LoadMonster();
         this._RAF();
@@ -66,6 +66,8 @@ class Scene {
         this._currentHitFromMobs = 0;
         this._lastAttackTime = 0; 
         this._gameOver = false;
+        this._gameOverTime = 0;
+        this._blockGame = false;  
     }
   
     _LoadWorld(){
@@ -78,10 +80,11 @@ class Scene {
         this._gui = new GUI();
     }
 
-    _LoadAnimatedModel() {
+    _LoadPlayer() {
       const params = {
         camera: this._camera,
         scene: this._scene,
+        healthBar: this._gui._healthBar,
       }
       this._controls = new BasicCharacterController(params);
   
@@ -151,38 +154,42 @@ class Scene {
     _Step(timeElapsed) {
       const timeElapsedS = timeElapsed * 0.001;
 
+      if (this._gameOver && (Date.now()-this._gameOverTime)>3000){
+        this._blockGame = true;
+      }
+      
       //* Update mixers
-      if (this._mixers && !this._gameOver) {
+      if (this._mixers && !this._blockGame) {
         this._mixers.map(m => m.update(timeElapsedS));
       }
   
       //* Update character controls
-      if (this._controls && !this._gameOver) {
+      if (this._controls && !this._blockGame) {
         this._controls.Update(timeElapsedS);
       }
 
       //* Update stars 
-      if (this._starsSpawner && !this._gameOver) {
+      if (this._starsSpawner && !this._blockGame) {
         this._starsSpawner.Update(timeElapsedS);
       }
       
       //* Update hearts 
-      if (this._heartSpawner && !this._gameOver) {
+      if (this._heartSpawner && !this._blockGame) {
         this._heartSpawner.Update(timeElapsedS);
       }
 
       //* Update swords 
-      if (this._swordSpawner && !this._gameOver) {
+      if (this._swordSpawner && !this._blockGame) {
         this._swordSpawner.Update(timeElapsedS);
       }
 
       //* Update mobs 
-      if (this._mobSpawner && !this._gameOver) {
+      if (this._mobSpawner && !this._blockGame) {
         this._mobSpawner.update(timeElapsedS);
       }
 
       //* Update monster
-      if (this._monsterSpawner && !this._gameOver) {
+      if (this._monsterSpawner && !this._blockGame) {
         this._monsterSpawner.update(timeElapsedS);
       }
 
@@ -204,8 +211,9 @@ class Scene {
       else this._thirdPersonCamera.Update(timeElapsedS);
 
       //* Handle game over
-      if (this._gui._healthBar.hearts.length === 0) {
+      if (this._gui._healthBar.hearts.length === 0 && !this._gameOver) {
         this._gameOver = true;
+        this._gameOverTime = new Date().getTime();
         this._gui._gameOver.show();
       }
 
@@ -281,7 +289,6 @@ class Scene {
           if (distanceToPlayer < 10 && !mob.deadFlag) {
             mob.life -= damage;
             this._lastAttackTime = new Date().getTime();
-            console.log(mob.life);
           }
         }
       }
