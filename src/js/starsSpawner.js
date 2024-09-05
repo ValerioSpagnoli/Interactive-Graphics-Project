@@ -5,54 +5,61 @@ export class StarsSpawner {
     constructor(params) {
         this._params = params;
         this._stars = [];
-        this._LoadModels();
+        this._lastSpawnTime = 0;
+        this._spawnInterval = 30;
+        this._maxstars = 5;
+        this._worldBoundingBoxes = this._params.world.BoundingBoxes;
     }
 
     _LoadModels() {
         const loader = new GLTFLoader();
-
-        const starPositions = [];
-        starPositions.push(new THREE.Vector3(0, 1, 50));
-        starPositions.push(new THREE.Vector3(0, 1, 110));
-        starPositions.push(new THREE.Vector3(0, 1, 170));
-        starPositions.push(new THREE.Vector3(0, 1, -50));
-        starPositions.push(new THREE.Vector3(-50, 1, 30));
-        starPositions.push(new THREE.Vector3(50, 1, 30));
-        starPositions.push(new THREE.Vector3(80, 1, 130));
-        starPositions.push(new THREE.Vector3(-80, 1, 130));
-        starPositions.push(new THREE.Vector3(100, 1, 100));
-        starPositions.push(new THREE.Vector3(-100, 1, 100));
-        starPositions.push(new THREE.Vector3(-130, 1, 150));
-        starPositions.push(new THREE.Vector3(130, 1, 150));
-        starPositions.push(new THREE.Vector3(-150, 1, 110));
-        starPositions.push(new THREE.Vector3(150, 1, 110));
-        starPositions.push(new THREE.Vector3(-120, 1, 50));
-        starPositions.push(new THREE.Vector3(120, 1, 50));
-        starPositions.push(new THREE.Vector3(-120, 1, 0));
-        starPositions.push(new THREE.Vector3(120, 1, 0));
-        starPositions.push(new THREE.Vector3(50, 1, -20));
-        starPositions.push(new THREE.Vector3(-50, 1, -20));
-        starPositions.push(new THREE.Vector3(-150, 1, -70));
-        starPositions.push(new THREE.Vector3(150, 1, -70));
-        starPositions.push(new THREE.Vector3(140, 1, -130));
-        starPositions.push(new THREE.Vector3(-140, 1, -130));
-
-        const k = starPositions.length;
-        for (let i = 0; i < k; i++) {
-            loader.load('./models/scene_objects/star.glb', (gltf) => {
-                gltf.scene.traverse(c => {
-                    c.castShadow = true;
-                });
-                const star = gltf.scene;
-                star.scale.set(3, 3, 3);
-                star.position.set(starPositions[i].x, starPositions[i].y, starPositions[i].z);  
-                this._params.scene.add(star);
-                this._stars.push(star);
+        this._lastSpawnTime = Date.now();
+        loader.load('./models/scene_objects/star.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
             });
-        }
+            const star = gltf.scene;
+            star.scale.set(3, 3, 3);
+            
+            let randomPos = new THREE.Vector3();
+            let found = false;
+            const insideTowers_box = new THREE.BoxGeometry(230, 50, 150);
+            const insideTowers_mat = new THREE.MeshBasicMaterial({
+                color: 0x00ff00,
+                wireframe: true,
+                visible: false,
+            });
+            const insideTowers = new THREE.Mesh(insideTowers_box, insideTowers_mat);
+            insideTowers.position.set(0, 25, -130);
+            this._params.scene.add(insideTowers);
+            this._worldBoundingBoxes.push(insideTowers);
+
+            while(!found) {
+                randomPos.x = Math.random() * 200 - 100;
+                randomPos.y = 1;
+                randomPos.z = Math.random() * 200 - 100;
+                found = true;
+                for (const b of this._worldBoundingBoxes) {
+                    const box = new THREE.Box3().setFromObject(b);
+                    if(box.containsPoint(randomPos)){
+                        found = false;
+                        break;
+                    }
+                }
+            }
+
+            star.position.set(randomPos.x, randomPos.y, randomPos.z);
+            this._params.scene.add(star);
+            this._stars.push(star);
+        }); 
     }
 
     Update(timeInSeconds) {
+        if(Date.now() - this._lastSpawnTime > this._spawnInterval*1000 && this._stars.length < this._maxstars) {
+            this._lastSpawnTime = Date.now();
+            this._LoadModels();
+        }
+
         this._stars.map(s => {
             const rotationSpeed = 1;
             s.rotation.y += rotationSpeed * timeInSeconds;             

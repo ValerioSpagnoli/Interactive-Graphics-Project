@@ -91,6 +91,7 @@ class Scene {
     _LoadStars() {
       this._starsSpawner = new StarsSpawner({
         scene: this._scene,
+        world: this._world,
       });   
     }
 
