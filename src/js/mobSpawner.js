@@ -1,11 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
-// Death: 0
-// Run: 9
-// Walk: 11
-// Attack: 13
-
 export class MobSpawner {
 
     constructor(params) {
@@ -15,9 +10,13 @@ export class MobSpawner {
         for (const b of this._params.world.BoundingBoxes) {
             this._worldBoundingBoxes.push(b);
         }
+        this._playerPosition = this._params.playerPosition;
+
         this._mobAttackDistance = 8;
         this._mobAttackTime = 600;
-
+        this._lastSpawnTime = 0;    
+        this._minNumberOfMobs = 15;
+        
         this._LoadModels();
     }
 
@@ -35,58 +34,32 @@ export class MobSpawner {
 
     _LoadModels() {
         const loader = new GLTFLoader();
+
+        this._mobPositions = [];
+        this._mobPositions.push(new THREE.Vector3(0, 1, 50));
+        this._mobPositions.push(new THREE.Vector3(0, 1, 110));
+        this._mobPositions.push(new THREE.Vector3(0, 1, 150));
+        this._mobPositions.push(new THREE.Vector3(0, 1, -50));
+        this._mobPositions.push(new THREE.Vector3(0, 1, -20));
+        this._mobPositions.push(new THREE.Vector3(-50, 1, 30));
+        this._mobPositions.push(new THREE.Vector3(50, 1, 30));
+        this._mobPositions.push(new THREE.Vector3(80, 1, 130));
+        this._mobPositions.push(new THREE.Vector3(-80, 1, 130));
+        this._mobPositions.push(new THREE.Vector3(100, 1, 100));
+        this._mobPositions.push(new THREE.Vector3(-100, 1, 100));
+        this._mobPositions.push(new THREE.Vector3(-150, 1, 100));
+        this._mobPositions.push(new THREE.Vector3(150, 1, 100));
+        this._mobPositions.push(new THREE.Vector3(-150, 1, 140));
+        this._mobPositions.push(new THREE.Vector3(150, 1, 140));
+        this._mobPositions.push(new THREE.Vector3(-110, 1, 50));
+        this._mobPositions.push(new THREE.Vector3(110, 1, 50));
+        this._mobPositions.push(new THREE.Vector3(-120, 1, 0));
+        this._mobPositions.push(new THREE.Vector3(120, 1, 0));
     
-        const mobPositions = [];
-        mobPositions.push(new THREE.Vector3(0, 1, 50));
-        mobPositions.push(new THREE.Vector3(0, 1, 110));
-        mobPositions.push(new THREE.Vector3(0, 1, 150));
-        mobPositions.push(new THREE.Vector3(0, 1, -50));
-        mobPositions.push(new THREE.Vector3(0, 1, -20));
-        mobPositions.push(new THREE.Vector3(-50, 1, 30));
-        mobPositions.push(new THREE.Vector3(50, 1, 30));
-        mobPositions.push(new THREE.Vector3(80, 1, 130));
-        mobPositions.push(new THREE.Vector3(-80, 1, 130));
-        mobPositions.push(new THREE.Vector3(100, 1, 100));
-        mobPositions.push(new THREE.Vector3(-100, 1, 100));
-        mobPositions.push(new THREE.Vector3(-150, 1, 100));
-        mobPositions.push(new THREE.Vector3(150, 1, 100));
-        mobPositions.push(new THREE.Vector3(-150, 1, 140));
-        mobPositions.push(new THREE.Vector3(150, 1, 140));
-        mobPositions.push(new THREE.Vector3(-110, 1, 50));
-        mobPositions.push(new THREE.Vector3(110, 1, 50));
-        mobPositions.push(new THREE.Vector3(-120, 1, 0));
-        mobPositions.push(new THREE.Vector3(120, 1, 0));
-    
-        const k = mobPositions.length;
+        const k = this._mobPositions.length;
     
         for (let i = 0; i < k; i++) {
-            let mob_ = {'mob':null, 'mixer':null, 'walk':null, 'attack':null, 'dead':null, 'currentAction':null, 'velocity':null, 'time':0, 'life':10, 'lastHit':0, 'deadFlag':false};      
-            loader.load('./models/mob/blue_demon.glb', (gltf) => {
-                gltf.scene.traverse(c => {
-                    c.castShadow = true;
-                });
-                const mob = gltf.scene;
-                mob.scale.set(3, 3, 3);
-                mob.position.set(mobPositions[i].x, mobPositions[i].y, mobPositions[i].z);
-                this._params.scene.add(mob);
-                mob_.mob = mob;
-                mob_.position = mob.position;
-                mob_.velocity = new THREE.Vector3(0, 0, 1);
-    
-                const mixer = new THREE.AnimationMixer(mob);
-                const walk = mixer.clipAction(gltf.animations[11]); // Walk animation
-                const attack = mixer.clipAction(gltf.animations[13]); // Attack animation
-                const dead = mixer.clipAction(gltf.animations[0]); // Death animation
-                walk.play();
-                
-                mob_.walk = walk;
-                mob_.attack = attack;
-                mob_.dead = dead;
-                mob_.currentAction = walk;
-                mob_.mixer = mixer;
-
-                this._mobs.push(mob_);
-            });
+            this._LoadModel(loader, this._mobPositions[i]);
         }
 
         const box_1 = new THREE.BoxGeometry(60, 50, 40);
@@ -111,18 +84,56 @@ export class MobSpawner {
         this._params.scene.add(cube_2);
         this._worldBoundingBoxes.push(cube_2);
     }
+
+    _LoadModel(loader, position){
+        let mob_ = {'mob':null, 'mixer':null, 'walk':null, 'attack':null, 'dead':null, 'currentAction':null, 'velocity':null, 'time':0, 'life':10, 'lastHit':0, 'deadFlag':false, 'deadTime':0};      
+        loader.load('./models/mob/blue_demon.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            const mob = gltf.scene;
+            mob.scale.set(3, 3, 3);
+            mob.position.set(position.x, position.y, position.z);
+            this._params.scene.add(mob);
+            mob_.mob = mob;
+            mob_.position = mob.position;
+            mob_.velocity = new THREE.Vector3(0, 0, 1);
+
+            const mixer = new THREE.AnimationMixer(mob);
+            const walk = mixer.clipAction(gltf.animations[11]); // Walk animation
+            const attack = mixer.clipAction(gltf.animations[13]); // Attack animation
+            const dead = mixer.clipAction(gltf.animations[0]); // Death animation
+            walk.play();
+            
+            mob_.walk = walk;
+            mob_.attack = attack;
+            mob_.dead = dead;
+            mob_.currentAction = walk;
+            mob_.mixer = mixer;
+
+            this._mobs.push(mob_);
+        });
+    }
     
     update(deltaTime) {
+
+        if(Date.now() - this._lastSpawnTime > 10000 && this._mobs.length < this._minNumberOfMobs){
+            this._lastSpawnTime = Date.now();
+            const k = this._mobPositions.length;
+            this._LoadModel(new GLTFLoader(), this._mobPositions[Math.floor(Math.random() * k)]);
+        }
+        
         for (const mixer of this._mobs.map(m => m.mixer)) {
             mixer.update(deltaTime);
         }
-        const playerPosition = this._params.playerPosition;
+
+        
         for (const mob of this._mobs) {
-            const distanceToPlayer = playerPosition.distanceTo(mob.position);
+            const distanceToPlayer = this._playerPosition.distanceTo(mob.position);
             let playerInsideBoundingBoxes = false;
             for (const b of this._worldBoundingBoxes) {
                 const box = new THREE.Box3().setFromObject(b);
-                if (box.containsPoint(playerPosition)) {
+                if (box.containsPoint(this._playerPosition)) {
                     playerInsideBoundingBoxes = true;
                     break;
                 }
@@ -130,13 +141,12 @@ export class MobSpawner {
 
             if(mob.currentAction !== mob.dead) {
                 if (distanceToPlayer < 20 && !playerInsideBoundingBoxes) {
-                    this.moveMobTowardsPlayer(mob, playerPosition);
+                    this.moveMobTowardsPlayer(mob, this._playerPosition);
                 } else {
                     this.moveMobRandomly(mob);
                 }
             }
-            
-
+        
             if (mob.life <= 0) {
                 this.dead(mob);
             }
@@ -207,10 +217,17 @@ export class MobSpawner {
             mob.currentAction = mob.dead;
             mob.currentAction.play();
             mob.deadFlag = true;
+            mob.deadTime = new Date().getTime();
         }
         else{
-            if (mob.currentAction.time > mob.currentAction.getClip().duration - 0.1) {
-                mob.currentAction.paused = true;
+            if(new Date().getTime() - mob.deadTime > 10000){
+                this._params.scene.remove(mob.mob);
+                this._mobs = this._mobs.filter(m => m !== mob);
+            }
+            else{                
+                if (mob.currentAction.time > mob.currentAction.getClip().duration - 0.1) {
+                    mob.currentAction.paused = true;
+                }
             }
         }
     }
