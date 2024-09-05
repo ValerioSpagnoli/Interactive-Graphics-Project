@@ -70,7 +70,7 @@ export class BasicCharacterController {
     }
 
     _AddBoundingBox(){
-      const geometry = new THREE.BoxGeometry(8, 14, 8);
+      const geometry = new THREE.BoxGeometry(8, 16, 8);
       const material = new THREE.MeshBasicMaterial({
           color: 0xff0000,
           wireframe: true,

@@ -209,7 +209,6 @@ class Scene {
         this._gui._gameOver.show();
       }
 
-
       //* Handle star collection
       this._stars = this._starsSpawner.stars;
       this._characterPosition = this._controls.Position;

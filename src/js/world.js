@@ -171,7 +171,7 @@ export class World {
         this._boundingBoxes.push(cube_7);
 
         //* Left wall tower inside
-        const box_8 = new THREE.BoxGeometry(100, 50, 40);
+        const box_8 = new THREE.BoxGeometry(95, 50, 40);
         const mat_8 = new THREE.MeshBasicMaterial({
             color: 0x00ff00,
             wireframe: true,
@@ -183,7 +183,7 @@ export class World {
         this._boundingBoxes.push(cube_8);
 
         //* Right wall tower inside
-        const box_9 = new THREE.BoxGeometry(100, 50, 40);
+        const box_9 = new THREE.BoxGeometry(92, 50, 40);
         const mat_9 = new THREE.MeshBasicMaterial({
             color: 0x00ff00,
             wireframe: true,

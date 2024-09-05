@@ -8,7 +8,10 @@ export class HeartSpawner {
         this._lastSpawnTime = 0;
         this._spawnInterval = 18;
         this._maxHearts = 5;
-        this._worldBoundingBoxes = this._params.world.BoundingBoxes;
+        this._worldBoundingBoxes = [];
+        for (const b of this._params.world.BoundingBoxes) {
+            this._worldBoundingBoxes.push(b);
+        }
     }
 
     _LoadModels() {
