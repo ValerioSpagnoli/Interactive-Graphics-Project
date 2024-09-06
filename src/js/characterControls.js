@@ -33,11 +33,18 @@ export class BasicCharacterController {
         this._normalScale = 0.06;
         this._bigScale = 0.1;
         
+        this._normalDamage = Math.ceil(this._params.powerBar.swords.length / 2);
+        this._bigDamage = this._params.powerBar.swords.length;
         this._damage = this._normalDamage;
-        this._attackRange = 10;
+
+        this._normalAttackRange = 10; 
+        this._bigAttackRange = 25;
+        this._attackRange = this._normalAttackRange;
         
-        this._starsToGetBigger = 10;
+        this._starsToGetBigger = 1;
         this._transformed = false;
+        this._timeTransformed = 0;
+        this._transformationTime = 30000; // 30 seconds
     }
 
     _LoadModels() {
@@ -143,6 +150,18 @@ export class BasicCharacterController {
         return this._attackRange;
     }
 
+    get transformed() {
+        return this._transformed;
+    }
+
+    get timeTransformed() {
+        return this._timeTransformed;
+    }
+
+    get transformationTime() {
+        return this._transformationTime;  
+    }
+
     Update(timeInSeconds) {
         if (!this._stateMachine._currentState) {
             return;
@@ -152,12 +171,16 @@ export class BasicCharacterController {
         if (this._params.healthBar.hearts.length === 0) {
           this._stateMachine.SetState('death');
         }
+
+        this._normalDamage = Math.ceil(this._params.powerBar.swords.length / 2);
+        this._bigDamage = this._params.powerBar.swords.length;
  
         if (this._params.starCounter.stars >= this._starsToGetBigger && !this._transformed) {
           this._transformed = true;
+          this._timeTransformed = Date.now();
           this._target.scale.setScalar(this._bigScale);
-          this._damage = this._params.powerBar.swords.length;
-          this._attackRange = 25;
+          this._damage = this._bigDamage;
+          this._attackRange = this._bigAttackRange;
           if (this._params.healthBar.hearts.length < 10) {
             for (let i = 0; i < 10 - this._params.healthBar.hearts.length; i++) {
               this._params.healthBar.addHeart();
@@ -165,7 +188,17 @@ export class BasicCharacterController {
           }
         }
         else{
-          this._damage = Math.ceil(this._params.powerBar.swords.length / 2);
+          this._damage = this._normalDamage;
+          this._attackRange = this._normalAttackRange;
+        }
+
+        if (this._transformed && Date.now() - this._timeTransformed > this._transformationTime) {
+          this._transformed = false;
+          this._timeTransformed = 0;
+          this._params.starCounter.stars = 0;
+          this._target.scale.setScalar(this._normalScale);
+          this._damage = this._normalDamage;
+          this._attackRange = this._normalAttackRange;
         }
 
         const velocity = this._velocity;

@@ -251,11 +251,41 @@ class MonsterLifeBar {
             this._divs[i].style.display = 'none';
         }
     }
+}
+
+class TransformationTime {
+    constructor(){
+        this._time = 30;
+        this._timer = document.createElement('div');
+        this._timer.style.position = 'absolute';
+        this._timer.style.right = '100px';
+        this._timer.style.top = '70px';
+        this._timer.style.color = 'white';
+        this._timer.style.fontSize = '70px';
+        this._timer.style.fontFamily = 'Handjet';
+        this._timer.innerHTML = `${this._time} s`;
+        document.body.appendChild(this._timer);
+    }
+
+    get time(){
+        return this._time;
+    }
+
+    set time(value){
+        this._time = value;
+    }
+
+    update(){
+        this._timer.innerHTML = `${this._time} s`;
+    }
 
 }
 
+
 export class GUI {
-    constructor() {
+    constructor(params) {
+        this._params = params;
+
         this._healthBar = new HealtBar();
         this._powerBar = new PowerBar();
         this._starCounter = new StarCounter(); 
@@ -263,6 +293,8 @@ export class GUI {
         this._monsterLifeBar = new MonsterLifeBar();
         this._monsterLifeBar.show();
 
+        this._transformationTime = new TransformationTime();
+        
         this._gameOver = new GameOver(); 
         this._gameOver.hide();
 
@@ -280,6 +312,10 @@ export class GUI {
 
     get starCounter() {
         return this._starCounter;
+    }
+
+    get transformationTime(){
+        return this._transformationTime;
     }
 
     get monsterLifeBar() {

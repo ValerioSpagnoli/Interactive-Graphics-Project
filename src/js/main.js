@@ -81,7 +81,7 @@ class Scene {
 
     _LoadGUI(){
         this._gui = new GUI({
-          monster: this._monsterSpawner,
+          player: this._player,
         });
     }
 
@@ -203,6 +203,7 @@ class Scene {
       //* Update GUI
       if (this._gui && !this._blockGame) {
         this._gui._monsterLifeBar.update();
+        this._gui._transformationTime.update();
       }
 
       //* Switch between orbit controls and third person camera
@@ -338,6 +339,14 @@ class Scene {
 
       //* Handle monster death
       this._gui._monsterLifeBar.monsterLife = this._monsterSpawner.MonsterLife;
+
+      //* Handle transformation time
+      if(this._player.transformed){
+        this._gui._transformationTime.time = Math.ceil((this._gui._transformationTime.time = this._player.transformationTime - (Date.now() - this._player.timeTransformed))/1000);
+      } 
+      else{
+        this._gui._transformationTime.time = Math.ceil(this._player.transformationTime/1000);
+      } 
     }
 }
 
