@@ -136,7 +136,7 @@ export class MobSpawner {
                 if (distanceToPlayer < 20 && !playerInsideBoundingBoxes) {
                     this.moveMobTowardsPlayer(mob, this._playerPosition);
                 } else {
-                    //this.moveMobRandomly(mob);
+                    this.moveMobRandomly(mob);
                 }
             }
         
