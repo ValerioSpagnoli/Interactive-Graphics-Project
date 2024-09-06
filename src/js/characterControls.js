@@ -36,7 +36,7 @@ export class BasicCharacterController {
         this._damage = this._normalDamage;
         this._attackRange = 10;
         
-        this._starsToGetBigger = 2;
+        this._starsToGetBigger = 10;
         this._transformed = false;
     }
 

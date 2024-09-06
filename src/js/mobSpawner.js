@@ -38,19 +38,12 @@ export class MobSpawner {
         this._mobPositions = [];
         this._mobPositions.push(new THREE.Vector3(0, 1, 50));
         this._mobPositions.push(new THREE.Vector3(0, 1, 110));
-        this._mobPositions.push(new THREE.Vector3(0, 1, 150));
-        this._mobPositions.push(new THREE.Vector3(0, 1, -50));
-        this._mobPositions.push(new THREE.Vector3(0, 1, -20));
         this._mobPositions.push(new THREE.Vector3(-50, 1, 30));
         this._mobPositions.push(new THREE.Vector3(50, 1, 30));
         this._mobPositions.push(new THREE.Vector3(80, 1, 130));
         this._mobPositions.push(new THREE.Vector3(-80, 1, 130));
-        this._mobPositions.push(new THREE.Vector3(100, 1, 100));
-        this._mobPositions.push(new THREE.Vector3(-100, 1, 100));
         this._mobPositions.push(new THREE.Vector3(-150, 1, 100));
         this._mobPositions.push(new THREE.Vector3(150, 1, 100));
-        this._mobPositions.push(new THREE.Vector3(-150, 1, 140));
-        this._mobPositions.push(new THREE.Vector3(150, 1, 140));
         this._mobPositions.push(new THREE.Vector3(-110, 1, 50));
         this._mobPositions.push(new THREE.Vector3(110, 1, 50));
         this._mobPositions.push(new THREE.Vector3(-120, 1, 0));
@@ -143,7 +136,7 @@ export class MobSpawner {
                 if (distanceToPlayer < 20 && !playerInsideBoundingBoxes) {
                     this.moveMobTowardsPlayer(mob, this._playerPosition);
                 } else {
-                    this.moveMobRandomly(mob);
+                    //this.moveMobRandomly(mob);
                 }
             }
         
