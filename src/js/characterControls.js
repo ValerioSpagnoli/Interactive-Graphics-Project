@@ -178,6 +178,7 @@ export class BasicCharacterController {
         if (this._params.starCounter.stars >= this._starsToGetBigger && !this._transformed) {
           this._transformed = true;
           this._timeTransformed = Date.now();
+          this._params.starCounter.stars = 0;
           this._target.scale.setScalar(this._bigScale);
           this._damage = this._bigDamage;
           this._attackRange = this._bigAttackRange;
@@ -195,10 +196,13 @@ export class BasicCharacterController {
         if (this._transformed && Date.now() - this._timeTransformed > this._transformationTime) {
           this._transformed = false;
           this._timeTransformed = 0;
-          this._params.starCounter.stars = 0;
           this._target.scale.setScalar(this._normalScale);
           this._damage = this._normalDamage;
           this._attackRange = this._normalAttackRange;
+          if(this._params.powerBar.swords.length > 1){
+            this._params.powerBar.removeSword();
+            this._params.powerBar.removeSword();
+          }
         }
 
         const velocity = this._velocity;
