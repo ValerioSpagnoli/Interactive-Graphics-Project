@@ -175,7 +175,7 @@ class Scene {
         this._gui.transformationTime.show();
       }
 
-      if (((this._gameOver && (Date.now()-this._gameOverTime)>3000) || (this._gameWin && (Date.now()-this._gameWinTime)>3000))){
+      if (((this._gameOver && (Date.now()-this._gameOverTime)>2000) || (this._gameWin && (Date.now()-this._gameWinTime)>2000))){
         this._blockGame = true;
       }
       
@@ -342,8 +342,8 @@ class Scene {
       }
 
       //* Handle monster attack
-      if(this._player.transformed) this._monsterSpawner.MonsterDamage = 2;
-      else this._monsterSpawner.MonsterDamage = 4;
+      if(this._player.transformed) this._monsterSpawner.MonsterDamage = 1;
+      else this._monsterSpawner.MonsterDamage = 2;
       this._monsterDamage = this._monsterSpawner.MonsterDamage;
       this._monsterAttackRange = this._monsterSpawner.MonsterAttackRange;
       this._monsterAttackTime = this._monsterSpawner.MonsterAttackTime;

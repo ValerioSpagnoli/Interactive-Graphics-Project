@@ -36,8 +36,8 @@ export class BasicCharacterController {
         this._normalScale = 0.06;
         this._bigScale = 0.1;
         
-        this._normalDamage = Math.ceil(this._params.powerBar.swords.length / 2);
-        this._bigDamage = this._params.powerBar.swords.length;
+        this._normalDamage = this._params.powerBar.swords.length;
+        this._bigDamage = this._params.powerBar.swords.length*2;
         this._damage = this._normalDamage;
 
         this._normalAttackRange = 10; 
@@ -208,8 +208,8 @@ export class BasicCharacterController {
           this._hitTime = Date.now();
         }
 
-        this._normalDamage = Math.ceil(this._params.powerBar.swords.length / 2);
-        this._bigDamage = this._params.powerBar.swords.length;
+        this._normalDamage = this._params.powerBar.swords.length;
+        this._bigDamage = this._params.powerBar.swords.length*2;
  
         if (this._params.starCounter.stars >= this._starsToGetBigger && !this._transformed) {
           this._transformed = true;
