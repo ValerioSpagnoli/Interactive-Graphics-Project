@@ -13,7 +13,7 @@ export class MobSpawner {
         this._playerPosition = this._params.playerPosition;
 
         this._mobAttackDistance = 8;
-        this._mobAttackTime = 800;
+        this._mobAttackTime = 500;
         this._lastSpawnTime = 0;    
         this._minNumberOfMobs = 15;
         

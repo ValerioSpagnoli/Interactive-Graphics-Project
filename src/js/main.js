@@ -40,7 +40,7 @@ class Scene {
         const far = 1000.0;
         this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
         //this._camera.position.set(0, 0, 0);
-        this._camera.position.set(200, 300, 200);
+        this._camera.position.set(0, 250, 300);
     
         this._scene = new THREE.Scene();
     
@@ -161,7 +161,20 @@ class Scene {
     _Step(timeElapsed) {
       const timeElapsedS = timeElapsed * 0.001;
 
-      if (( (this._gameOver && (Date.now()-this._gameOverTime)>3000) || (this._gameWin && (Date.now()-this._gameWinTime)>3000) )){
+      if(!this._gui.start.play){
+        this._blockGame = true;
+      }
+      else{
+        this._blockGame = false;
+        this._orbitControls.enabled = false;
+        this._gui.healthBar.show();
+        this._gui.powerBar.show();
+        this._gui.starCounter.show();
+        this._gui.monsterLifeBar.show();
+        this._gui.transformationTime.show();
+      }
+
+      if (((this._gameOver && (Date.now()-this._gameOverTime)>3000) || (this._gameWin && (Date.now()-this._gameWinTime)>3000))){
         this._blockGame = true;
       }
       
@@ -238,16 +251,18 @@ class Scene {
       }
 
       //* Handle star collection
-      this._stars = this._starsSpawner.stars;
-      this._characterPosition = this._player.Position;
-      this._stars.map(s => {
-        if (s.position.distanceTo(this._characterPosition) < 8) {
-          this._scene.remove(s);
-          this._stars = this._stars.filter(star => star !== s);
-          this._starsSpawner.stars = this._stars;
-          this._gui._starCounter.addStar();
-        }
-      });
+      if(!this._player.transformed){
+        this._stars = this._starsSpawner.stars;
+        this._characterPosition = this._player.Position;
+        this._stars.map(s => {
+          if (s.position.distanceTo(this._characterPosition) < 8) {
+            this._scene.remove(s);
+            this._stars = this._stars.filter(star => star !== s);
+            this._starsSpawner.stars = this._stars;
+            this._gui._starCounter.addStar();
+          }
+        });
+      }
 
       //* Handle heart collection
       this._hearts = this._heartSpawner.hearts;
@@ -296,7 +311,7 @@ class Scene {
           this._currentHitFromMobs += 1;
         }
       }
-      if(this._currentHitFromMobs === 5){
+      if(this._currentHitFromMobs === 3){
         this._gui._healthBar.removeHeart();
         this._currentHitFromMobs = 0;
       }

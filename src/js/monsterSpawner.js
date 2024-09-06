@@ -29,7 +29,7 @@ export class MonsterSpawner {
         this._timeLastRoar = 0;
 
         this._monsterLife = 100;
-        this._monsterDamage = 1;  
+        this._monsterDamage = 2;  
         this._monsterLastHit = 0; 
         this._monsterState = 'roar';
     }

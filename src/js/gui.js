@@ -1,4 +1,4 @@
-class HealtBar {
+class HealthBar {
     constructor() {
         this._hearts = [];
         this._heartsContainer = document.createElement('div');
@@ -40,6 +40,14 @@ class HealtBar {
             this._heartsContainer.appendChild(heart);
             this._hearts.push(heart);
         }
+    }
+
+    show() {
+        this._heartsContainer.style.display = 'block';
+    }
+
+    hide() {
+        this._heartsContainer.style.display = 'none';
     }
 }
 
@@ -86,6 +94,14 @@ class PowerBar {
             this._swords.push(sword);
         }
     }
+
+    show() {
+        this._swordsContainer.style.display = 'block';
+    }
+
+    hide() {
+        this._swordsContainer.style.display = 'none';
+    }
 }
 
 class StarCounter {
@@ -122,6 +138,14 @@ class StarCounter {
     reset() {
         this.stars = 0;
     }
+
+    show() {
+        this._starCounter.style.display = 'block';
+    }
+
+    hide() {
+        this._starCounter.style.display = 'none';
+    }
 }
 
 class GameOver {
@@ -129,7 +153,7 @@ class GameOver {
         this._gameOver = document.createElement('div');
         this._gameOver.style.position = 'absolute';
         this._gameOver.style.left = '50%';
-        this._gameOver.style.top = '50%';
+        this._gameOver.style.top = '40%';
         this._gameOver.style.transform = 'translate(-50%, -50%)';
         this._gameOver.style.color = 'white';
         this._gameOver.style.fontSize = '400px';
@@ -144,6 +168,24 @@ class GameOver {
         this._layer.style.height = '100%';
         this._layer.style.backgroundColor = 'rgba(30, 0, 0, 0.5)';
         this._layer.style.display = 'none';
+
+        const button = document.createElement('button');
+        button.style.position = 'absolute';
+        button.style.left = '50%';
+        button.style.top = '150%';
+        button.style.transform = 'translate(-50%, -50%)';
+        button.style.width = '400px';
+        button.style.height = '180px';
+        button.style.backgroundColor = 'white';
+        button.style.color = 'black';
+        button.style.fontSize = '100px';
+        button.style.fontFamily = 'Handjet';
+        button.innerHTML = 'Restart';
+        button.onclick = () => {
+            window.location.reload();
+        }
+        this._gameOver.appendChild(button);
+        
         document.body.appendChild(this._layer);
         document.body.appendChild(this._gameOver);
     }
@@ -166,7 +208,7 @@ class GameWin {
         this._gameWin = document.createElement('div');
         this._gameWin.style.position = 'absolute';
         this._gameWin.style.left = '50%';
-        this._gameWin.style.top = '50%';
+        this._gameWin.style.top = '40%';
         this._gameWin.style.transform = 'translate(-50%, -50%)';
         this._gameWin.style.color = 'white';
         this._gameWin.style.fontSize = '400px';
@@ -181,6 +223,24 @@ class GameWin {
         this._layer.style.height = '100%';
         this._layer.style.backgroundColor = 'rgba(0, 30, 0, 0.5)';
         this._layer.style.display = 'none';
+
+        const button = document.createElement('button');
+        button.style.position = 'absolute';
+        button.style.left = '50%';
+        button.style.top = '150%';
+        button.style.transform = 'translate(-50%, -50%)';
+        button.style.width = '400px';
+        button.style.height = '180px';
+        button.style.backgroundColor = 'white';
+        button.style.color = 'black';
+        button.style.fontSize = '100px';
+        button.style.fontFamily = 'Handjet';
+        button.innerHTML = 'Restart';
+        button.onclick = () => {
+            window.location.reload();
+        }
+        this._gameWin.appendChild(button);
+
         document.body.appendChild(this._layer);
         document.body.appendChild(this._gameWin);
     }
@@ -195,6 +255,73 @@ class GameWin {
     hide() {
         this._gameWin.style.display = 'none';
         this._layer.style.display = 'none';
+    }
+}
+
+
+class Start {
+    constructor() {
+        this._start = document.createElement('div');
+        this._start.style.position = 'absolute';
+        this._start.style.left = '50%';
+        this._start.style.top = '40%';
+        this._start.style.transform = 'translate(-50%, -50%)';
+        this._start.style.color = 'white';
+        this._start.style.fontSize = '300px';
+        this._start.style.fontFamily = 'Handjet';
+        this._start.innerHTML = 'Kill the Monster';
+
+        this._layer = document.createElement('div');
+        this._layer.style.position = 'absolute';
+        this._layer.style.left = '0';
+        this._layer.style.top = '0';
+        this._layer.style.width = '100%';
+        this._layer.style.height = '100%';
+        this._layer.style.backgroundColor = 'rgba(100, 100, 100, 0.2)';
+        this._layer.style.display = 'none';
+
+        const button = document.createElement('button');
+        button.style.position = 'absolute';
+        button.style.left = '50%';
+        button.style.top = '150%';
+        button.style.transform = 'translate(-50%, -50%)';
+        button.style.width = '400px';
+        button.style.height = '180px';
+        button.style.backgroundColor = 'white';
+        button.style.color = 'black';
+        button.style.fontSize = '100px';
+        button.style.fontFamily = 'Handjet';
+        button.innerHTML = 'Start';
+        button.onclick = () => {
+            this._play = true;
+            this.hide();
+        }
+        this._start.appendChild(button);
+
+        document.body.appendChild(this._layer);
+        document.body.appendChild(this._start);
+
+        this._play = false;
+    }
+
+    show() {
+        setTimeout(() => {
+            this._start.style.display = 'block';
+            this._layer.style.display = 'block';
+        }, 1000);
+    }
+
+    hide() {
+        this._start.style.display = 'none';
+        this._layer.style.display = 'none';
+    }
+
+    get play() {
+        return this._play;
+    }
+
+    set play(value) {
+        this._play = value;
     }
 }
 
@@ -279,6 +406,14 @@ class TransformationTime {
         this._timer.innerHTML = `${this._time} s`;
     }
 
+    show(){
+        this._timer.style.display = 'block';
+    }
+
+    hide(){
+        this._timer.style.display = 'none';
+    }
+
 }
 
 
@@ -286,23 +421,32 @@ export class GUI {
     constructor(params) {
         this._params = params;
 
-        this._healthBar = new HealtBar();
+        this._healthBar = new HealthBar();
+        this._healthBar.hide();
+            
         this._powerBar = new PowerBar();
+        this._powerBar.hide();
+
         this._starCounter = new StarCounter(); 
+        this._starCounter.hide();
 
         this._monsterLifeBar = new MonsterLifeBar();
-        this._monsterLifeBar.show();
+        this._monsterLifeBar.hide();
 
         this._transformationTime = new TransformationTime();
-        
+        this._transformationTime.hide();
+
         this._gameOver = new GameOver(); 
         this._gameOver.hide();
 
         this._gameWin = new GameWin();
         this._gameWin.hide();
+
+        this._start = new Start();
+        this._start.show();
     }
 
-    get healtBar() {
+    get healthBar() {
         return this._healthBar;
     }
 
@@ -324,5 +468,13 @@ export class GUI {
 
     get gameOver() {
         return this._gameOver;
+    }
+
+    get gameWin() {
+        return this._gameWin;
+    }
+
+    get start() {
+        return this._start;
     }
 }
