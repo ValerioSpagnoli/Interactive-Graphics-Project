@@ -171,8 +171,6 @@ export class MonsterSpawner {
         }
       }
 
-
-
       if(this._mixer) {
         this._mixer.update(deltaTime);
       }
@@ -217,14 +215,14 @@ export class MonsterSpawner {
 
       if(distanceToPlayer < 20){
         this._stateMachine.SetState('walk');
-        this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(-0.1);
+        this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(-0.2);
         this._position.add(this._velocity);
         const angle = Math.atan2(this._playerPosition.x - this._position.x, this._playerPosition.z - this._position.z);
         this._rotation.y = angle;
       }
       else if(distanceToPlayer > 25){
         this._stateMachine.SetState('walk');
-        this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(0.1);
+        this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(0.2);
         this._position.add(this._velocity);
         const angle = Math.atan2(this._playerPosition.x - this._position.x, this._playerPosition.z - this._position.z);
         this._rotation.y = angle;

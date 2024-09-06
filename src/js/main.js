@@ -356,7 +356,7 @@ class Scene {
           if(this._player.transformed)this._player.hitIntensity = 1;
           else this._player.hitIntensity = 3;  
           for (let i = 0; i < this._monsterDamage; i++) {
-            this._gui._healthBar.removeHeart();
+           this._gui._healthBar.removeHeart();
           }
         }
       } 
