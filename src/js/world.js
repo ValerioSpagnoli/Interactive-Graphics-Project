@@ -227,7 +227,7 @@ export class World {
     }
 
     _AddLights(){
-        let light_1 = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+        let light_1 = new THREE.DirectionalLight(0xf0ebc0, 0.8);
         light_1.position.set(100, 100, 0);
         light_1.target.position.set(0, 0, 0);
         light_1.castShadow = true;
@@ -243,26 +243,9 @@ export class World {
         light_1.shadow.camera.top = 50;
         light_1.shadow.camera.bottom = -50;
         this._params.scene.add(light_1);
-
-        let light_2 = new THREE.DirectionalLight(0xd9c56c, 0.4);
-        light_2.position.set(0, 100, 50);
-        light_2.target.position.set(0, 0, 0);
-        light_2.castShadow = true;
-        light_2.shadow.bias = -0.001;
-        light_2.shadow.mapSize.width = 4096;
-        light_2.shadow.mapSize.height = 4096;
-        light_2.shadow.camera.near = 0.1;
-        light_2.shadow.camera.far = 500.0;
-        light_2.shadow.camera.near = 0.5;
-        light_2.shadow.camera.far = 500.0;
-        light_2.shadow.camera.left = 50;
-        light_2.shadow.camera.right = -50;
-        light_2.shadow.camera.top = 50;
-        light_2.shadow.camera.bottom = -50;
-        this._params.scene.add(light_2);
     
-        let light_3 = new THREE.AmbientLight(0xe8e0ba, 0.35);
-        this._params.scene.add(light_3);
+        let light_2 = new THREE.AmbientLight(0xf0eab4, 0.5);
+        this._params.scene.add(light_2);
 
         let torch_1 = new THREE.PointLight(0xf56b16, 1000, 100);
         torch_1.position.set(-120, 25, 178);
@@ -327,9 +310,6 @@ export class World {
         let torch_16 = new THREE.PointLight(0xf56b16, 1000, 100);
         torch_16.position.set(-40, 25, -175);
         this._params.scene.add(torch_16);
-
-
-
     }
 
     _AddBoundingBoxes() {
