@@ -159,6 +159,8 @@ class GameOver {
         this._gameOver.style.fontSize = '300px';
         this._gameOver.style.fontFamily = 'Handjet';
         this._gameOver.innerHTML = 'Game Over';
+        this._gameOver.style.textShadow = '5px 6px 2px rgba(255, 0, 0, 0.5)';
+
 
         this._layer = document.createElement('div');
         this._layer.style.position = 'absolute';
@@ -166,26 +168,38 @@ class GameOver {
         this._layer.style.top = '0';
         this._layer.style.width = '100%';
         this._layer.style.height = '100%';
-        this._layer.style.backgroundColor = 'rgba(30, 0, 0, 0.5)';
+        this._layer.style.backgroundColor = 'rgba(100, 0, 0, 0.1)';
         this._layer.style.display = 'none';
 
         const button = document.createElement('button');
         button.style.position = 'absolute';
         button.style.left = '50%';
-        button.style.top = '150%';
+        button.style.top = '140%';
         button.style.transform = 'translate(-50%, -50%)';
         button.style.width = '400px';
         button.style.height = '180px';
-        button.style.backgroundColor = 'white';
-        button.style.color = 'black';
+        button.style.backgroundColor = 'rgba(150, 150, 150, 0.5)';
+        button.style.color = 'rgba(255, 255, 255, 1)';
+        button.style.textShadow = '5px 6px 2px rgba(155, 0, 0, 0.5)';
         button.style.fontSize = '100px';
         button.style.fontFamily = 'Handjet';
+        button.style.border = 'solid 7px rgba(255, 0, 0, 0.5)';
+        button.style.borderRadius = '20px';
         button.innerHTML = 'Restart';
         button.onclick = () => {
             window.location.reload();
         }
+        button.onmouseover = () => {
+            button.style.backgroundColor = 'rgba(180, 180, 180, 0.7)';
+            button.style.border = 'solid 10px rgba(255, 0, 0, 0.5)';
+        }
+        button.onmouseout = () => {
+            button.style.backgroundColor = 'rgba(150, 150, 150, 0.5)';
+            button.style.border = 'solid 7px rgba(255, 0, 0, 0.5)';
+
+        }
         this._gameOver.appendChild(button);
-        
+
         document.body.appendChild(this._layer);
         document.body.appendChild(this._gameOver);
     }
@@ -214,6 +228,7 @@ class GameWin {
         this._gameWin.style.fontSize = '300px';
         this._gameWin.style.fontFamily = 'Handjet';
         this._gameWin.innerHTML = 'Game Win';
+        this._gameWin.style.textShadow = '5px 6px 2px rgba(0, 255, 0, 0.5)';
 
         this._layer = document.createElement('div');
         this._layer.style.position = 'absolute';
@@ -221,23 +236,35 @@ class GameWin {
         this._layer.style.top = '0';
         this._layer.style.width = '100%';
         this._layer.style.height = '100%';
-        this._layer.style.backgroundColor = 'rgba(0, 30, 0, 0.5)';
+        this._layer.style.backgroundColor = 'rgba(0, 100, 0, 0.1)';
         this._layer.style.display = 'none';
 
         const button = document.createElement('button');
         button.style.position = 'absolute';
         button.style.left = '50%';
-        button.style.top = '150%';
+        button.style.top = '140%';
         button.style.transform = 'translate(-50%, -50%)';
         button.style.width = '400px';
         button.style.height = '180px';
-        button.style.backgroundColor = 'white';
-        button.style.color = 'black';
+        button.style.backgroundColor = 'rgba(150, 150, 150, 0.5)';
+        button.style.color = 'rgba(255, 255, 255, 1)';
+        button.style.textShadow = '5px 6px 2px rgba(0, 155, 0, 0.5)';
         button.style.fontSize = '100px';
         button.style.fontFamily = 'Handjet';
+        button.style.border = 'solid 7px rgba(0, 255, 0, 0.5)';
+        button.style.borderRadius = '20px';
         button.innerHTML = 'Restart';
         button.onclick = () => {
             window.location.reload();
+        }
+        button.onmouseover = () => {
+            button.style.backgroundColor = 'rgba(180, 180, 180, 0.7)';
+            button.style.border = 'solid 10px rgba(0, 255, 0, 0.5)';
+        }
+        button.onmouseout = () => {
+            button.style.backgroundColor = 'rgba(150, 150, 150, 0.5)';
+            button.style.border = 'solid 7px rgba(0, 255, 0, 0.5)';
+
         }
         this._gameWin.appendChild(button);
 
@@ -264,12 +291,13 @@ class Start {
         this._start = document.createElement('div');
         this._start.style.position = 'absolute';
         this._start.style.left = '50%';
-        this._start.style.top = '40%';
+        this._start.style.top = '30%';
         this._start.style.transform = 'translate(-50%, -50%)';
         this._start.style.color = 'white';
         this._start.style.fontSize = '300px';
         this._start.style.fontFamily = 'Handjet';
         this._start.innerHTML = 'Kill the Monster';
+        this._start.style.textShadow = '5px 6px 2px rgba(0, 0, 155, 0.5)';
 
         this._layer = document.createElement('div');
         this._layer.style.position = 'absolute';
@@ -277,39 +305,50 @@ class Start {
         this._layer.style.top = '0';
         this._layer.style.width = '100%';
         this._layer.style.height = '100%';
-        this._layer.style.backgroundColor = 'rgba(100, 100, 100, 0.2)';
+        this._layer.style.backgroundColor = 'rgba(0, 0, 155, 0.1)';
         this._layer.style.display = 'none';
 
         const button = document.createElement('button');
         button.style.position = 'absolute';
         button.style.left = '50%';
-        button.style.top = '150%';
+        button.style.top = '285%';
         button.style.transform = 'translate(-50%, -50%)';
         button.style.width = '400px';
         button.style.height = '180px';
-        button.style.backgroundColor = 'white';
-        button.style.color = 'black';
+        button.style.backgroundColor = 'rgba(150, 150, 150, 0.5)';
+        button.style.color = 'rgba(255, 255, 255, 1)';
+        button.style.textShadow = '5px 6px 2px rgba(0, 0, 155, 0.5)';
         button.style.fontSize = '100px';
         button.style.fontFamily = 'Handjet';
+        button.style.border = 'solid 7px rgba(0, 0, 155, 0.5)';
+        button.style.borderRadius = '20px';
         button.innerHTML = 'Start';
         button.onclick = () => {
             this._play = true;
             this.hide();
         }
+        button.onmouseover = () => {
+            button.style.backgroundColor = 'rgba(180, 180, 180, 0.7)';
+            button.style.border = 'solid 10px rgba(0, 0, 155, 0.5)';
+        }
+        button.onmouseout = () => {
+            button.style.backgroundColor = 'rgba(150, 150, 150, 0.5)';
+            button.style.border = 'solid 7px rgba(0, 0, 155, 0.5)';
+
+        }
         this._start.appendChild(button);
 
-        // add a Div with some text for explanation
         const explanation = document.createElement('div');
         explanation.style.position = 'absolute';
         explanation.style.left = '50%';
-        explanation.style.top = '250%';
+        explanation.style.top = '170%';
         explanation.style.width = '1500px';
         explanation.style.transform = 'translate(-50%, -50%)';
         explanation.style.color = 'white';
         explanation.style.fontSize = '50px';
         explanation.style.fontFamily = 'Handjet';
-        explanation.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-        explanation.style.border = 'solid 5px white';
+        explanation.style.backgroundColor = 'rgba(180, 180, 180, 0.5)';
+        explanation.style.border = 'solid 7px rgba(0, 0, 155, 0.5)';
         explanation.style.borderRadius = '20px';
         explanation.style.padding = '30px';
         explanation.innerHTML = '- <b>W A S D</b> to move and <b>Space</b> to attack<br>- Collect swords to increase the power of your attack and hearts to increase your life.<br>- Collect <b>5 stars</b> to become bigger and stronger.<br>&nbsp&nbsp&nbspThe effect lasts for <b>15 seconds</b>, then you will return to normal size and lose 2 swords.<br>&nbsp&nbsp&nbspThe transformation will give to you full health.<br>- Defeat the monster to win the game';
