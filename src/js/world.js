@@ -64,6 +64,166 @@ export class World {
             gltf.scene.scale.set(20, 20, 20);
             this._params.scene.add(gltf.scene);
         });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(120, 18, 178);
+            gltf.scene.rotation.y = Math.PI;
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(-120, 18, 178);
+            gltf.scene.rotation.y = Math.PI;
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(-42, 18, 152);
+            gltf.scene.rotation.y = Math.PI;
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(42, 18, 152);
+            gltf.scene.rotation.y = Math.PI;
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(158, 18, 130);
+            gltf.scene.rotation.y = -Math.PI/2;
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(-160, 18, 130);
+            gltf.scene.rotation.y = Math.PI/2;
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(-160, 18, 50);
+            gltf.scene.rotation.y = Math.PI/2;
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(-160, 18, -30);
+            gltf.scene.rotation.y = Math.PI/2;
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(-160, 18, -110);
+            gltf.scene.rotation.y = Math.PI/2;
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(158, 18, 60);
+            gltf.scene.rotation.y = -Math.PI/2;
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(158, 18, -60);
+            gltf.scene.rotation.y = -Math.PI/2;
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(158, 18, -130);
+            gltf.scene.rotation.y = -Math.PI/2;
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(40, 18, -52);
+            gltf.scene.rotation.y = 0
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(-40, 18, -52);
+            gltf.scene.rotation.y = 0
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(-40, 18, -175);
+            gltf.scene.rotation.y = 0
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
+
+        loader.load('./models/scene_objects/torch.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(40, 18, -175);
+            gltf.scene.rotation.y = 0
+            gltf.scene.scale.set(4, 4, 4);
+            this._params.scene.add(gltf.scene);
+        });
     }
 
     _AddLights(){
@@ -103,6 +263,73 @@ export class World {
     
         let light_3 = new THREE.AmbientLight(0xe8e0ba, 0.35);
         this._params.scene.add(light_3);
+
+        let torch_1 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_1.position.set(-120, 25, 178);
+        this._params.scene.add(torch_1);
+
+        let torch_2 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_2.position.set(120, 25, 178);
+        this._params.scene.add(torch_2);
+
+        let torch_3 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_3.position.set(42, 25, 152);
+        this._params.scene.add(torch_3);
+
+        let torch_4 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_4.position.set(-42, 25, 152);
+        this._params.scene.add(torch_4);
+
+        let torch_5 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_5.position.set(158, 25, 130);
+        this._params.scene.add(torch_5);
+
+        let torch_6 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_6.position.set(-160, 25, 130);
+        this._params.scene.add(torch_6);
+
+        let torch_7 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_7.position.set(-160, 25, 50);
+        this._params.scene.add(torch_7);
+
+        let torch_8 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_8.position.set(-160, 25, -30);
+        this._params.scene.add(torch_8);
+
+        let torch_9 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_9.position.set(-160, 25, -110);
+        this._params.scene.add(torch_9);
+
+        let torch_10 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_10.position.set(158, 25, 60);
+        this._params.scene.add(torch_10);
+
+        let torch_11 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_11.position.set(158, 25, -60);
+        this._params.scene.add(torch_11);
+
+        let torch_12 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_12.position.set(158, 25, -130);
+        this._params.scene.add(torch_12);
+
+        let torch_13 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_13.position.set(40, 25, -52);
+        this._params.scene.add(torch_13);
+
+        let torch_14 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_14.position.set(-40, 25, -52);
+        this._params.scene.add(torch_14);
+
+        let torch_15 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_15.position.set(40, 25, -175);
+        this._params.scene.add(torch_15);
+
+        let torch_16 = new THREE.PointLight(0xf56b16, 1000, 100);
+        torch_16.position.set(-40, 25, -175);
+        this._params.scene.add(torch_16);
+
+
+
     }
 
     _AddBoundingBoxes() {
