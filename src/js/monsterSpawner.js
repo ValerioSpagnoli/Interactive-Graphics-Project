@@ -20,7 +20,7 @@ export class MonsterSpawner {
         this._playerPosition = this._params.playerPosition;
 
         this._monsterAttackRange = {'min': 20, 'max': 25};  
-        this._monsterAttackTime = 2000;    
+        this._monsterAttackTime = 600;    
         this._LoadModel();
 
         this._timeLastWalk = 0;

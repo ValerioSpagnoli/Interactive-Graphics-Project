@@ -253,9 +253,9 @@ class Scene {
       //* Handle star collection
       if(!this._player.transformed){
         this._stars = this._starsSpawner.stars;
-        this._characterPosition = this._player.Position;
+        this._playerPosition = this._player.Position;
         this._stars.map(s => {
-          if (s.position.distanceTo(this._characterPosition) < 8) {
+          if (s.position.distanceTo(this._playerPosition) < 8) {
             this._scene.remove(s);
             this._stars = this._stars.filter(star => star !== s);
             this._starsSpawner.stars = this._stars;
@@ -266,9 +266,9 @@ class Scene {
 
       //* Handle heart collection
       this._hearts = this._heartSpawner.hearts;
-      this._characterPosition = this._player.Position;
+      this._playerPosition = this._player.Position;
       this._hearts.map(h => {
-        if (h.position.distanceTo(this._characterPosition) < 8) {
+        if (h.position.distanceTo(this._playerPosition) < 8) {
           this._scene.remove(h);
           this._hearts = this._hearts.filter(heart => heart !== h);
           this._heartSpawner.hearts = this._hearts;
@@ -278,9 +278,9 @@ class Scene {
 
       //* Handle sword collection
       this._swords = this._swordSpawner.swords;
-      this._characterPosition = this._player.Position;
+      this._playerPosition = this._player.Position;
       this._swords.map(s => {
-        if (s.position.distanceTo(this._characterPosition) < 8) {
+        if (s.position.distanceTo(this._playerPosition) < 8) {
           this._scene.remove(s);
           this._swords = this._swords.filter(sword => sword !== s);
           this._swordSpawner.swords = this._swords;
@@ -290,11 +290,11 @@ class Scene {
 
       //* Handle collision with world bounding boxes
       this._worldboundingBoxes = this._world.BoundingBoxes;
-      this._characterPosition = this._player.Position;
+      this._playerPosition = this._player.Position;
       this._characterPreviousPosition = this._player.PreviousPosition;
       this._worldboundingBoxes.map(b => {
         const box = new THREE.Box3().setFromObject(b);
-        if (box.containsPoint(this._characterPosition)) {
+        if (box.containsPoint(this._playerPosition)) {
           this._player._velocity = new THREE.Vector3(0, 0, 0);
           this._player._target.position.set(this._characterPreviousPosition.x, this._characterPreviousPosition.y, this._characterPreviousPosition.z);
         }
@@ -304,10 +304,15 @@ class Scene {
       this._mobs = this._mobSpawner.Mobs;
       this._mobAttackDistance = this._mobSpawner.MobAttackDistance;
       this._mobAttackTime = this._mobSpawner.MobAttackTime;
+      this._player.hitFlag = false; 
       for (const mob of this._mobs) {
-        const distanceToPlayer = this._characterPosition.distanceTo(mob.position);
+        const distanceToPlayer = this._playerPosition.distanceTo(mob.position);
         if (distanceToPlayer < this._mobAttackDistance && (Date.now() - mob.lastHit) > this._mobAttackTime && !mob.deadFlag) {
           mob.lastHit = new Date().getTime();
+          this._player.hitFlag = true;
+          this._player.hitDirection = mob.position.clone().sub(this._playerPosition).normalize(); 
+          if(this._player.transformed)this._player.hitIntensity = 0.3;
+          else this._player.hitIntensity = 1;  
           this._currentHitFromMobs += 1;
         }
       }
@@ -320,14 +325,20 @@ class Scene {
       const damage = this._player.damage;
       if (this._player._stateMachine._currentState && this._player._stateMachine._currentState.Name === 'attack' && (Date.now() - this._lastAttackTime) > 1000) {
         for (const mob of this._mobs) {
-          const distanceToPlayer = this._characterPosition.distanceTo(mob.position);
-          if (distanceToPlayer < this._player.attackRange && !mob.deadFlag) {
+
+          const distanceToPlayer = this._playerPosition.distanceTo(mob.position);
+
+          const player2MobDir = mob.position.clone().sub(this._playerPosition).normalize();
+          const playerDir = this._player.Position.clone().sub(this._player.PreviousPosition).normalize();
+          const dot = playerDir.dot(player2MobDir);
+          const inFront = dot > 0.5;
+
+          if (distanceToPlayer < this._player.attackRange && !mob.deadFlag && inFront) {
             mob.life -= damage;
             this._lastAttackTime = new Date().getTime();
           }
         }
       }
-
 
       //* Handle monster attack
       if(this._player.transformed)this._monsterSpawner.MonsterDamage = 2;
@@ -336,10 +347,14 @@ class Scene {
       this._monsterAttackRange = this._monsterSpawner.MonsterAttackRange;
       this._monsterAttackTime = this._monsterSpawner.MonsterAttackTime;
       this._monsterState = this._monsterSpawner.MonsterState;
-      const distanceToMonster = this._characterPosition.distanceTo(this._monsterSpawner.MonsterPosition);
+      const distanceToMonster = this._playerPosition.distanceTo(this._monsterSpawner.MonsterPosition);
       if (distanceToMonster > this._monsterAttackRange.min && distanceToMonster < this._monsterAttackRange.max) {
         if ((Date.now() - this._monsterSpawner.MonsterLastHit) > this._monsterAttackTime && this._monsterState === 'attack') {
           this._monsterSpawner.MonsterLastHit = new Date().getTime();
+          this._player.hitFlag = true;
+          this._player.hitDirection = this._monsterSpawner.MonsterPosition.clone().sub(this._playerPosition).normalize();
+          if(this._player.transformed)this._player.hitIntensity = 1;
+          else this._player.hitIntensity = 3;  
           for (let i = 0; i < this._monsterDamage; i++) {
             this._gui._healthBar.removeHeart();
           }

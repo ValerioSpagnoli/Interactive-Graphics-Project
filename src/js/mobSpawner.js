@@ -79,7 +79,7 @@ export class MobSpawner {
     }
 
     _LoadModel(loader, position){
-        let mob_ = {'mob':null, 'mixer':null, 'walk':null, 'attack':null, 'dead':null, 'currentAction':null, 'velocity':null, 'time':0, 'life':6, 'lastHit':0, 'deadFlag':false, 'deadTime':0};      
+        let mob_ = {'mob':null, 'mixer':null, 'walk':null, 'attack':null, 'dead':null, 'currentAction':null, 'velocity':null, 'time':0, 'life':6, 'lastHit':0, 'deadFlag':false, 'deadTime':0, 'position':null, 'rotation':null};    
         loader.load('./models/mob/blue_demon.glb', (gltf) => {
             gltf.scene.traverse(c => {
                 c.castShadow = true;
@@ -90,6 +90,7 @@ export class MobSpawner {
             this._params.scene.add(mob);
             mob_.mob = mob;
             mob_.position = mob.position;
+            mob_.rotation = mob.rotation;
             mob_.velocity = new THREE.Vector3(0, 0, 1);
 
             const mixer = new THREE.AnimationMixer(mob);

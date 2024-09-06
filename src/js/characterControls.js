@@ -29,6 +29,9 @@ export class BasicCharacterController {
         this._AddBoundingBox();
 
         this._hitFlag = false;
+        this._hitTime = 0;  
+        this._hitDirection = new THREE.Vector3(); 
+        this._hitIntensity = 1;
         
         this._normalScale = 0.06;
         this._bigScale = 0.1;
@@ -57,7 +60,7 @@ export class BasicCharacterController {
           });
           fbx.position.set(0, 0, 190);
           fbx.rotation.y = Math.PI;
-    
+          
           this._target = fbx;
           this._params.scene.add(this._target);
     
@@ -85,7 +88,6 @@ export class BasicCharacterController {
           loader.load('idle.fbx', (a) => { _OnLoad('idle', a); });
           loader.load('attack.fbx', (a) => { _OnLoad('attack', a); });
           loader.load('death.fbx', (a) => { _OnLoad('death', a); });
-          loader.load('hit.fbx', (a) => { _OnLoad('hit', a); });
         });
     }
 
@@ -142,6 +144,22 @@ export class BasicCharacterController {
         this._hitFlag = value;
     }
 
+    get hitDirection() {
+        return this._hitDirection;
+    }
+
+    set hitDirection(value) {
+        this._hitDirection = value;
+    }
+
+    get hitIntensity() {
+        return this._hitIntensity;
+    }
+
+    set hitIntensity(value) {
+        this._hitIntensity = value;
+    }
+
     get damage() {
         return this._damage;
     }
@@ -170,6 +188,13 @@ export class BasicCharacterController {
         
         if (this._params.healthBar.hearts.length === 0) {
           this._stateMachine.SetState('death');
+        }
+
+        if (this._hitFlag){
+          const randomSign = Math.random() < 0.5 ? -1 : 1;
+          this._target.rotation.y += (Math.PI / 40) * randomSign;
+          this._target.position.z -= this._hitDirection.z * this._hitIntensity;
+          this._hitTime = Date.now();
         }
 
         this._normalDamage = Math.ceil(this._params.powerBar.swords.length / 2);
