@@ -298,6 +298,23 @@ class Start {
         }
         this._start.appendChild(button);
 
+        // add a Div with some text for explanation
+        const explanation = document.createElement('div');
+        explanation.style.position = 'absolute';
+        explanation.style.left = '50%';
+        explanation.style.top = '250%';
+        explanation.style.width = '1500px';
+        explanation.style.transform = 'translate(-50%, -50%)';
+        explanation.style.color = 'white';
+        explanation.style.fontSize = '50px';
+        explanation.style.fontFamily = 'Handjet';
+        explanation.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        explanation.style.border = 'solid 5px white';
+        explanation.style.borderRadius = '20px';
+        explanation.style.padding = '30px';
+        explanation.innerHTML = '- <b>W A S D</b> to move and <b>Space</b> to attack<br>- Collect swords to increase the power of your attack and hearts to increase your life.<br>- Collect <b>5 stars</b> to become bigger and stronger.<br>&nbsp&nbsp&nbspThe effect lasts for <b>15 seconds</b>, then you will return to normal size and lose 2 swords.<br>&nbsp&nbsp&nbspThe transformation will give to you full health.<br>- Defeat the monster to win the game';
+        this._start.appendChild(explanation);
+        
         document.body.appendChild(this._layer);
         document.body.appendChild(this._start);
 
