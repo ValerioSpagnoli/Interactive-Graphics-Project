@@ -19,20 +19,55 @@ export class MonsterSpawner {
         }
         this._playerPosition = this._params.playerPosition;
 
-        this._bossAttackDistance = 8;
-        this._bossAttackTime = 800;        
+        this._monsterAttackRange = {'min': 20, 'max': 25};  
+        this._monsterAttackTime = 2000;    
         this._LoadModel();
 
         this._timeLastWalk = 0;
         this._timeLastIdle = 0;
+        this._timeLastAttack = 0;
+        this._timeLastRoar = 0;
+
+        this._monsterLife = 100;
+        this._monsterDamage = 1;  
+        this._monsterLastHit = 0; 
+        this._monsterState = 'roar';
     }
 
-    get BossAttackDistance() {
-        return this._bossAttackDistance;
+    get MonsterAttackRange() {
+        return this._monsterAttackRange;
     }
 
-    get BossAttackTime() {
-        return this._bossAttackTime;
+    get MonsterAttackTime() {
+        return this._monsterAttackTime;
+    }
+
+    get MonsterDamage() {
+        return this._monsterDamage;
+    }
+
+    get MonsterLife() {
+        return this._monsterLife;  
+    }
+
+    set MonsterLife(value) {
+        this._monsterLife = value;
+    }
+
+    get MonsterLastHit() {
+        return this._monsterLastHit;
+    }
+
+    set MonsterLastHit(value) {
+        this._monsterLastHit = value;
+    }
+
+    get MonsterPosition() { 
+        return this._position;
+    }
+
+    get MonsterState() {
+        return this._monsterState;
     }
 
     _LoadModel() {
@@ -99,6 +134,16 @@ export class MonsterSpawner {
         cube_1.position.set(0, 25, -70);
         this._params.scene.add(cube_1);
         this._worldBoundingBoxes.push(cube_1);
+
+        const insideTowers_box = new THREE.BoxGeometry(230, 50, 150);
+        const insideTowers_mat = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+            wireframe: true,
+            visible: false,
+        });
+        this._insideTowers = new THREE.Mesh(insideTowers_box, insideTowers_mat);
+        this._insideTowers.position.set(0, 25, -130);
+        this._params.scene.add(this._insideTowers);
     }
 
     update(deltaTime) {
@@ -107,9 +152,14 @@ export class MonsterSpawner {
       }
       this._stateMachine._currentState.Update(deltaTime);
 
-      this.moveMonsterRandomly(deltaTime);
-      if(this._stateMachine._currentState.Name == 'walk') {
+      const box = new THREE.Box3().setFromObject(this._insideTowers);
+      if(box.containsPoint(this._playerPosition)){
+        this.attackPlayer();
       }
+      else{
+        this.moveMonsterRandomly(deltaTime);
+      }
+
 
       if(this._mixer) {
         this._mixer.update(deltaTime);
@@ -144,9 +194,50 @@ export class MonsterSpawner {
         const angle = Math.atan2(this._velocity.x, this._velocity.z);
         this._rotation.y = angle;
       }
+    }
+
+
+    attackPlayer() {
+      const distanceToPlayer = this._playerPosition.distanceTo(this._position);
+
+      if(this._timeLastAttack === 0) this._timeLastAttack = Date.now();
+      if(this._timeLastRoar === 0) this._timeLastRoar = Date.now();
+
+      if(distanceToPlayer < 20){
+        this._stateMachine.SetState('walk');
+        this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(-0.1);
+        this._position.add(this._velocity);
+        const angle = Math.atan2(this._playerPosition.x - this._position.x, this._playerPosition.z - this._position.z);
+        this._rotation.y = angle;
+      }
+      else if(distanceToPlayer > 25){
+        this._stateMachine.SetState('walk');
+        this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(0.1);
+        this._position.add(this._velocity);
+        const angle = Math.atan2(this._playerPosition.x - this._position.x, this._playerPosition.z - this._position.z);
+        this._rotation.y = angle;
+      }
+      else{ 
+        const angle = Math.atan2(this._playerPosition.x - this._position.x, this._playerPosition.z - this._position.z);
+        this._rotation.y = angle;
+
+        if((this._stateMachine._currentState.Name === 'roar' || this._stateMachine._currentState.Name === 'walk') && Date.now() - this._timeLastRoar > 2500) {
+          //const randomAttack = Math.random() < 0.5 ? 'attack_1' : 'attack_2';
+          const randomAttack = 'attack_1';
+          this._stateMachine.SetState(randomAttack);
+          this._timeLastAttack = Date.now();
+          this._monsterState = 'attack';
+          this._monsterLastHit = Date.now();
+        }
+        else if((this._stateMachine._currentState.Name === 'attack_1' || this._stateMachine._currentState.Name === 'attack_2') && Date.now() - this._timeLastAttack > 2500) {
+          this._stateMachine.SetState('roar');
+          this._timeLastRoar = Date.now();
+          this._monsterState = 'roar';
+        }
+      }
+
 
     }
-   
 }
 
 class BasicCharacterControllerProxy {

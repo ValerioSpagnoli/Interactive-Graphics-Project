@@ -85,12 +85,14 @@ class Scene {
         camera: this._camera,
         scene: this._scene,
         healthBar: this._gui._healthBar,
+        powerBar: this._gui._powerBar,
+        starCounter: this._gui._starCounter,
       }
-      this._controls = new BasicCharacterController(params);
+      this._player = new BasicCharacterController(params);
   
       this._thirdPersonCamera = new ThirdPersonCamera({
         camera: this._camera,
-        target: this._controls,
+        target: this._player,
       });
     }
   
@@ -119,7 +121,7 @@ class Scene {
       this._mobSpawner = new MobSpawner({
         scene: this._scene,
         world: this._world,
-        playerPosition: this._controls.Position,
+        playerPosition: this._player.Position,
       });
     }
 
@@ -127,7 +129,7 @@ class Scene {
       this._monsterSpawner = new MonsterSpawner({
         scene: this._scene,
         world: this._world,
-        playerPosition: this._controls.Position,
+        playerPosition: this._player.Position,
       });
     }
 
@@ -164,8 +166,8 @@ class Scene {
       }
   
       //* Update character controls
-      if (this._controls && !this._blockGame) {
-        this._controls.Update(timeElapsedS);
+      if (this._player && !this._blockGame) {
+        this._player.Update(timeElapsedS);
       }
 
       //* Update stars 
@@ -194,17 +196,17 @@ class Scene {
       }
 
       //* Switch between orbit controls and third person camera
-      const lastTimeFPressed = this._controls._lastTimeFPressed;
+      const lastTimeFPressed = this._player._lastTimeFPressed;
       const currentTime = new Date().getTime();
       const timeDiff = currentTime - lastTimeFPressed;
-      if (this._controls._input._keys.f && timeDiff > 500) {
+      if (this._player._input._keys.f && timeDiff > 500) {
         this._orbitControls.enabled = !this._orbitControls.enabled;
-        this._controls._lastTimeFPressed = currentTime
+        this._player._lastTimeFPressed = currentTime
 
         if (this._orbitControls.enabled) {
           this._orbitControls.target = this._thirdPersonCamera._params.target.Position;
           this._orbitControls.object.position.copy(this._thirdPersonCamera._currentPosition);
-          this._orbitControls.object.lookAt(this._controls.Position);
+          this._orbitControls.object.lookAt(this._player.Position);
         }
       }
       if(this._orbitControls.enabled) this._orbitControls.update();
@@ -219,7 +221,7 @@ class Scene {
 
       //* Handle star collection
       this._stars = this._starsSpawner.stars;
-      this._characterPosition = this._controls.Position;
+      this._characterPosition = this._player.Position;
       this._stars.map(s => {
         if (s.position.distanceTo(this._characterPosition) < 8) {
           this._scene.remove(s);
@@ -231,7 +233,7 @@ class Scene {
 
       //* Handle heart collection
       this._hearts = this._heartSpawner.hearts;
-      this._characterPosition = this._controls.Position;
+      this._characterPosition = this._player.Position;
       this._hearts.map(h => {
         if (h.position.distanceTo(this._characterPosition) < 8) {
           this._scene.remove(h);
@@ -243,7 +245,7 @@ class Scene {
 
       //* Handle sword collection
       this._swords = this._swordSpawner.swords;
-      this._characterPosition = this._controls.Position;
+      this._characterPosition = this._player.Position;
       this._swords.map(s => {
         if (s.position.distanceTo(this._characterPosition) < 8) {
           this._scene.remove(s);
@@ -255,13 +257,13 @@ class Scene {
 
       //* Handle collision with world bounding boxes
       this._worldboundingBoxes = this._world.BoundingBoxes;
-      this._characterPosition = this._controls.Position;
-      this._characterPreviousPosition = this._controls.PreviousPosition;
+      this._characterPosition = this._player.Position;
+      this._characterPreviousPosition = this._player.PreviousPosition;
       this._worldboundingBoxes.map(b => {
         const box = new THREE.Box3().setFromObject(b);
         if (box.containsPoint(this._characterPosition)) {
-          this._controls._velocity = new THREE.Vector3(0, 0, 0);
-          this._controls._target.position.set(this._characterPreviousPosition.x, this._characterPreviousPosition.y, this._characterPreviousPosition.z);
+          this._player._velocity = new THREE.Vector3(0, 0, 0);
+          this._player._target.position.set(this._characterPreviousPosition.x, this._characterPreviousPosition.y, this._characterPreviousPosition.z);
         }
       });
 
@@ -282,14 +284,38 @@ class Scene {
       }
 
       //* Handle attacks on mobs
-      const damage = Math.ceil(this._gui._powerBar.swords.length / 2);
-      if (this._controls._stateMachine._currentState && this._controls._stateMachine._currentState.Name === 'attack' && (Date.now() - this._lastAttackTime) > 1000) {
+      const damage = this._player.damage;
+      if (this._player._stateMachine._currentState && this._player._stateMachine._currentState.Name === 'attack' && (Date.now() - this._lastAttackTime) > 1000) {
         for (const mob of this._mobs) {
           const distanceToPlayer = this._characterPosition.distanceTo(mob.position);
-          if (distanceToPlayer < 10 && !mob.deadFlag) {
+          if (distanceToPlayer < this._player.attackRange && !mob.deadFlag) {
             mob.life -= damage;
             this._lastAttackTime = new Date().getTime();
           }
+        }
+      }
+
+
+      //* Handle monster attack
+      this._monsterDamage = this._monsterSpawner.MonsterDamage;
+      this._monsterAttackRange = this._monsterSpawner.MonsterAttackRange;
+      this._monsterAttackTime = this._monsterSpawner.MonsterAttackTime;
+      this._monsterState = this._monsterSpawner.MonsterState;
+      const distanceToMonster = this._characterPosition.distanceTo(this._monsterSpawner.MonsterPosition);
+      if (distanceToMonster > this._monsterAttackRange.min && distanceToMonster < this._monsterAttackRange.max) {
+        if ((Date.now() - this._monsterSpawner.MonsterLastHit) > this._monsterAttackTime && this._monsterState === 'attack') {
+          this._monsterSpawner.MonsterLastHit = new Date().getTime();
+          for (let i = 0; i < this._monsterDamage; i++) {
+            this._gui._healthBar.removeHeart();
+          }
+        }
+      } 
+
+      //* Handle attacks on monster
+      if (this._player._stateMachine._currentState && this._player._stateMachine._currentState.Name === 'attack' && (Date.now() - this._lastAttackTime) > 1000) {
+        if (distanceToMonster < this._player.attackRange) {
+          this._monsterSpawner.MonsterLife -= this._player.damage;
+          this._lastAttackTime = new Date().getTime();
         }
       }
     }

@@ -29,13 +29,22 @@ export class BasicCharacterController {
         this._AddBoundingBox();
 
         this._hitFlag = false;
+        
+        this._normalScale = 0.06;
+        this._bigScale = 0.1;
+        
+        this._damage = this._normalDamage;
+        this._attackRange = 10;
+        
+        this._starsToGetBigger = 2;
+        this._transformed = false;
     }
 
     _LoadModels() {
         const loader = new FBXLoader();
         loader.setPath('./models/knight/');
         loader.load('knight.fbx', (fbx) => {
-          fbx.scale.setScalar(0.06);
+          fbx.scale.setScalar(this._normalScale);
           fbx.traverse(c => {
             c.castShadow = true;
           });
@@ -126,6 +135,14 @@ export class BasicCharacterController {
         this._hitFlag = value;
     }
 
+    get damage() {
+        return this._damage;
+    }
+
+    get attackRange() {
+        return this._attackRange;
+    }
+
     Update(timeInSeconds) {
         if (!this._stateMachine._currentState) {
             return;
@@ -134,6 +151,21 @@ export class BasicCharacterController {
         
         if (this._params.healthBar.hearts.length === 0) {
           this._stateMachine.SetState('death');
+        }
+ 
+        if (this._params.starCounter.stars >= this._starsToGetBigger && !this._transformed) {
+          this._transformed = true;
+          this._target.scale.setScalar(this._bigScale);
+          this._damage = this._params.powerBar.swords.length;
+          this._attackRange = 25;
+          if (this._params.healthBar.hearts.length < 10) {
+            for (let i = 0; i < 10 - this._params.healthBar.hearts.length; i++) {
+              this._params.healthBar.addHeart();
+            }
+          }
+        }
+        else{
+          this._damage = Math.ceil(this._params.powerBar.swords.length / 2);
         }
 
         const velocity = this._velocity;
