@@ -46,6 +46,10 @@ export class MonsterSpawner {
         return this._monsterDamage;
     }
 
+    set MonsterDamage(value) {
+        this._monsterDamage = value;
+    }
+
     get MonsterLife() {
         return this._monsterLife;  
     }

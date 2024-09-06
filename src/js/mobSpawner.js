@@ -79,7 +79,7 @@ export class MobSpawner {
     }
 
     _LoadModel(loader, position){
-        let mob_ = {'mob':null, 'mixer':null, 'walk':null, 'attack':null, 'dead':null, 'currentAction':null, 'velocity':null, 'time':0, 'life':10, 'lastHit':0, 'deadFlag':false, 'deadTime':0};      
+        let mob_ = {'mob':null, 'mixer':null, 'walk':null, 'attack':null, 'dead':null, 'currentAction':null, 'velocity':null, 'time':0, 'life':6, 'lastHit':0, 'deadFlag':false, 'deadTime':0};      
         loader.load('./models/mob/blue_demon.glb', (gltf) => {
             gltf.scene.traverse(c => {
                 c.castShadow = true;
@@ -133,7 +133,7 @@ export class MobSpawner {
             }
 
             if(mob.currentAction !== mob.dead) {
-                if (distanceToPlayer < 20 && !playerInsideBoundingBoxes) {
+                if (distanceToPlayer < 60 && !playerInsideBoundingBoxes) {
                     this.moveMobTowardsPlayer(mob, this._playerPosition);
                 } else {
                     this.moveMobRandomly(mob);

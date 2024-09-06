@@ -156,7 +156,7 @@ class GameOver {
         this._gameOver.style.top = '40%';
         this._gameOver.style.transform = 'translate(-50%, -50%)';
         this._gameOver.style.color = 'white';
-        this._gameOver.style.fontSize = '400px';
+        this._gameOver.style.fontSize = '300px';
         this._gameOver.style.fontFamily = 'Handjet';
         this._gameOver.innerHTML = 'Game Over';
 
@@ -211,7 +211,7 @@ class GameWin {
         this._gameWin.style.top = '40%';
         this._gameWin.style.transform = 'translate(-50%, -50%)';
         this._gameWin.style.color = 'white';
-        this._gameWin.style.fontSize = '400px';
+        this._gameWin.style.fontSize = '300px';
         this._gameWin.style.fontFamily = 'Handjet';
         this._gameWin.innerHTML = 'Game Win';
 
