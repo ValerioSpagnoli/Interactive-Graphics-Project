@@ -149,8 +149,10 @@ class GameOver {
     }
 
     show() {
-        this._gameOver.style.display = 'block';
-        this._layer.style.display = 'block';
+        setTimeout(() => {
+            this._gameOver.style.display = 'block';
+            this._layer.style.display = 'block';
+        }, 1000);
     }
 
     hide() {
@@ -159,13 +161,113 @@ class GameOver {
     }
 }
 
+class GameWin {
+    constructor() {
+        this._gameWin = document.createElement('div');
+        this._gameWin.style.position = 'absolute';
+        this._gameWin.style.left = '50%';
+        this._gameWin.style.top = '50%';
+        this._gameWin.style.transform = 'translate(-50%, -50%)';
+        this._gameWin.style.color = 'white';
+        this._gameWin.style.fontSize = '400px';
+        this._gameWin.style.fontFamily = 'Handjet';
+        this._gameWin.innerHTML = 'Game Win';
+
+        this._layer = document.createElement('div');
+        this._layer.style.position = 'absolute';
+        this._layer.style.left = '0';
+        this._layer.style.top = '0';
+        this._layer.style.width = '100%';
+        this._layer.style.height = '100%';
+        this._layer.style.backgroundColor = 'rgba(0, 30, 0, 0.5)';
+        this._layer.style.display = 'none';
+        document.body.appendChild(this._layer);
+        document.body.appendChild(this._gameWin);
+    }
+
+    show() {
+        setTimeout(() => {
+            this._gameWin.style.display = 'block';
+            this._layer.style.display = 'block';
+        }, 1000);
+    }
+
+    hide() {
+        this._gameWin.style.display = 'none';
+        this._layer.style.display = 'none';
+    }
+}
+
+class MonsterLifeBar {
+    constructor(){        
+        this._monsterLife = 100;
+        this._monsterLifeBar = document.createElement('div');
+        this._monsterLifeBar.style.position = 'absolute';
+        this._monsterLifeBar.style.left = '50%';
+        this._monsterLifeBar.style.top = '90px';
+        this._monsterLifeBar.style.transform = 'translateX(-50%)';
+        this._monsterLifeBar.style.width = '1000px';
+        this._monsterLifeBar.style.height = '50px';
+        this._monsterLifeBar.style.border = 'solid 5px white';
+        this._monsterLifeBar.style.borderRadius = '10px';
+        document.body.appendChild(this._monsterLifeBar);
+
+        this._divs = [];
+        for(let i = 0; i < 100; i++){
+            const life = document.createElement('div');
+            life.style.width = '10px';
+            life.style.height = '50px';
+            life.style.backgroundColor = 'red';
+            life.style.float = 'left';
+            this._monsterLifeBar.appendChild(life);
+            this._divs.push(life);
+        }
+    }
+
+    get monsterLife(){
+        return this._monsterLife;
+    }
+
+    set monsterLife(value){
+        this._monsterLife = value;
+    }
+    
+    show(){
+        this._monsterLifeBar.style.display = 'block';
+    }
+
+    hide(){
+        this._monsterLifeBar.style.display = 'none';
+    }
+
+    update(){
+        if(this._monsterLife < 0){
+            this._monsterLife = 0;
+        }
+        for(let i = 0; i < this._monsterLife; i++){
+            this._divs[i].style.display = 'block';
+        }
+        for(let i = this._monsterLife; i < 100; i++){
+            this._divs[i].style.display = 'none';
+        }
+    }
+
+}
+
 export class GUI {
     constructor() {
         this._healthBar = new HealtBar();
         this._powerBar = new PowerBar();
         this._starCounter = new StarCounter(); 
+
+        this._monsterLifeBar = new MonsterLifeBar();
+        this._monsterLifeBar.show();
+
         this._gameOver = new GameOver(); 
         this._gameOver.hide();
+
+        this._gameWin = new GameWin();
+        this._gameWin.hide();
     }
 
     get healtBar() {
@@ -178,6 +280,10 @@ export class GUI {
 
     get starCounter() {
         return this._starCounter;
+    }
+
+    get monsterLifeBar() {
+        return this._monsterLifeBar;
     }
 
     get gameOver() {

@@ -65,8 +65,11 @@ class Scene {
         this._currentCollectedStars = 0;
         this._currentHitFromMobs = 0;
         this._lastAttackTime = 0; 
+
         this._gameOver = false;
         this._gameOverTime = 0;
+        this._gameWin = false;
+        this._gameWinTime = 0;
         this._blockGame = false;  
     }
   
@@ -77,7 +80,9 @@ class Scene {
     }
 
     _LoadGUI(){
-        this._gui = new GUI();
+        this._gui = new GUI({
+          monster: this._monsterSpawner,
+        });
     }
 
     _LoadPlayer() {
@@ -156,7 +161,7 @@ class Scene {
     _Step(timeElapsed) {
       const timeElapsedS = timeElapsed * 0.001;
 
-      if (this._gameOver && (Date.now()-this._gameOverTime)>3000){
+      if (( (this._gameOver && (Date.now()-this._gameOverTime)>3000) || (this._gameWin && (Date.now()-this._gameWinTime)>3000) )){
         this._blockGame = true;
       }
       
@@ -195,6 +200,11 @@ class Scene {
         this._monsterSpawner.update(timeElapsedS);
       }
 
+      //* Update GUI
+      if (this._gui && !this._blockGame) {
+        this._gui._monsterLifeBar.update();
+      }
+
       //* Switch between orbit controls and third person camera
       const lastTimeFPressed = this._player._lastTimeFPressed;
       const currentTime = new Date().getTime();
@@ -217,6 +227,13 @@ class Scene {
         this._gameOver = true;
         this._gameOverTime = new Date().getTime();
         this._gui._gameOver.show();
+      }
+
+      //* Handle game win
+      if (this._monsterSpawner.MonsterState === 'death' && !this._gameWin) {
+        this._gameWin = true;
+        this._gameWinTime = new Date().getTime();
+        this._gui._gameWin.show();
       }
 
       //* Handle star collection
@@ -318,6 +335,9 @@ class Scene {
           this._lastAttackTime = new Date().getTime();
         }
       }
+
+      //* Handle monster death
+      this._gui._monsterLifeBar.monsterLife = this._monsterSpawner.MonsterLife;
     }
 }
 

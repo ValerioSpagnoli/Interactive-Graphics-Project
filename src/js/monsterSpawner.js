@@ -122,6 +122,7 @@ export class MonsterSpawner {
             loader.load('roar.fbx', (a) => { _OnLoad('roar', a); });
             loader.load('attack_1.fbx', (a) => { _OnLoad('attack_1', a); });
             loader.load('attack_2.fbx', (a) => { _OnLoad('attack_2', a); });
+            loader.load('death.fbx', (a) => { _OnLoad('death', a); });
         });
 
         const box_1 = new THREE.BoxGeometry(30, 50, 10);
@@ -152,13 +153,20 @@ export class MonsterSpawner {
       }
       this._stateMachine._currentState.Update(deltaTime);
 
-      const box = new THREE.Box3().setFromObject(this._insideTowers);
-      if(box.containsPoint(this._playerPosition)){
-        this.attackPlayer();
+      if(this._monsterLife <= 0 && this._monsterState !== 'death'){  
+        this._stateMachine.SetState('death');
+        this._monsterState = 'death';
       }
-      else{
-        this.moveMonsterRandomly(deltaTime);
+      else{        
+        const box = new THREE.Box3().setFromObject(this._insideTowers);
+        if(box.containsPoint(this._playerPosition)){
+          this.attackPlayer();
+        }
+        else{
+          this.moveMonsterRandomly(deltaTime);
+        }
       }
+
 
 
       if(this._mixer) {
@@ -296,6 +304,7 @@ class CharacterFSM extends FiniteStateMachine {
         this._AddState('roar', RoarState);
         this._AddState('attack_1', Attack1State);
         this._AddState('attack_2', Attack2State);
+        this._AddState('death', DeathState);
     }
 };
 
@@ -498,3 +507,43 @@ class Attack2State extends State {
   Update(timeElapsed) {  
   }
 };
+
+
+class DeathState extends State {
+  constructor(parent) {
+    super(parent);
+  }
+
+  get Name() {
+    return 'death';
+  }
+
+  Enter(prevState) {
+    const curAction = this._parent._proxy._animations['death'].action;
+    if (prevState) {
+      const prevAction = this._parent._proxy._animations[prevState.Name].action;
+
+      curAction.enabled = true;
+
+      if (prevState.Name == 'idle') {
+        const ratio = curAction.getClip().duration / prevAction.getClip().duration;
+        curAction.time = prevAction.time * ratio;
+      } else {
+        curAction.time = 0.0;
+        curAction.setEffectiveTimeScale(1.0);
+        curAction.setEffectiveWeight(1.0);
+      }
+
+      curAction.crossFadeFrom(prevAction, 0.5, true);
+      curAction.play();
+    } else {
+      curAction.play();
+    }
+  }
+
+  Exit() {
+  }
+
+  Update(timeElapsed) {  
+  }
+}
