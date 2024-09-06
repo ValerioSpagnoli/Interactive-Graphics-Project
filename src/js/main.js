@@ -344,7 +344,7 @@ class Scene {
       //* Handle monster attack
       if(this._player.transformed) this._monsterSpawner.MonsterDamage = 2;
       else this._monsterSpawner.MonsterDamage = 4;
-      this._monsterDamage = 0; //this._monsterSpawner.MonsterDamage;
+      this._monsterDamage = this._monsterSpawner.MonsterDamage;
       this._monsterAttackRange = this._monsterSpawner.MonsterAttackRange;
       this._monsterAttackTime = this._monsterSpawner.MonsterAttackTime;
       this._monsterState = this._monsterSpawner.MonsterState;

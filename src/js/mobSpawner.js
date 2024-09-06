@@ -15,7 +15,7 @@ export class MobSpawner {
         this._mobAttackDistance = 8;
         this._mobAttackTime = 500;
         this._lastSpawnTime = 0;    
-        this._minNumberOfMobs = 15;
+        this._minNumberOfMobs = 12;
         
         this._LoadModels();
     }
