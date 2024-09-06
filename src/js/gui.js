@@ -400,7 +400,7 @@ class MonsterLifeBar {
             const life = document.createElement('div');
             life.style.width = '10px';
             life.style.height = '50px';
-            life.style.backgroundColor = 'red';
+            life.style.backgroundColor = 'rgba(200, 0, 0, 0.8)';
             life.style.float = 'left';
             this._monsterLifeBar.appendChild(life);
             this._divs.push(life);
