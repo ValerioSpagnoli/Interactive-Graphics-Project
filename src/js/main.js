@@ -89,6 +89,7 @@ class Scene {
       const params = {
         camera: this._camera,
         scene: this._scene,
+        world: this._world,
         healthBar: this._gui._healthBar,
         powerBar: this._gui._powerBar,
         starCounter: this._gui._starCounter,
@@ -341,9 +342,9 @@ class Scene {
       }
 
       //* Handle monster attack
-      if(this._player.transformed)this._monsterSpawner.MonsterDamage = 2;
+      if(this._player.transformed) this._monsterSpawner.MonsterDamage = 2;
       else this._monsterSpawner.MonsterDamage = 4;
-      this._monsterDamage = this._monsterSpawner.MonsterDamage;
+      this._monsterDamage = 0; //this._monsterSpawner.MonsterDamage;
       this._monsterAttackRange = this._monsterSpawner.MonsterAttackRange;
       this._monsterAttackTime = this._monsterSpawner.MonsterAttackTime;
       this._monsterState = this._monsterSpawner.MonsterState;
@@ -356,7 +357,7 @@ class Scene {
           if(this._player.transformed)this._player.hitIntensity = 1;
           else this._player.hitIntensity = 3;  
           for (let i = 0; i < this._monsterDamage; i++) {
-           this._gui._healthBar.removeHeart();
+            this._gui._healthBar.removeHeart();
           }
         }
       } 

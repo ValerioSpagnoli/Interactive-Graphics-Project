@@ -19,7 +19,7 @@ export class MonsterSpawner {
         }
         this._playerPosition = this._params.playerPosition;
 
-        this._monsterAttackRange = {'min': 20, 'max': 25};  
+        this._monsterAttackRange = {'min': 15, 'max': 20};  
         this._monsterAttackTime = 600;    
         this._LoadModel();
 
@@ -84,7 +84,7 @@ export class MonsterSpawner {
             });
             fbx.position.set(0, 0, -140);
             fbx.rotation.y = 0;
-            fbx.scale.set(0.17, 0.17, 0.17);
+            fbx.scale.set(0.13, 0.13, 0.13);
 
             const textureLoader = new THREE.TextureLoader();
             const texture = textureLoader.load('./models/monster/monster_texture.png');
@@ -178,14 +178,25 @@ export class MonsterSpawner {
 
 
     moveMonsterRandomly(deltaTime) {
+      this._timeLastAttack = 0;
+      this._timeLastRoar = 0;
+
+      if(this._stateMachine._currentState.Name === 'attack_1' || this._stateMachine._currentState.Name === 'attack_2') {
+        this._stateMachine.SetState('idle');
+        this._monsterState = 'idle';
+        this._timeLastIdle = Date.now();
+      }
+
       if(this._stateMachine._currentState.Name === 'idle' && Date.now() - this._timeLastIdle > 5000) {
         this._stateMachine.SetState('walk');
+        this._monsterState = 'walk';
         this._timeLastWalk = Date.now();
         this._velocity.set(Math.random() * 2 - 1, 0, Math.random() * 2 - 1);
         this._velocity.normalize().multiplyScalar(0.2);
       }
       else if(this._stateMachine._currentState.Name === 'walk' && Date.now() - this._timeLastWalk > 5000) {
         this._stateMachine.SetState('idle');
+        this._monsterState = 'idle';
         this._timeLastIdle = Date.now();
       }
 
@@ -213,14 +224,14 @@ export class MonsterSpawner {
       if(this._timeLastAttack === 0) this._timeLastAttack = Date.now();
       if(this._timeLastRoar === 0) this._timeLastRoar = Date.now();
 
-      if(distanceToPlayer < 20){
+      if(distanceToPlayer < this.MonsterAttackRange.min){
         this._stateMachine.SetState('walk');
         this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(-0.2);
         this._position.add(this._velocity);
         const angle = Math.atan2(this._playerPosition.x - this._position.x, this._playerPosition.z - this._position.z);
         this._rotation.y = angle;
       }
-      else if(distanceToPlayer > 25){
+      else if(distanceToPlayer > this.MonsterAttackRange.max){
         this._stateMachine.SetState('walk');
         this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(0.2);
         this._position.add(this._velocity);

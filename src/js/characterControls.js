@@ -44,7 +44,7 @@ export class BasicCharacterController {
         this._bigAttackRange = 25;
         this._attackRange = this._normalAttackRange;
         
-        this._starsToGetBigger = 5;
+        this._starsToGetBigger = 0;
         this._transformed = false;
         this._timeTransformed = 0;
         this._transformationTime = 15000;
@@ -193,7 +193,18 @@ export class BasicCharacterController {
         if (this._hitFlag){
           const randomSign = Math.random() < 0.5 ? -1 : 1;
           this._target.rotation.y += (Math.PI / 40) * randomSign;
-          this._target.position.z -= this._hitDirection.z * this._hitIntensity;
+          const newPosition = this._target.position.z - this._hitDirection.z * this._hitIntensity;
+          let isValid = true;
+          for (const b of this._params.world.BoundingBoxes) {
+            const box = new THREE.Box3().setFromObject(b);
+            if (box.containsPoint(new THREE.Vector3(this._target.position.x, this._target.position.y, newPosition))) {
+              isValid = false;
+              break;
+            }
+          }
+          if (isValid) {
+            this._target.position.z = newPosition;
+          }
           this._hitTime = Date.now();
         }
 
