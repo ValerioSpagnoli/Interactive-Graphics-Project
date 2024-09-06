@@ -41,10 +41,10 @@ export class BasicCharacterController {
         this._bigAttackRange = 25;
         this._attackRange = this._normalAttackRange;
         
-        this._starsToGetBigger = 1;
+        this._starsToGetBigger = 5;
         this._transformed = false;
         this._timeTransformed = 0;
-        this._transformationTime = 15000; // 30 seconds
+        this._transformationTime = 15000;
     }
 
     _LoadModels() {
