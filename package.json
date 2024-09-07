@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "cannon-es": "^0.20.0",
+    "gh-pages": "^6.1.1",
     "three": "^0.167.1"
   },
   "devDependencies": {
