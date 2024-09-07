@@ -88,7 +88,8 @@ export class BasicCharacterController {
           loader.load('walk.fbx', (a) => { _OnLoad('walk', a); });
           loader.load('run.fbx', (a) => { _OnLoad('run', a); });
           loader.load('idle.fbx', (a) => { _OnLoad('idle', a); });
-          loader.load('attack.fbx', (a) => { _OnLoad('attack', a); });
+          loader.load('attack_1.fbx', (a) => { _OnLoad('attack_1', a); });
+          loader.load('attack_2.fbx', (a) => { _OnLoad('attack_2', a); });
           loader.load('death.fbx', (a) => { _OnLoad('death', a); });
         });
     }

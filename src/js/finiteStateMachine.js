@@ -43,7 +43,8 @@ export class CharacterFSM extends FiniteStateMachine {
       this._AddState('idle', IdleState);
       this._AddState('walk', WalkState);
       this._AddState('run', RunState);
-      this._AddState('attack', AttackState);
+      this._AddState('attack_1', AttackState_1);
+      this._AddState('attack_2', AttackState_2);
       this._AddState('death', DeathState);
     }
 };
@@ -89,8 +90,11 @@ class IdleState extends State {
     Update(timeElapsed, input) {
       if (input._keys.forward || input._keys.backward) {
         this._parent.SetState('walk');
-      } else if (input._keys.space) {
-        this._parent.SetState('attack');
+      } 
+      else if (input._keys.space) {
+        const randomAttack = Math.random() < 0.5 ? 'attack_1' : 'attack_2';
+        console.log(randomAttack);
+        this._parent.SetState(randomAttack);
       }
     }
 };
@@ -189,17 +193,17 @@ class RunState extends State {
 };
 
 
-class AttackState extends State {
+class AttackState_1 extends State {
     constructor(parent) {
       super(parent);
     }
   
     get Name() {
-      return 'attack';
+      return 'attack_1';
     }
   
     Enter(prevState) {
-      const curAction = this._parent._proxy._animations['attack'].action;
+      const curAction = this._parent._proxy._animations['attack_1'].action;
       if (prevState) {
         const prevAction = this._parent._proxy._animations[prevState.Name].action;
   
@@ -221,12 +225,52 @@ class AttackState extends State {
   
     Update(timeElapsed, input) {
       if (input._keys.space) {
-        this._parent.SetState('attack');
+        this._parent.SetState('attack_1');
       }
       else {
         this._parent.SetState('idle');
       }
     }
+}
+
+class AttackState_2 extends State {
+  constructor(parent) {
+    super(parent);
+  }
+
+  get Name() {
+    return 'attack_2';
+  }
+
+  Enter(prevState) {
+    const curAction = this._parent._proxy._animations['attack_2'].action;
+    if (prevState) {
+      const prevAction = this._parent._proxy._animations[prevState.Name].action;
+
+      curAction.enabled = true;
+
+      curAction.time = 0.0;
+      curAction.setEffectiveTimeScale(1.0);
+      curAction.setEffectiveWeight(1.0);
+
+      curAction.crossFadeFrom(prevAction, 0.5, true);
+      curAction.play();
+    } else {
+      curAction.play();
+    }
+  }
+
+  Exit() {
+  }
+
+  Update(timeElapsed, input) {
+    if (input._keys.space) {
+      this._parent.SetState('attack_2');
+    }
+    else {
+      this._parent.SetState('idle');
+    }
+  }
 }
 
 class DeathState extends State {
