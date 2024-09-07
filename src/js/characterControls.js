@@ -23,10 +23,12 @@ export class BasicCharacterController {
             new BasicCharacterControllerProxy(this._animations)
         );
 
-        this._lastTimeFPressed = 0;
+        this._worldBoundingBoxes = [];
+        for (const b of this._params.world.BoundingBoxes) {
+          this._worldBoundingBoxes.push(b);
+        }
 
         this._LoadModels();
-        this._AddBoundingBox();
 
         this._hitFlag = false;
         this._hitTime = 0;  
@@ -91,18 +93,6 @@ export class BasicCharacterController {
         });
     }
 
-    _AddBoundingBox(){
-      const geometry = new THREE.BoxGeometry(8, 16, 8);
-      const material = new THREE.MeshBasicMaterial({
-          color: 0xff0000,
-          wireframe: true,
-          visible: false,
-      });
-      this._cube = new THREE.Mesh(geometry, material);
-      this._cube.position.set(0, 7, 0);
-      this._params.scene.add(this._cube);
-    }
-
     get Position(){
         return this._position;
     }
@@ -117,18 +107,6 @@ export class BasicCharacterController {
         }
         return this._target.quaternion;
     }   
-
-    get BoundingBox(){
-        return this._cube;
-    }
-
-    get lastTimeFPressed() {
-        return this._lastTimeFPressed;
-    }
-
-    set lastTimeFPressed(value) {
-        this._lastTimeFPressed = value;
-    }
 
     get keyPressed() {
         const keys = this._input._keys;
@@ -180,16 +158,92 @@ export class BasicCharacterController {
         return this._transformationTime;  
     }
 
-    Update(timeInSeconds) {
-        if (!this._stateMachine._currentState) {
-            return;
+    _BoundingBoxCollisionHandler(){
+      this._worldBoundingBoxes.map(b => {
+        const box = new THREE.Box3().setFromObject(b);
+        if (box.containsPoint(this._position)){
+          console.log('collision');
+          return true;
         }
+      });
+      return false;
+    }
+
+    _PlayerMovementHandler(time){ 
+      const velocity = this._velocity;
+      const frameDecceleration = new THREE.Vector3(
+          velocity.x * this._decceleration.x,
+          velocity.y * this._decceleration.y,
+          velocity.z * this._decceleration.z
+      );
+      frameDecceleration.multiplyScalar(time);
+      frameDecceleration.z = Math.sign(frameDecceleration.z) * Math.min(
+          Math.abs(frameDecceleration.z), Math.abs(velocity.z));
+
+      velocity.add(frameDecceleration);
+
+      const player = this._target;
+      const _Q = new THREE.Quaternion();
+      const _A = new THREE.Vector3(); 
+      const _R = player.quaternion.clone();
+
+      const acceleration = this._acceleration.clone();
+      if (this._input._keys.shift) {
+          acceleration.multiplyScalar(3.0);
+      }
+
+      if (this._input._keys.forward) {
+          velocity.z += acceleration.z * time;
+      }
+      if (this._input._keys.backward) {
+          velocity.z -= acceleration.z * time;
+      }
+      if (this._input._keys.left) {
+          _A.set(0, 1, 0);
+          _Q.setFromAxisAngle(_A, 4.0 * Math.PI * time * this._acceleration.y);
+          _R.multiply(_Q);
+      }
+      if (this._input._keys.right) {
+          _A.set(0, 1, 0);
+          _Q.setFromAxisAngle(_A, 4.0 * -Math.PI * time * this._acceleration.y);
+          _R.multiply(_Q);
+      }
+
+      player.quaternion.copy(_R);
+      
+      const oldPosition = new THREE.Vector3();
+      oldPosition.copy(player.position);
+
+      const forward = new THREE.Vector3(0, 0, 1);
+      forward.applyQuaternion(player.quaternion);
+      forward.normalize();
+      forward.multiplyScalar(velocity.z * time);
+      player.position.add(forward);
+
+      const sideways = new THREE.Vector3(1, 0, 0);
+      sideways.applyQuaternion(player.quaternion);
+      sideways.normalize();
+      sideways.multiplyScalar(velocity.x * time);
+      player.position.add(sideways);
+
+      this._worldBoundingBoxes.map(b => {
+        const box = new THREE.Box3().setFromObject(b);
+        if (box.containsPoint(player.position)){
+          player.position.copy(oldPosition);
+        }
+      });
+
+      this._position.copy(player.position);
+      this._previousPosition.copy(oldPosition);
+    }
+
+
+    Update(timeInSeconds) {
+        if (!this._stateMachine._currentState) return;
         this._stateMachine._currentState.Update(timeInSeconds, this._input);
         
-        if (this._params.healthBar.hearts.length === 0) {
-          this._stateMachine.SetState('death');
-        }
-
+        if (this._params.healthBar.hearts.length === 0) this._stateMachine.SetState('death');
+        
         if (this._hitFlag){
           const randomSign = Math.random() < 0.5 ? -1 : 1;
           this._target.rotation.y += (Math.PI / 40) * randomSign;
@@ -239,69 +293,7 @@ export class BasicCharacterController {
           }
         }
 
-        const velocity = this._velocity;
-        const frameDecceleration = new THREE.Vector3(
-            velocity.x * this._decceleration.x,
-            velocity.y * this._decceleration.y,
-            velocity.z * this._decceleration.z
-        );
-        frameDecceleration.multiplyScalar(timeInSeconds);
-        frameDecceleration.z = Math.sign(frameDecceleration.z) * Math.min(
-            Math.abs(frameDecceleration.z), Math.abs(velocity.z));
-
-        velocity.add(frameDecceleration);
-
-        const controlObject = this._target;
-        const _Q = new THREE.Quaternion();
-        const _A = new THREE.Vector3(); 
-        const _R = controlObject.quaternion.clone();
-
-        const acc = this._acceleration.clone();
-        if (this._input._keys.shift) {
-            acc.multiplyScalar(3.0);
-        }
-
-        if (this._input._keys.forward) {
-            velocity.z += acc.z * timeInSeconds;
-        }
-        if (this._input._keys.backward) {
-            velocity.z -= acc.z * timeInSeconds;
-        }
-        if (this._input._keys.left) {
-            _A.set(0, 1, 0);
-            _Q.setFromAxisAngle(_A, 4.0 * Math.PI * timeInSeconds * this._acceleration.y);
-            _R.multiply(_Q);
-        }
-        if (this._input._keys.right) {
-            _A.set(0, 1, 0);
-            _Q.setFromAxisAngle(_A, 4.0 * -Math.PI * timeInSeconds * this._acceleration.y);
-            _R.multiply(_Q);
-        }
-
-        controlObject.quaternion.copy(_R);
-        
-        const oldPosition = new THREE.Vector3();
-        oldPosition.copy(controlObject.position);
-
-        const forward = new THREE.Vector3(0, 0, 1);
-        forward.applyQuaternion(controlObject.quaternion);
-        forward.normalize();
-
-        const sideways = new THREE.Vector3(1, 0, 0);
-        sideways.applyQuaternion(controlObject.quaternion);
-        sideways.normalize();
-
-        sideways.multiplyScalar(velocity.x * timeInSeconds);
-        forward.multiplyScalar(velocity.z * timeInSeconds);
-
-        controlObject.position.add(forward);
-        controlObject.position.add(sideways);
-
-        this._cube.position.copy(controlObject.position);
-        this._cube.position.y = 7;
-
-        this._position.copy(controlObject.position);
-        this._previousPosition.copy(oldPosition);
+        this._PlayerMovementHandler(timeInSeconds);
 
         if (this._mixer) {
             this._mixer.update(timeInSeconds);
@@ -333,7 +325,6 @@ class BasicCharacterControllerInput {
         space: false,
         shift: false,
         ctrl: false,
-        f: false,
       };
       document.addEventListener('keydown', (e) => this._onKeyDown(e), false);
       document.addEventListener('keyup', (e) => this._onKeyUp(e), false);
@@ -362,9 +353,6 @@ class BasicCharacterControllerInput {
         case 17: // CTRL
           this._keys.ctrl = true;
           break
-        case 70: // F
-          this._keys.f = true;
-          break;
       }
     }
   
@@ -390,9 +378,6 @@ class BasicCharacterControllerInput {
           break;
         case 17: // CTRL
           this._keys.ctrl = false;
-          break;
-        case 70: // F
-          this._keys.f = false;
           break;
       }
     }

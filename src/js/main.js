@@ -55,6 +55,7 @@ class Scene {
         this._gameWin = false;
         this._gameWinTime = 0;
         this._blockGame = false;  
+
         this._difficulty = 'medium';
         this._mobAttackTime = {'easy': 1000, 'medium': 500, 'hard': 300};
         this._mobHitsToDamage = {'easy': 4, 'medium': 3, 'hard': 2};
@@ -161,59 +162,41 @@ class Scene {
         this._previousRAF = t;
       });
     }
-  
-    _Step(timeElapsed) {
-      const timeElapsedS = timeElapsed * 0.001;
 
-      if(!this._gui.start.play){
-        this._blockGame = true;
-      }
-      else{
-        this._blockGame = false;
-        this._gui.healthBar.show();
-        this._gui.powerBar.show();
-        this._gui.starCounter.show();
-        this._gui.monsterLifeBar.show();
-        this._gui.transformationTime.show();
-      }
-
-      if (((this._gameOver && (Date.now()-this._gameOverTime)>2000) || (this._gameWin && (Date.now()-this._gameWinTime)>2000))){
-        this._blockGame = true;
-      }
-      
+    _Update(timeElapsed) {
       //* Update mixers
       if (this._mixers && !this._blockGame) {
-        this._mixers.map(m => m.update(timeElapsedS));
+        this._mixers.map(m => m.update(timeElapsed));
       }
   
       //* Update character controls
       if (this._player && !this._blockGame) {
-        this._player.Update(timeElapsedS);
+        this._player.Update(timeElapsed);
       }
 
       //* Update stars 
       if (this._starsSpawner && !this._blockGame) {
-        this._starsSpawner.Update(timeElapsedS);
+        this._starsSpawner.Update(timeElapsed);
       }
       
       //* Update hearts 
       if (this._heartSpawner && !this._blockGame) {
-        this._heartSpawner.Update(timeElapsedS);
+        this._heartSpawner.Update(timeElapsed);
       }
 
       //* Update swords 
       if (this._swordSpawner && !this._blockGame) {
-        this._swordSpawner.Update(timeElapsedS);
+        this._swordSpawner.Update(timeElapsed);
       }
 
       //* Update mobs 
       if (this._mobSpawner && !this._blockGame) {
-        this._mobSpawner.update(timeElapsedS);
+        this._mobSpawner.update(timeElapsed);
       }
 
       //* Update monster
       if (this._monsterSpawner && !this._blockGame) {
-        this._monsterSpawner.update(timeElapsedS);
+        this._monsterSpawner.update(timeElapsed);
       }
 
       //* Update GUI
@@ -224,8 +207,10 @@ class Scene {
         this._difficulty = this._gui.start._difficulty;
       }
 
-      if(!this._blockGame) this._thirdPersonCamera.Update(timeElapsedS);
+      if(!this._blockGame) this._thirdPersonCamera.Update(timeElapsed);
+    }
 
+    _GameOverWinHandler(){
       //* Handle game over
       if (this._gui._healthBar.hearts.length === 0 && !this._gameOver) {
         this._gameOver = true;
@@ -239,7 +224,9 @@ class Scene {
         this._gameWinTime = new Date().getTime();
         this._gui._gameWin.show();
       }
+    }
 
+    _CollectorHandler(){
       //* Handle star collection
       if(!this._player.transformed){
         this._stars = this._starsSpawner.stars;
@@ -277,18 +264,31 @@ class Scene {
           this._gui._powerBar.addSword();
         }
       });
+    }
+  
+    _Step(timeElapsed) {
+      const timeElapsedS = timeElapsed * 0.001;
 
-      //* Handle collision with world bounding boxes
-      this._worldboundingBoxes = this._world.BoundingBoxes;
-      this._playerPosition = this._player.Position;
-      this._characterPreviousPosition = this._player.PreviousPosition;
-      this._worldboundingBoxes.map(b => {
-        const box = new THREE.Box3().setFromObject(b);
-        if (box.containsPoint(this._playerPosition)) {
-          this._player._velocity = new THREE.Vector3(0, 0, 0);
-          this._player._target.position.set(this._characterPreviousPosition.x, this._characterPreviousPosition.y, this._characterPreviousPosition.z);
-        }
-      });
+      if(!this._gui.start.play){
+        this._blockGame = true;
+      }
+      else{
+        this._blockGame = false;
+        this._gui.healthBar.show();
+        this._gui.powerBar.show();
+        this._gui.starCounter.show();
+        this._gui.monsterLifeBar.show();
+        this._gui.transformationTime.show();
+      }
+
+      if (((this._gameOver && (Date.now()-this._gameOverTime)>2000) || (this._gameWin && (Date.now()-this._gameWinTime)>2000))){
+        this._blockGame = true;
+      }
+
+      this._Update(timeElapsedS);
+      this._GameOverWinHandler();
+      this._CollectorHandler();
+      
 
       //* Handle mob attack
       this._mobs = this._mobSpawner.Mobs;
@@ -341,7 +341,7 @@ class Scene {
       if (distanceToMonster > this._monsterAttackRange.min && distanceToMonster < this._monsterAttackRange.max) {
         if ((Date.now() - this._monsterSpawner.MonsterLastHit) > this._monsterAttackTime && this._monsterState === 'attack') {
           this._monsterSpawner.MonsterLastHit = new Date().getTime();
-          this,_currentHitFromMonster += 1;
+          this._currentHitFromMonster += 1;
           this._player.hitFlag = true;
           this._player.hitDirection = this._monsterSpawner.MonsterPosition.clone().sub(this._playerPosition).normalize();
           if(this._player.transformed)this._player.hitIntensity = 1;
