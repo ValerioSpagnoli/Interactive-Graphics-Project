@@ -56,6 +56,7 @@ class Scene {
         this._gameWin = false;
         this._gameWinTime = 0;
         this._blockGame = false;  
+        this._blockGui = false; 
 
         this._difficulty = 'medium';
         this._mobAttackTime = {'easy': 1000, 'medium': 500, 'hard': 300};
@@ -211,7 +212,7 @@ class Scene {
       }
 
       //* Update GUI
-      if (this._gui) {
+      if (this._gui && !this._blockGui) {
         if(!this._gui.start.play){
           this._blockGame = true;
         }
@@ -255,6 +256,7 @@ class Scene {
 
       if (((this._gameOver && (Date.now()-this._gameOverTime)>2000) || (this._gameWin && (Date.now()-this._gameWinTime)>2000))){
         this._blockGame = true;
+        this._blockGui = true;
       }
     }
 
@@ -414,6 +416,7 @@ class Scene {
   
     _Step(timeElapsed) {
       this._Update(timeElapsed * 0.001);
+      if (this._blockGame) return;
       this._GameOverWinHandler();
       this._CollectorHandler();
       this._MobAttackHandler();
