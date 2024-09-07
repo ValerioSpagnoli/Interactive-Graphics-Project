@@ -129,7 +129,7 @@ class Scene {
       this._mobSpawner = new MobSpawner({
         scene: this._scene,
         world: this._world,
-        playerPosition: this._player.Position,
+        playerPosition: this._player.position,
         mobAttackTime: this._mobAttackTime[this._difficulty],
       });
     }
@@ -138,7 +138,7 @@ class Scene {
       this._monsterSpawner = new MonsterSpawner({
         scene: this._scene,
         world: this._world,
-        playerPosition: this._player.Position,
+        playerPosition: this._player.position,
         monsterAttackTime: this._monsterAttackTime[this._difficulty],
       });
     }
@@ -217,7 +217,7 @@ class Scene {
         this._gui.transformationTime.update(this._player.transformed);
         this._gui.start.update();
         this._difficulty = this._gui.start._difficulty;
-        this._gui._monsterLifeBar.monsterLife = this._monsterSpawner.MonsterLife;
+        this._gui._monsterLifeBar.monsterLife = this._monsterSpawner.monsterLife;
 
         if(this._player.transformed) this._gui._transformationTime.time = Math.ceil((this._gui._transformationTime.time = this._player.transformationTime - (Date.now() - this._player.timeTransformed))/1000);
         else this._gui._transformationTime.time = Math.ceil(this._player.transformationTime/1000);
@@ -251,7 +251,7 @@ class Scene {
       //* Handle star collection
       if(!this._player.transformed){
         this._stars = this._starsSpawner.stars;
-        this._playerPosition = this._player.Position;
+        this._playerPosition = this._player.position;
         this._stars.map(s => {
           if (s.position.distanceTo(this._playerPosition) < 8) {
             this._scene.remove(s);
@@ -264,7 +264,7 @@ class Scene {
 
       //* Handle heart collection
       this._hearts = this._heartSpawner.hearts;
-      this._playerPosition = this._player.Position;
+      this._playerPosition = this._player.position;
       this._hearts.map(h => {
         if (h.position.distanceTo(this._playerPosition) < 8) {
           this._scene.remove(h);
@@ -276,7 +276,7 @@ class Scene {
 
       //* Handle sword collection
       this._swords = this._swordSpawner.swords;
-      this._playerPosition = this._player.Position;
+      this._playerPosition = this._player.position;
       this._swords.map(s => {
         if (s.position.distanceTo(this._playerPosition) < 8) {
           this._scene.remove(s);
@@ -289,9 +289,9 @@ class Scene {
 
     _MobAttackHandler(){
       //* Handle mob attack
-      this._mobs = this._mobSpawner.Mobs;
-      this._mobAttackDistance = this._mobSpawner.MobAttackDistance;
-      this._mobAttackTime = this._mobSpawner.MobAttackTime;
+      this._mobs = this._mobSpawner.mobs;
+      this._mobAttackDistance = this._mobSpawner.mobAttackDistance;
+      this._mobAttackTime = this._mobSpawner.mobAttackTime;
       this._player.hitFlag = false; 
       for (const mob of this._mobs) {
         const distanceToPlayer = this._playerPosition.distanceTo(mob.position);
@@ -317,7 +317,7 @@ class Scene {
           const distanceToPlayer = this._playerPosition.distanceTo(mob.position);
 
           const player2MobDir = mob.position.clone().sub(this._playerPosition).normalize();
-          const playerDir = this._player.Position.clone().sub(this._player.PreviousPosition).normalize();
+          const playerDir = this._player.position.clone().sub(this._player.previousPosition).normalize();
           const dot = playerDir.dot(player2MobDir);
           const inFront = dot > 0.5;
 
@@ -331,21 +331,19 @@ class Scene {
 
     _MonsterAttackHandler(){
       //* Handle monster attack
-      
-      if(this._player.transformed) this._monsterSpawner.MonsterDamage = this._monsterDamageTransformed[this._difficulty];
-      else this._monsterSpawner.MonsterDamage = this._monsterDamageNormal[this._difficulty];
-      this._monsterDamage = this._monsterSpawner.MonsterDamage;
-      console.log(this._monsterDamage);
-      this._monsterAttackRange = this._monsterSpawner.MonsterAttackRange;
-      this._monsterAttackTime = this._monsterSpawner.MonsterAttackTime;
-      this._monsterState = this._monsterSpawner.MonsterState;
-      const distanceToMonster = this._playerPosition.distanceTo(this._monsterSpawner.MonsterPosition);
+      if(this._player.transformed) this._monsterSpawner.monsterDamage = this._monsterDamageTransformed[this._difficulty];
+      else this._monsterSpawner.monsterDamage = this._monsterDamageNormal[this._difficulty];
+      this._monsterDamage = this._monsterSpawner.monsterDamage;
+      this._monsterAttackRange = this._monsterSpawner.monsterAttackRange;
+      this._monsterAttackTime = this._monsterSpawner.monsterAttackTime;
+      this._monsterState = this._monsterSpawner.monsterState;
+      const distanceToMonster = this._playerPosition.distanceTo(this._monsterSpawner.monsterPosition);
       if (distanceToMonster > this._monsterAttackRange.min && distanceToMonster < this._monsterAttackRange.max) {
-        if ((Date.now() - this._monsterSpawner.MonsterLastHit) > this._monsterAttackTime && this._monsterState === 'attack') {
-          this._monsterSpawner.MonsterLastHit = new Date().getTime();
+        if ((Date.now() - this._monsterSpawner.monsterLastHit) > this._monsterAttackTime && this._monsterState === 'attack') {
+          this._monsterSpawner.monsterLastHit = new Date().getTime();
           this._currentHitFromMonster += 1;
           this._player.hitFlag = true;
-          this._player.hitDirection = this._monsterSpawner.MonsterPosition.clone().sub(this._playerPosition).normalize();
+          this._player.hitDirection = this._monsterSpawner.monsterPosition.clone().sub(this._playerPosition).normalize();
           if(this._player.transformed)this._player.hitIntensity = 1;
           else this._player.hitIntensity = 3;  
         }
@@ -360,7 +358,7 @@ class Scene {
       //* Handle attacks on monster
       if (this._player._stateMachine._currentState && this._player._stateMachine._currentState.Name === 'attack' && (Date.now() - this._lastAttackTime) > 1000) {
         if (distanceToMonster < this._player.attackRange) {
-          this._monsterSpawner.MonsterLife -= this._player.damage;
+          this._monsterSpawner.monsterLife -= this._player.damage;
           this._lastAttackTime = new Date().getTime();
         }
       }

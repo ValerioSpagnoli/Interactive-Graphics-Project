@@ -9,7 +9,7 @@ export class SwordSpawner {
         this._spawnInterval = 20;
         this._maxSwords = 5;    
         this._worldBoundingBoxes = [];
-        for (const b of this._params.world.BoundingBoxes) {
+        for (const b of this._params.world.boundingBoxes) {
             this._worldBoundingBoxes.push(b);
         }
     }

@@ -7,7 +7,7 @@ export class MobSpawner {
         this._params = params;
         this._mobs = [];
         this._worldBoundingBoxes = [];
-        for (const b of this._params.world.BoundingBoxes) {
+        for (const b of this._params.world.boundingBoxes) {
             this._worldBoundingBoxes.push(b);
         }
         this._playerPosition = this._params.playerPosition;
@@ -20,15 +20,15 @@ export class MobSpawner {
         this._LoadModels();
     }
 
-    get Mobs() {
+    get mobs() {
         return this._mobs;
     }
 
-    get MobAttackDistance() {
+    get mobAttackDistance() {
         return this._mobAttackDistance;
     }
 
-    get MobAttackTime() {
+    get mobAttackTime() {
         return this._mobAttackTime;
     }
 

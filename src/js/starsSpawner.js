@@ -9,7 +9,7 @@ export class StarsSpawner {
         this._spawnInterval = 12;
         this._maxstars = 5;
         this._worldBoundingBoxes = [];
-        for (const b of this._params.world.BoundingBoxes) {
+        for (const b of this._params.world.boundingBoxes) {
             this._worldBoundingBoxes.push(b);
         }
     }

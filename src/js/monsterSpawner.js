@@ -14,7 +14,7 @@ export class MonsterSpawner {
         this._previousPosition = new THREE.Vector3();
 
         this._worldBoundingBoxes = [];
-        for (const b of this._params.world.BoundingBoxes) {
+        for (const b of this._params.world.boundingBoxes) {
             this._worldBoundingBoxes.push(b);
         }
         this._playerPosition = this._params.playerPosition;
@@ -34,43 +34,43 @@ export class MonsterSpawner {
         this._monsterState = 'roar';
     }
 
-    get MonsterAttackRange() {
+    get monsterAttackRange() {
         return this._monsterAttackRange;
     }
 
-    get MonsterAttackTime() {
+    get monsterAttackTime() {
         return this._monsterAttackTime;
     }
 
-    get MonsterDamage() {
+    get monsterDamage() {
         return this._monsterDamage;
     }
 
-    set MonsterDamage(value) {
+    set monsterDamage(value) {
         this._monsterDamage = value;
     }
 
-    get MonsterLife() {
+    get monsterLife() {
         return this._monsterLife;  
     }
 
-    set MonsterLife(value) {
+    set monsterLife(value) {
         this._monsterLife = value;
     }
 
-    get MonsterLastHit() {
+    get monsterLastHit() {
         return this._monsterLastHit;
     }
 
-    set MonsterLastHit(value) {
+    set monsterLastHit(value) {
         this._monsterLastHit = value;
     }
 
-    get MonsterPosition() { 
+    get monsterPosition() { 
         return this._position;
     }
 
-    get MonsterState() {
+    get monsterState() {
         return this._monsterState;
     }
 
@@ -224,14 +224,14 @@ export class MonsterSpawner {
       if(this._timeLastAttack === 0) this._timeLastAttack = Date.now();
       if(this._timeLastRoar === 0) this._timeLastRoar = Date.now();
 
-      if(distanceToPlayer < this.MonsterAttackRange.min){
+      if(distanceToPlayer < this._monsterAttackRange.min){
         this._stateMachine.SetState('walk');
         this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(-0.2);
         this._position.add(this._velocity);
         const angle = Math.atan2(this._playerPosition.x - this._position.x, this._playerPosition.z - this._position.z);
         this._rotation.y = angle;
       }
-      else if(distanceToPlayer > this.MonsterAttackRange.max){
+      else if(distanceToPlayer > this._monsterAttackRange.max){
         this._stateMachine.SetState('walk');
         this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(0.2);
         this._position.add(this._velocity);

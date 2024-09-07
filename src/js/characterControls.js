@@ -24,7 +24,7 @@ export class BasicCharacterController {
         );
 
         this._worldBoundingBoxes = [];
-        for (const b of this._params.world.BoundingBoxes) {
+        for (const b of this._params.world.boundingBoxes) {
           this._worldBoundingBoxes.push(b);
         }
 
@@ -93,15 +93,15 @@ export class BasicCharacterController {
         });
     }
 
-    get Position(){
+    get position(){
         return this._position;
     }
 
-    get PreviousPosition(){
+    get previousPosition(){
         return this._previousPosition;
     }
 
-    get Rotation(){
+    get rotation(){
         if (!this._target) {
             return new THREE.Quaternion();
         }
@@ -236,7 +236,7 @@ export class BasicCharacterController {
         this._target.rotation.y += (Math.PI / 40) * randomSign;
         const newPosition = this._target.position.z - this._hitDirection.z * this._hitIntensity;
         let isValid = true;
-        for (const b of this._params.world.BoundingBoxes) {
+        for (const b of this._params.world.boundingBoxes) {
           const box = new THREE.Box3().setFromObject(b);
           if (box.containsPoint(new THREE.Vector3(this._target.position.x, this._target.position.y, newPosition))) {
             isValid = false;

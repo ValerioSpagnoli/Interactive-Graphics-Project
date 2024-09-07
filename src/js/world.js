@@ -652,7 +652,7 @@ export class World {
 
     }
 
-    get BoundingBoxes() {
+    get boundingBoxes() {
         return this._boundingBoxes;
     }
 }
