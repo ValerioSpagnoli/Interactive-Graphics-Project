@@ -28,8 +28,6 @@ export class BasicCharacterController {
           this._worldBoundingBoxes.push(b);
         }
 
-        this._LoadModels();
-
         this._hitFlag = false;
         this._hitTime = 0;  
         this._hitDirection = new THREE.Vector3(); 
@@ -41,7 +39,7 @@ export class BasicCharacterController {
         this._normalDamage = this._params.powerBar.swords.length;
         this._bigDamage = this._params.powerBar.swords.length*2;
         this._damage = this._normalDamage;
-
+        
         this._normalAttackRange = 10; 
         this._bigAttackRange = 25;
         this._attackRange = this._normalAttackRange;
@@ -50,7 +48,9 @@ export class BasicCharacterController {
         this._transformed = false;
         this._timeTransformed = 0;
         this._transformationTime = 15000;
-    }
+        
+        this._LoadModels();
+      }
 
     _LoadModels() {
         const loader = new FBXLoader();
@@ -158,17 +158,6 @@ export class BasicCharacterController {
         return this._transformationTime;  
     }
 
-    _BoundingBoxCollisionHandler(){
-      this._worldBoundingBoxes.map(b => {
-        const box = new THREE.Box3().setFromObject(b);
-        if (box.containsPoint(this._position)){
-          console.log('collision');
-          return true;
-        }
-      });
-      return false;
-    }
-
     _PlayerMovementHandler(time){ 
       const velocity = this._velocity;
       const frameDecceleration = new THREE.Vector3(
@@ -237,62 +226,70 @@ export class BasicCharacterController {
       this._previousPosition.copy(oldPosition);
     }
 
+    _DeathHandler(){  
+      if (this._params.healthBar.hearts.length === 0) this._stateMachine.SetState('death');
+    }
+
+    _HitHandler(){
+      if (this._hitFlag){
+        const randomSign = Math.random() < 0.5 ? -1 : 1;
+        this._target.rotation.y += (Math.PI / 40) * randomSign;
+        const newPosition = this._target.position.z - this._hitDirection.z * this._hitIntensity;
+        let isValid = true;
+        for (const b of this._params.world.BoundingBoxes) {
+          const box = new THREE.Box3().setFromObject(b);
+          if (box.containsPoint(new THREE.Vector3(this._target.position.x, this._target.position.y, newPosition))) {
+            isValid = false;
+            break;
+          }
+        }
+        if (isValid) {
+          this._target.position.z = newPosition;
+        }
+        this._hitTime = Date.now();
+      }
+    }
+
+    _TransformationHandler(){
+      this._normalDamage = this._params.powerBar.swords.length;
+      this._bigDamage = this._params.powerBar.swords.length*2;
+
+      if (this._params.starCounter.stars >= this._starsToGetBigger && !this._transformed) {
+        this._transformed = true;
+        this._timeTransformed = Date.now();
+        this._params.starCounter.stars = 0;
+        this._target.scale.setScalar(this._bigScale);
+        this._damage = this._bigDamage;
+        this._attackRange = this._bigAttackRange;
+        if (this._params.healthBar.hearts.length < 10) {
+          const numOfHearts = this._params.healthBar.hearts.length;
+          for (let i = 0; i < 10 - numOfHearts; i++) {
+            this._params.healthBar.addHeart();
+          }
+        }
+      }
+
+      if (this._transformed && Date.now() - this._timeTransformed > this._transformationTime) {
+        this._transformed = false;
+        this._timeTransformed = 0;
+        this._target.scale.setScalar(this._normalScale);
+        this._damage = this._normalDamage;
+        this._attackRange = this._normalAttackRange;
+        if(this._params.powerBar.swords.length > 1){
+          for (let i = 0; i < this._params.powerBar.swords.length / 2; i++) {
+            this._params.powerBar.removeSword();
+          }
+        }
+      }
+    }
 
     Update(timeInSeconds) {
         if (!this._stateMachine._currentState) return;
         this._stateMachine._currentState.Update(timeInSeconds, this._input);
         
-        if (this._params.healthBar.hearts.length === 0) this._stateMachine.SetState('death');
-        
-        if (this._hitFlag){
-          const randomSign = Math.random() < 0.5 ? -1 : 1;
-          this._target.rotation.y += (Math.PI / 40) * randomSign;
-          const newPosition = this._target.position.z - this._hitDirection.z * this._hitIntensity;
-          let isValid = true;
-          for (const b of this._params.world.BoundingBoxes) {
-            const box = new THREE.Box3().setFromObject(b);
-            if (box.containsPoint(new THREE.Vector3(this._target.position.x, this._target.position.y, newPosition))) {
-              isValid = false;
-              break;
-            }
-          }
-          if (isValid) {
-            this._target.position.z = newPosition;
-          }
-          this._hitTime = Date.now();
-        }
-
-        this._normalDamage = this._params.powerBar.swords.length;
-        this._bigDamage = this._params.powerBar.swords.length*2;
- 
-        if (this._params.starCounter.stars >= this._starsToGetBigger && !this._transformed) {
-          this._transformed = true;
-          this._timeTransformed = Date.now();
-          this._params.starCounter.stars = 0;
-          this._target.scale.setScalar(this._bigScale);
-          this._damage = this._bigDamage;
-          this._attackRange = this._bigAttackRange;
-          if (this._params.healthBar.hearts.length < 10) {
-            const numOfHearts = this._params.healthBar.hearts.length;
-            for (let i = 0; i < 10 - numOfHearts; i++) {
-              this._params.healthBar.addHeart();
-            }
-          }
-        }
-
-        if (this._transformed && Date.now() - this._timeTransformed > this._transformationTime) {
-          this._transformed = false;
-          this._timeTransformed = 0;
-          this._target.scale.setScalar(this._normalScale);
-          this._damage = this._normalDamage;
-          this._attackRange = this._normalAttackRange;
-          if(this._params.powerBar.swords.length > 1){
-            for (let i = 0; i < this._params.powerBar.swords.length / 2; i++) {
-              this._params.powerBar.removeSword();
-            }
-          }
-        }
-
+        this._DeathHandler();
+        this._HitHandler();
+        this._TransformationHandler();
         this._PlayerMovementHandler(timeInSeconds);
 
         if (this._mixer) {

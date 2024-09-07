@@ -201,12 +201,29 @@ class Scene {
 
       //* Update GUI
       if (this._gui) {
+        if(!this._gui.start.play){
+          this._blockGame = true;
+        }
+        else{
+          this._blockGame = false;
+          this._gui.healthBar.show();
+          this._gui.powerBar.show();
+          this._gui.starCounter.show();
+          this._gui.monsterLifeBar.show();
+          this._gui.transformationTime.show();
+        }
+
         this._gui.monsterLifeBar.update();
         this._gui.transformationTime.update(this._player.transformed);
         this._gui.start.update();
         this._difficulty = this._gui.start._difficulty;
+        this._gui._monsterLifeBar.monsterLife = this._monsterSpawner.MonsterLife;
+
+        if(this._player.transformed) this._gui._transformationTime.time = Math.ceil((this._gui._transformationTime.time = this._player.transformationTime - (Date.now() - this._player.timeTransformed))/1000);
+        else this._gui._transformationTime.time = Math.ceil(this._player.transformationTime/1000);
       }
 
+      //* Update third person camera
       if(!this._blockGame) this._thirdPersonCamera.Update(timeElapsed);
     }
 
@@ -223,6 +240,10 @@ class Scene {
         this._gameWin = true;
         this._gameWinTime = new Date().getTime();
         this._gui._gameWin.show();
+      }
+
+      if (((this._gameOver && (Date.now()-this._gameOverTime)>2000) || (this._gameWin && (Date.now()-this._gameWinTime)>2000))){
+        this._blockGame = true;
       }
     }
 
@@ -265,31 +286,8 @@ class Scene {
         }
       });
     }
-  
-    _Step(timeElapsed) {
-      const timeElapsedS = timeElapsed * 0.001;
 
-      if(!this._gui.start.play){
-        this._blockGame = true;
-      }
-      else{
-        this._blockGame = false;
-        this._gui.healthBar.show();
-        this._gui.powerBar.show();
-        this._gui.starCounter.show();
-        this._gui.monsterLifeBar.show();
-        this._gui.transformationTime.show();
-      }
-
-      if (((this._gameOver && (Date.now()-this._gameOverTime)>2000) || (this._gameWin && (Date.now()-this._gameWinTime)>2000))){
-        this._blockGame = true;
-      }
-
-      this._Update(timeElapsedS);
-      this._GameOverWinHandler();
-      this._CollectorHandler();
-      
-
+    _MobAttackHandler(){
       //* Handle mob attack
       this._mobs = this._mobSpawner.Mobs;
       this._mobAttackDistance = this._mobSpawner.MobAttackDistance;
@@ -329,11 +327,15 @@ class Scene {
           }
         }
       }
+    }
 
+    _MonsterAttackHandler(){
       //* Handle monster attack
+      
       if(this._player.transformed) this._monsterSpawner.MonsterDamage = this._monsterDamageTransformed[this._difficulty];
       else this._monsterSpawner.MonsterDamage = this._monsterDamageNormal[this._difficulty];
       this._monsterDamage = this._monsterSpawner.MonsterDamage;
+      console.log(this._monsterDamage);
       this._monsterAttackRange = this._monsterSpawner.MonsterAttackRange;
       this._monsterAttackTime = this._monsterSpawner.MonsterAttackTime;
       this._monsterState = this._monsterSpawner.MonsterState;
@@ -346,9 +348,6 @@ class Scene {
           this._player.hitDirection = this._monsterSpawner.MonsterPosition.clone().sub(this._playerPosition).normalize();
           if(this._player.transformed)this._player.hitIntensity = 1;
           else this._player.hitIntensity = 3;  
-          for (let i = 0; i < this._monsterDamage; i++) {
-            this._gui._healthBar.removeHeart();
-          }
         }
       } 
       if(this._currentHitFromMonster === this._monsterHitsToDamage[this._difficulty]){
@@ -365,17 +364,14 @@ class Scene {
           this._lastAttackTime = new Date().getTime();
         }
       }
-
-      //* Handle monster death
-      this._gui._monsterLifeBar.monsterLife = this._monsterSpawner.MonsterLife;
-
-      //* Handle transformation time
-      if(this._player.transformed){
-        this._gui._transformationTime.time = Math.ceil((this._gui._transformationTime.time = this._player.transformationTime - (Date.now() - this._player.timeTransformed))/1000);
-      } 
-      else{
-        this._gui._transformationTime.time = Math.ceil(this._player.transformationTime/1000);
-      } 
+    }
+  
+    _Step(timeElapsed) {
+      this._Update(timeElapsed * 0.001);
+      this._GameOverWinHandler();
+      this._CollectorHandler();
+      this._MobAttackHandler();
+      this._MonsterAttackHandler();
     }
 }
 
