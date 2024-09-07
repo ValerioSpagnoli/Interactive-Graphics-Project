@@ -338,7 +338,6 @@ class Start {
         }
         this._start.appendChild(button);
 
-        // add a choice for the player to choose the difficulty of the game as a radio button with 3 options
         const difficulty = document.createElement('div');
         difficulty.style.position = 'absolute';
         difficulty.style.left = '50%';
