@@ -44,7 +44,7 @@ export class BasicCharacterController {
         this._bigAttackRange = 25;
         this._attackRange = this._normalAttackRange;
         
-        this._starsToGetBigger = 5;
+        this._starsToGetBigger = 0;
         this._transformed = false;
         this._timeTransformed = 0;
         this._transformationTime = 15000;
