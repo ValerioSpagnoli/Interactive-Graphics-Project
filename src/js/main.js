@@ -52,6 +52,25 @@ class Scene {
         this._mixers = [];
         this._previousRAF = null;
         
+        
+        this._currentCollectedStars = 0;
+        this._currentHitFromMobs = 0;
+        this._currentHitFromMonster = 0;
+        this._lastAttackTime = 0; 
+
+        this._gameOver = false;
+        this._gameOverTime = 0;
+        this._gameWin = false;
+        this._gameWinTime = 0;
+        this._blockGame = false;  
+        this._difficulty = 'medium';
+        this._mobAttackTime = {'easy': 1000, 'medium': 500, 'hard': 300};
+        this._mobHitsToDamage = {'easy': 4, 'medium': 3, 'hard': 2};
+        this._monsterAttackTime = {'easy': 1100, 'medium': 600, 'hard': 400};
+        this._monsterHitsToDamage = {'easy': 2, 'medium': 1, 'hard': 1};
+        this._monsterDamageNormal = {'easy': 2, 'medium': 2, 'hard': 3};
+        this._monsterDamageTransformed = {'easy': 1, 'medium': 1, 'hard': 2};
+
         this._LoadWorld();
         this._LoadGUI();
         this._LoadStars();
@@ -61,16 +80,6 @@ class Scene {
         this._LoadMobs();
         this._LoadMonster();
         this._RAF();
-
-        this._currentCollectedStars = 0;
-        this._currentHitFromMobs = 0;
-        this._lastAttackTime = 0; 
-
-        this._gameOver = false;
-        this._gameOverTime = 0;
-        this._gameWin = false;
-        this._gameWinTime = 0;
-        this._blockGame = false;  
     }
   
     _LoadWorld(){
@@ -128,6 +137,7 @@ class Scene {
         scene: this._scene,
         world: this._world,
         playerPosition: this._player.Position,
+        mobAttackTime: this._mobAttackTime[this._difficulty],
       });
     }
 
@@ -136,6 +146,7 @@ class Scene {
         scene: this._scene,
         world: this._world,
         playerPosition: this._player.Position,
+        monsterAttackTime: this._monsterAttackTime[this._difficulty],
       });
     }
 
@@ -215,9 +226,11 @@ class Scene {
       }
 
       //* Update GUI
-      if (this._gui && !this._blockGame) {
-        this._gui._monsterLifeBar.update();
-        this._gui._transformationTime.update();
+      if (this._gui) {
+        this._gui.monsterLifeBar.update();
+        this._gui.transformationTime.update();
+        this._gui.start.update();
+        this._difficulty = this._gui.start._difficulty;
       }
 
       //* Switch between orbit controls and third person camera
@@ -317,7 +330,7 @@ class Scene {
           this._currentHitFromMobs += 1;
         }
       }
-      if(this._currentHitFromMobs === 3){
+      if(this._currentHitFromMobs === this._mobHitsToDamage[this._difficulty]){
         this._gui._healthBar.removeHeart();
         this._currentHitFromMobs = 0;
       }
@@ -342,8 +355,8 @@ class Scene {
       }
 
       //* Handle monster attack
-      if(this._player.transformed) this._monsterSpawner.MonsterDamage = 1;
-      else this._monsterSpawner.MonsterDamage = 2;
+      if(this._player.transformed) this._monsterSpawner.MonsterDamage = this._monsterDamageTransformed[this._difficulty];
+      else this._monsterSpawner.MonsterDamage = this._monsterDamageNormal[this._difficulty];
       this._monsterDamage = this._monsterSpawner.MonsterDamage;
       this._monsterAttackRange = this._monsterSpawner.MonsterAttackRange;
       this._monsterAttackTime = this._monsterSpawner.MonsterAttackTime;
@@ -352,6 +365,7 @@ class Scene {
       if (distanceToMonster > this._monsterAttackRange.min && distanceToMonster < this._monsterAttackRange.max) {
         if ((Date.now() - this._monsterSpawner.MonsterLastHit) > this._monsterAttackTime && this._monsterState === 'attack') {
           this._monsterSpawner.MonsterLastHit = new Date().getTime();
+          this,_currentHitFromMonster += 1;
           this._player.hitFlag = true;
           this._player.hitDirection = this._monsterSpawner.MonsterPosition.clone().sub(this._playerPosition).normalize();
           if(this._player.transformed)this._player.hitIntensity = 1;
@@ -361,6 +375,12 @@ class Scene {
           }
         }
       } 
+      if(this._currentHitFromMonster === this._monsterHitsToDamage[this._difficulty]){
+        for (let i = 0; i < this._monsterDamage; i++) {
+          this._gui._healthBar.removeHeart();
+        }
+        this._currentHitFromMonster = 0;
+      }
 
       //* Handle attacks on monster
       if (this._player._stateMachine._currentState && this._player._stateMachine._currentState.Name === 'attack' && (Date.now() - this._lastAttackTime) > 1000) {

@@ -291,7 +291,7 @@ class Start {
         this._start = document.createElement('div');
         this._start.style.position = 'absolute';
         this._start.style.left = '50%';
-        this._start.style.top = '30%';
+        this._start.style.top = '25%';
         this._start.style.transform = 'translate(-50%, -50%)';
         this._start.style.color = 'white';
         this._start.style.fontSize = '300px';
@@ -338,6 +338,105 @@ class Start {
         }
         this._start.appendChild(button);
 
+        // add a choice for the player to choose the difficulty of the game as a radio button with 3 options
+        const difficulty = document.createElement('div');
+        difficulty.style.position = 'absolute';
+        difficulty.style.left = '50%';
+        difficulty.style.top = '350%';
+        difficulty.style.transform = 'translate(-50%, -50%)';
+        difficulty.style.color = 'white';
+        difficulty.style.fontSize = '70px';
+        difficulty.style.fontFamily = 'Handjet';
+        difficulty.innerHTML = 'Choose the difficulty';
+        this._start.appendChild(difficulty);
+
+        const easy = document.createElement('input');
+        easy.type = 'radio';
+        easy.name = 'difficulty';
+        easy.value = 'easy';
+        easy.checked = false;
+        easy.style.width = '40px';
+        easy.style.height = '40px';
+        easy.style.margin = '40 40px';
+        easy.style.position = 'absolute';
+        easy.style.left = '30%';
+        easy.style.top = '380%';
+        easy.style.transform = 'translate(-50%, -50%)';   
+        easy.style.appearance = 'none';
+        easy.style.border = 'solid 5px rgba(0, 0, 155, 0.5)';
+        easy.style.backgroundColor = 'rgba(150, 150, 150, 0.5)';
+        easy.style.borderRadius = '10px';
+        this._start.appendChild(easy);
+
+        const easyLabel = document.createElement('label');
+        easyLabel.innerHTML = 'Easy';
+        easyLabel.style.color = 'white';
+        easyLabel.style.fontSize = '60px';
+        easyLabel.style.fontFamily = 'Handjet';
+        easyLabel.style.position = 'absolute';
+        easyLabel.style.left = '35%';
+        easyLabel.style.top = '380%';
+        easyLabel.style.transform = 'translate(-50%, -50%)';
+        this._start.appendChild(easyLabel);
+
+        const medium = document.createElement('input');
+        medium.type = 'radio';
+        medium.name = 'difficulty';
+        medium.value = 'medium';
+        medium.checked = true;  
+        medium.style.width = '40px';
+        medium.style.height = '40px';
+        medium.style.margin = '40 40px';
+        medium.style.position = 'absolute';
+        medium.style.left = '45%';
+        medium.style.top = '380%';
+        medium.style.transform = 'translate(-50%, -50%)';
+        medium.style.appearance = 'none';
+        medium.style.border = 'solid 5px rgba(0, 0, 155, 0.5)';
+        medium.style.backgroundColor = 'rgba(0, 0, 155, 0.5)';
+        medium.style.borderRadius = '10px';
+        this._start.appendChild(medium);
+
+        const mediumLabel = document.createElement('label');
+        mediumLabel.innerHTML = 'Medium';
+        mediumLabel.style.color = 'white';
+        mediumLabel.style.fontSize = '60px';
+        mediumLabel.style.fontFamily = 'Handjet';
+        mediumLabel.style.position = 'absolute';
+        mediumLabel.style.left = '52%';
+        mediumLabel.style.top = '380%';
+        mediumLabel.style.transform = 'translate(-50%, -50%)';
+        this._start.appendChild(mediumLabel);
+
+        const hard = document.createElement('input');
+        hard.type = 'radio';
+        hard.name = 'difficulty';
+        hard.value = 'hard';
+        hard.checked = false;
+        hard.style.width = '40px';
+        hard.style.height = '40px';
+        hard.style.margin = '40 40px';
+        hard.style.position = 'absolute';
+        hard.style.left = '63%';
+        hard.style.top = '380%';
+        hard.style.transform = 'translate(-50%, -50%)';
+        hard.style.appearance = 'none';
+        hard.style.border = 'solid 5px rgba(0, 0, 155, 0.5)';
+        hard.style.backgroundColor = 'rgba(150, 150, 150, 0.5)';
+        hard.style.borderRadius = '10px';
+        this._start.appendChild(hard);
+
+        const hardLabel = document.createElement('label');
+        hardLabel.innerHTML = 'Hard';
+        hardLabel.style.color = 'white';
+        hardLabel.style.fontSize = '60px';
+        hardLabel.style.fontFamily = 'Handjet';
+        hardLabel.style.position = 'absolute';
+        hardLabel.style.left = '68%';
+        hardLabel.style.top = '380%';
+        hardLabel.style.transform = 'translate(-50%, -50%)';
+        this._start.appendChild(hardLabel);
+
         const explanation = document.createElement('div');
         explanation.style.position = 'absolute';
         explanation.style.left = '50%';
@@ -358,6 +457,7 @@ class Start {
         document.body.appendChild(this._start);
 
         this._play = false;
+        this._difficulty = 'medium';
     }
 
     show() {
@@ -372,12 +472,45 @@ class Start {
         this._layer.style.display = 'none';
     }
 
+    update(){
+        const easy = document.querySelector('input[value="easy"]');
+        const medium = document.querySelector('input[value="medium"]');
+        const hard = document.querySelector('input[value="hard"]');
+        if(easy.checked){
+            easy.style.backgroundColor = 'rgba(250, 250, 250, 0.8)';
+            easy.style.border = 'solid 6px rgba(0, 0, 155, 0.8)';
+            medium.style.backgroundColor = 'rgba(150, 150, 150, 0.5)';
+            medium.style.border = 'solid 5px rgba(0, 0, 155, 0.5)';
+            hard.style.backgroundColor = 'rgba(150, 150, 150, 0.5)';
+            hard.style.border = 'solid 5px rgba(0, 0, 155, 0.5)';
+        } else if(medium.checked){
+            easy.style.backgroundColor = 'rgba(150, 150, 150, 0.5)';
+            easy.style.border = 'solid 5px rgba(0, 0, 155, 0.5)';
+            medium.style.backgroundColor = 'rgba(250, 250, 250, 0.8)';
+            medium.style.border = 'solid 6px rgba(0, 0, 155, 0.8)';
+            hard.style.backgroundColor = 'rgba(150, 150, 150, 0.5)';
+            hard.style.border = 'solid 5px rgba(0, 0, 155, 0.5)';
+        } else {
+            easy.style.backgroundColor = 'rgba(150, 150, 150, 0.5)';
+            easy.style.border = 'solid 5px rgba(0, 0, 155, 0.5)';
+            medium.style.backgroundColor = 'rgba(150, 150, 150, 0.5)';
+            medium.style.border = 'solid 5px rgba(0, 0, 155, 0.5)';
+            hard.style.backgroundColor = 'rgba(250, 250, 250, 0.8)';
+            hard.style.border = 'solid 6px rgba(0, 0, 155, 0.8)';
+        }
+        this._difficulty = document.querySelector('input[name="difficulty"]:checked').value;
+    }
+
     get play() {
         return this._play;
     }
 
     set play(value) {
         this._play = value;
+    }
+
+    get difficulty() {
+        return this._difficulty;
     }
 }
 
