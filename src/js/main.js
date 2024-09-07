@@ -236,7 +236,7 @@ class Scene {
       }
 
       //* Handle game win
-      if (this._monsterSpawner.MonsterState === 'death' && !this._gameWin) {
+      if (this._monsterSpawner.monsterState === 'death' && !this._gameWin) {
         this._gameWin = true;
         this._gameWinTime = new Date().getTime();
         this._gui._gameWin.show();
