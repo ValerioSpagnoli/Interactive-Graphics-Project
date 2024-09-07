@@ -1,7 +1,7 @@
 # Kill the Monster
 
 <p align="center">
-<img src="media/kill_the_monster.png" alt="drawing" width="500"/>
+<img src="media/kill_the_monster.png" alt="drawing" width="700"/>
 </p>
 
 This game has been developed in ```three.js``` as final project of the exam Interactive Graphics.
