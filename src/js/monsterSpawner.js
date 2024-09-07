@@ -140,14 +140,14 @@ export class MonsterSpawner {
         this._params.scene.add(cube_1);
         this._worldBoundingBoxes.push(cube_1);
 
-        const insideTowers_box = new THREE.BoxGeometry(230, 50, 150);
+        const insideTowers_box = new THREE.BoxGeometry(201, 50, 100);
         const insideTowers_mat = new THREE.MeshBasicMaterial({
             color: 0x00ff00,
             wireframe: true,
             visible: false,
         });
         this._insideTowers = new THREE.Mesh(insideTowers_box, insideTowers_mat);
-        this._insideTowers.position.set(0, 25, -130);
+        this._insideTowers.position.set(1, 25, -145);
         this._params.scene.add(this._insideTowers);
     }
 
