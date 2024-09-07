@@ -591,7 +591,12 @@ class TransformationTime {
         this._time = value;
     }
 
-    update(){
+    update(transformed){
+        if(!transformed){
+            this._timer.style.display = 'none';
+            return;
+        }
+        this._timer.style.display = 'block';
         this._timer.innerHTML = `${this._time} s`;
     }
 

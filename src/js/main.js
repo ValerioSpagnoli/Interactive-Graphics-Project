@@ -1,6 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import { World } from './world';
 import { GUI } from './gui';
@@ -39,19 +37,13 @@ class Scene {
         const near = 1.0;
         const far = 1000.0;
         this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-        //this._camera.position.set(0, 0, 0);
-        this._camera.position.set(0, 250, 300);
+        this._camera.position.set(150, 200, 300);
+        this._camera.lookAt(new THREE.Vector3(-44, 0, -100));
     
         this._scene = new THREE.Scene();
-    
-        this._orbitControls = new OrbitControls(this._camera, this._threejs.domElement);
-        this._orbitControls.target.set(0, 0, 0);
-        this._orbitControls.update();
-        this._orbitControls.enabled = true;
 
         this._mixers = [];
         this._previousRAF = null;
-        
         
         this._currentCollectedStars = 0;
         this._currentHitFromMobs = 0;
@@ -178,7 +170,6 @@ class Scene {
       }
       else{
         this._blockGame = false;
-        this._orbitControls.enabled = false;
         this._gui.healthBar.show();
         this._gui.powerBar.show();
         this._gui.starCounter.show();
@@ -228,27 +219,12 @@ class Scene {
       //* Update GUI
       if (this._gui) {
         this._gui.monsterLifeBar.update();
-        this._gui.transformationTime.update();
+        this._gui.transformationTime.update(this._player.transformed);
         this._gui.start.update();
         this._difficulty = this._gui.start._difficulty;
       }
 
-      //* Switch between orbit controls and third person camera
-      const lastTimeFPressed = this._player._lastTimeFPressed;
-      const currentTime = new Date().getTime();
-      const timeDiff = currentTime - lastTimeFPressed;
-      if (this._player._input._keys.f && timeDiff > 500) {
-        this._orbitControls.enabled = !this._orbitControls.enabled;
-        this._player._lastTimeFPressed = currentTime
-
-        if (this._orbitControls.enabled) {
-          this._orbitControls.target = this._thirdPersonCamera._params.target.Position;
-          this._orbitControls.object.position.copy(this._thirdPersonCamera._currentPosition);
-          this._orbitControls.object.lookAt(this._player.Position);
-        }
-      }
-      if(this._orbitControls.enabled) this._orbitControls.update();
-      else this._thirdPersonCamera.Update(timeElapsedS);
+      if(!this._blockGame) this._thirdPersonCamera.Update(timeElapsedS);
 
       //* Handle game over
       if (this._gui._healthBar.hearts.length === 0 && !this._gameOver) {
