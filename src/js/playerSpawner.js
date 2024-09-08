@@ -4,7 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { CharacterFSM } from './finiteStateMachine';
 
 
-export class BasicCharacterController {
+export class PlayerSpawner {
     constructor (params) {
         this._Init(params);
     }
@@ -18,9 +18,9 @@ export class BasicCharacterController {
         this._previousPosition = new THREE.Vector3();
 
         this._animations = {};
-        this._input = new BasicCharacterControllerInput();
+        this._input = new PlayerSpawnerInput();
         this._stateMachine = new CharacterFSM(
-            new BasicCharacterControllerProxy(this._animations)
+            new PlayerSpawnerProxy(this._animations)
         );
 
         this._worldBoundingBoxes = [];
@@ -306,7 +306,7 @@ export class BasicCharacterController {
     }
 }
 
-class BasicCharacterControllerProxy {
+class PlayerSpawnerProxy {
     constructor (animations) {
         this._animations = animations;
     }
@@ -316,7 +316,7 @@ class BasicCharacterControllerProxy {
     }
 }
 
-class BasicCharacterControllerInput {
+class PlayerSpawnerInput {
     constructor() {
       this._Init();    
     }

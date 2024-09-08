@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import { World } from './world';
 import { GUI } from './gui';
-import { BasicCharacterController } from './characterControls';
+import { PlayerSpawner } from './playerSpawner';
 import { ThirdPersonCamera } from './thirdPersonCamera';
 import { StarsSpawner } from './starsSpawner';
 import { HeartSpawner } from './heartSpawner';
@@ -103,7 +103,7 @@ class Scene {
         powerBar: this._gui._powerBar,
         starCounter: this._gui._starCounter,
       }
-      this._player = new BasicCharacterController(params);
+      this._player = new PlayerSpawner(params);
   
       this._thirdPersonCamera = new ThirdPersonCamera({
         camera: this._camera,

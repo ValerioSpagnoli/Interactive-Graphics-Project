@@ -7,7 +7,7 @@ export class MonsterSpawner {
         this._params = params;
         this._animations = {};
         this._stateMachine = new CharacterFSM(
-            new BasicCharacterControllerProxy(this._animations)
+            new PlayerSpawnerProxy(this._animations)
         );
         this._velocity = new THREE.Vector3();  
         this._position = new THREE.Vector3();
@@ -261,7 +261,7 @@ export class MonsterSpawner {
     }
 }
 
-class BasicCharacterControllerProxy {
+class PlayerSpawnerProxy {
     constructor (animations) {
         this._animations = animations;
     }
