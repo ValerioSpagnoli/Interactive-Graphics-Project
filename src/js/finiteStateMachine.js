@@ -93,7 +93,6 @@ class IdleState extends State {
       } 
       else if (input._keys.space) {
         const randomAttack = Math.random() < 0.5 ? 'attack_1' : 'attack_2';
-        console.log(randomAttack);
         this._parent.SetState(randomAttack);
       }
     }

@@ -397,7 +397,7 @@ class Scene {
       }
 
       //* Handle attacks on monster
-      if (this._player._stateMachine._currentState && this._player._stateMachine._currentState.Name === 'attack' && (Date.now() - this._lastAttackTime) > 1000) {
+      if (this._player._stateMachine._currentState && (this._player._stateMachine._currentState.Name === 'attack_1' || this._player._stateMachine._currentState.Name === 'attack_2') && (Date.now() - this._lastAttackTime) > 1000) {
         if (distanceToMonster < this._player.attackRange) {
           this._monsterSpawner.monsterLife -= this._player.damage;
           this._lastAttackTime = new Date().getTime();
