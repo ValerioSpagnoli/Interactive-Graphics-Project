@@ -61,7 +61,7 @@ export class BasicCharacterController {
             c.castShadow = true;
           });
           fbx.position.set(0, 0, 190);
-          fbx.rotation.y = Math.PI;
+          fbx.rotation.y = 0;
           
           this._target = fbx;
           this._params.scene.add(this._target);
@@ -108,6 +108,13 @@ export class BasicCharacterController {
         }
         return this._target.quaternion;
     }   
+
+    set rotation(value){
+        if (!this._target) {
+            return;
+        }
+        this._target.quaternion.copy(value);
+    }
 
     get keyPressed() {
         const keys = this._input._keys;

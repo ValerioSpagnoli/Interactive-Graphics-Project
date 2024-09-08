@@ -217,6 +217,7 @@ class Scene {
           this._blockGame = true;
         }
         else{
+          if(this._blockGame) this._player.rotation = new THREE.Quaternion(0, 1, 0, 0);
           this._blockGame = false;
           this._gui.healthBar.show();
           this._gui.powerBar.show();
