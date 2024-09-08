@@ -162,13 +162,17 @@ export class MobSpawner {
         } 
         else {
             mobVelocity.copy(playerPosition).sub(mobPosition).normalize().multiplyScalar(0.1);
-            mobPosition.add(mobVelocity);
             const angle = Math.atan2(mobVelocity.x, mobVelocity.z);
             mob.mob.rotation.y = angle;
-
-            if (distanceToPlayer < this._mobAttackDistance) {
-                mob.currentAction.stop();
+            
+            for (const b of this._worldBoundingBoxes) {
+                const box = new THREE.Box3().setFromObject(b);
+                if (box.containsPoint(mobPosition)) {
+                    mobVelocity.set(-mobVelocity.x, 0, -mobVelocity.z);
+                    mobVelocity.normalize().multiplyScalar(0.1);
+                }
             }
+            mobPosition.add(mobVelocity);
     
             if (mob.currentAction !== mob.walk) {
                 mob.currentAction.stop();
