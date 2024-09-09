@@ -36,6 +36,7 @@ export class CharacterFSM extends FiniteStateMachine {
     constructor(animations) {
       super();
       this._animations = animations;
+      this._playerLife = 10;
       this._Init();
     }
   
@@ -46,6 +47,14 @@ export class CharacterFSM extends FiniteStateMachine {
       this._AddState('attack_1', AttackState_1);
       this._AddState('attack_2', AttackState_2);
       this._AddState('death', DeathState);
+    }
+
+    get playerLife() {
+      return this._playerLife;
+    }
+
+    set playerLife(value) {
+      this._playerLife = value;
     }
 };
 
@@ -88,12 +97,17 @@ class IdleState extends State {
     }
   
     Update(timeElapsed, input) {
-      if (input._keys.forward || input._keys.backward) {
-        this._parent.SetState('walk');
-      } 
-      else if (input._keys.space) {
-        const randomAttack = Math.random() < 0.5 ? 'attack_1' : 'attack_2';
-        this._parent.SetState(randomAttack);
+      if(this._parent.playerLife <= 0) {
+        this._parent.SetState('death');
+      }
+      else{
+        if (input._keys.forward || input._keys.backward) {
+          this._parent.SetState('walk');
+        } 
+        else if (input._keys.space) {
+          const randomAttack = Math.random() < 0.5 ? 'attack_1' : 'attack_2';
+          this._parent.SetState(randomAttack);
+        }
       }
     }
 };
@@ -134,14 +148,20 @@ class WalkState extends State {
     }
   
     Update(timeElapsed, input) {
-      if (input._keys.forward || input._keys.backward) {
-        if (input._keys.shift) {
-          this._parent.SetState('run');
-        }
-        return;
+      if(this._parent.playerLife <= 0) {
+        this._parent.SetState('death');
       }
-  
-      this._parent.SetState('idle');
+      else{
+        if (input._keys.forward || input._keys.backward) {
+          if (input._keys.shift) {
+            this._parent.SetState('run');
+          }
+          return;
+        }
+        else{
+          this._parent.SetState('idle');
+        }
+      }
     }
 };
 
@@ -181,13 +201,20 @@ class RunState extends State {
     }
   
     Update(timeElapsed, input) {
-      if (input._keys.forward || input._keys.backward) {
-        if (!input._keys.shift) {
-          this._parent.SetState('walk');
-        }
-        return;
+      if(this._parent.playerLife <= 0) {
+        this._parent.SetState('death');
       }
-      this._parent.SetState('idle');
+      else{
+        if (input._keys.forward || input._keys.backward) {
+          if (!input._keys.shift) {
+            this._parent.SetState('walk');
+          }
+          return;
+        }
+        else{
+          this._parent.SetState('idle');
+        }
+      }
     }
 };
 
@@ -223,11 +250,16 @@ class AttackState_1 extends State {
     }
   
     Update(timeElapsed, input) {
-      if (input._keys.space) {
-        this._parent.SetState('attack_1');
+      if(this._parent.playerLife <= 0) {
+        this._parent.SetState('death');
       }
-      else {
-        this._parent.SetState('idle');
+      else{
+        if (input._keys.space) {
+          this._parent.SetState('attack_1');
+        }
+        else {
+          this._parent.SetState('idle');
+        }
       }
     }
 }
@@ -263,11 +295,16 @@ class AttackState_2 extends State {
   }
 
   Update(timeElapsed, input) {
-    if (input._keys.space) {
-      this._parent.SetState('attack_2');
+    if(this._parent.playerLife <= 0) {
+      this._parent.SetState('death');
     }
-    else {
-      this._parent.SetState('idle');
+    else{
+      if (input._keys.space) {
+        this._parent.SetState('attack_2');
+      }
+      else {
+        this._parent.SetState('idle');
+      }
     }
   }
 }
@@ -303,5 +340,6 @@ class DeathState extends State {
     }
   
     Update(timeElapsed, input) {
+      this._parent.SetState('death');
     }
 }

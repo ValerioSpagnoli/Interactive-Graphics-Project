@@ -64,6 +64,79 @@ export class PlayerSpawner {
         this._LoadModels();
       }
 
+      
+      get position(){
+        return this._position;
+    }
+
+    get previousPosition(){
+        return this._previousPosition;
+    }
+
+    get rotation(){
+        if (!this._target) {
+            return new THREE.Quaternion();
+        }
+        return this._target.quaternion;
+    }   
+
+    set rotation(value){
+        if (!this._target) {
+            return;
+        }
+        this._target.quaternion.copy(value);
+      }
+
+    get keyPressed() {
+        const keys = this._input._keys;
+        const keyPressed = {'w': keys.forward, 'a': keys.left, 's': keys.backward, 'd': keys.right, 'shift': keys.shift, 'space': keys.space};
+        return keyPressed;
+      }
+
+      get hitFlag() {
+        return this._hitFlag;
+      }
+      
+      set hitFlag(value) {
+        this._hitFlag = value;
+      }
+      
+      get hitDirection() {
+        return this._hitDirection;
+    }
+    
+    set hitDirection(value) {
+      this._hitDirection = value;
+    }
+    
+    get hitIntensity() {
+      return this._hitIntensity;
+    }
+    
+    set hitIntensity(value) {
+      this._hitIntensity = value;
+    }
+    
+    get damage() {
+      return this._damage;
+    }
+
+    get attackRange() {
+        return this._attackRange;
+      }
+      
+      get transformed() {
+        return this._transformed;
+    }
+
+    get timeTransformed() {
+      return this._timeTransformed;
+    }
+    
+    get transformationTime() {
+      return this._transformationTime;  
+    }
+    
     _LoadModels() {
         const loader = new FBXLoader();
         loader.setPath('./models/knight/');
@@ -106,83 +179,11 @@ export class PlayerSpawner {
         });
     }
 
-    get position(){
-        return this._position;
-    }
-
-    get previousPosition(){
-        return this._previousPosition;
-    }
-
-    get rotation(){
-        if (!this._target) {
-            return new THREE.Quaternion();
-        }
-        return this._target.quaternion;
-    }   
-
-    set rotation(value){
-        if (!this._target) {
-            return;
-        }
-        this._target.quaternion.copy(value);
-    }
-
-    get keyPressed() {
-        const keys = this._input._keys;
-        const keyPressed = {'w': keys.forward, 'a': keys.left, 's': keys.backward, 'd': keys.right, 'shift': keys.shift, 'space': keys.space};
-        return keyPressed;
-    }
-
-    get hitFlag() {
-        return this._hitFlag;
-    }
-
-    set hitFlag(value) {
-        this._hitFlag = value;
-    }
-
-    get hitDirection() {
-        return this._hitDirection;
-    }
-
-    set hitDirection(value) {
-        this._hitDirection = value;
-    }
-
-    get hitIntensity() {
-        return this._hitIntensity;
-    }
-
-    set hitIntensity(value) {
-        this._hitIntensity = value;
-    }
-
-    get damage() {
-        return this._damage;
-    }
-
-    get attackRange() {
-        return this._attackRange;
-    }
-
-    get transformed() {
-        return this._transformed;
-    }
-
-    get timeTransformed() {
-        return this._timeTransformed;
-    }
-
-    get transformationTime() {
-        return this._transformationTime;  
-    }
-
     _PlayerMovementHandler(time){ 
       const velocity = this._velocity;
       const frameDecceleration = new THREE.Vector3(
-          velocity.x * this._decceleration.x,
-          velocity.y * this._decceleration.y,
+        velocity.x * this._decceleration.x,
+        velocity.y * this._decceleration.y,
           velocity.z * this._decceleration.z
       );
       frameDecceleration.multiplyScalar(time);
@@ -246,9 +247,9 @@ export class PlayerSpawner {
       this._previousPosition.copy(oldPosition);
     }
 
-    _DeathHandler(){  
-      if (this._params.healthBar.hearts.length === 0) this._stateMachine.SetState('death');
-    }
+    // _DeathHandler(){  
+    //   if (this._params.healthBar.hearts.length === 0) this._stateMachine.SetState('death');
+    // }
 
     _HitHandler(){
       if (this._hitFlag){
@@ -309,10 +310,11 @@ export class PlayerSpawner {
     Update(timeInSeconds) {
         if (!this._stateMachine._currentState) return;
         this._stateMachine._currentState.Update(timeInSeconds, this._input);
+        this._stateMachine.playerLife = this._params.healthBar.hearts.length;
         
         this._PlayerMovementHandler(timeInSeconds);
         this._HitHandler();
-        this._DeathHandler();
+        // this._DeathHandler();
         this._TransformationHandler();
 
         if (this._mixer) {
