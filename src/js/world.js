@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+// fire spawner
+import { FireSpawner } from './fireSpawner.js';
 
 export class World {
     constructor(params) {
@@ -10,6 +12,7 @@ export class World {
     _Init() {
         this._boundingBoxes = [];
         this._boundingBoxesVisible = false;
+        this._mixers = [];
         this._AddFloor();
         this._AddSky();
         this._AddModel();
@@ -224,6 +227,18 @@ export class World {
             gltf.scene.scale.set(4, 4, 4);
             this._params.scene.add(gltf.scene);
         });
+
+        loader.load('./models/scene_objects/fire_rocks.glb', (gltf) => {
+            gltf.scene.traverse(c => {
+                c.castShadow = true;
+            });
+            gltf.scene.position.set(0, 0, 50);
+            gltf.scene.rotation.y = 0
+            gltf.scene.scale.set(5, 5, 5);
+            this._params.scene.add(gltf.scene);
+        });
+
+        this._fireSpawner = new FireSpawner(this._params);
     }
 
     _AddLights(){
@@ -310,6 +325,22 @@ export class World {
         let torch_16 = new THREE.PointLight(0xf56b16, 1000, 100);
         torch_16.position.set(-40, 25, -175);
         this._params.scene.add(torch_16);
+
+        let fire_1 = new THREE.PointLight(0xf56b16, 1000, 100);
+        fire_1.position.set(-61, 38, 99);
+        this._params.scene.add(fire_1);
+
+        let fire_2 = new THREE.PointLight(0xf56b16, 1000, 100);
+        fire_2.position.set(80, 38, 57);
+        this._params.scene.add(fire_2);
+
+        let fire_3 = new THREE.PointLight(0xf56b16, 1000, 100);
+        fire_3.position.set(-81, 38, -2);
+        this._params.scene.add(fire_3);
+
+        let fire_4 = new THREE.PointLight(0xf56b16, 1000, 100);
+        fire_4.position.set(2, 2, 51);
+        this._params.scene.add(fire_4);
     }
 
     _AddBoundingBoxes() {
@@ -649,10 +680,31 @@ export class World {
         this._params.scene.add(cube_28);
         this._boundingBoxes.push(cube_28);
 
+        //* Fire
+        const cylinder_29 = new THREE.CylinderGeometry(15, 15, 50, 32);
+        const mat_29 = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+            wireframe: true,
+            visible: this._boundingBoxesVisible,
+        });
+        const cylinderMesh_29 = new THREE.Mesh(cylinder_29, mat_29);
+        cylinderMesh_29.position.set(2, 7, 50);
+        this._params.scene.add(cylinderMesh_29);
+        this._boundingBoxes.push(cylinderMesh_29);
+    }
 
+
+    update() {
+        this._fireSpawner.createFire({x: -63, y: 38, z: 94, width: 7, height: 4, depth: 7}, 5);
+        this._fireSpawner.createFire({x: 77, y: 38, z: 53, width: 7, height: 4, depth: 7}, 5);
+        this._fireSpawner.createFire({x: -83, y: 38, z: -5, width: 4, height: 4, depth: 8}, 5);
+        this._fireSpawner.createFire({x: -3, y: -1, z: 45, width: 10, height: 10, depth: 10}, 100);
+        this._fireSpawner.updateFire();
     }
 
     get boundingBoxes() {
         return this._boundingBoxes;
     }
+
+
 }

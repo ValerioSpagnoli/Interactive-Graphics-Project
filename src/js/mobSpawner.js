@@ -36,7 +36,7 @@ export class MobSpawner {
         const loader = new GLTFLoader();
 
         this._mobPositions = [];
-        this._mobPositions.push(new THREE.Vector3(0, 1, 50));
+        this._mobPositions.push(new THREE.Vector3(0, 1, -20));
         this._mobPositions.push(new THREE.Vector3(0, 1, 110));
         this._mobPositions.push(new THREE.Vector3(-50, 1, 30));
         this._mobPositions.push(new THREE.Vector3(50, 1, 30));
