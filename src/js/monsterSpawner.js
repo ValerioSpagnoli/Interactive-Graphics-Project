@@ -191,8 +191,7 @@ export class MonsterSpawner {
         this._stateMachine.SetState('walk');
         this._monsterState = 'walk';
         this._timeLastWalk = Date.now();
-        this._velocity.set(Math.random() * 2 - 1, 0, Math.random() * 2 - 1);
-        this._velocity.normalize().multiplyScalar(0.2);
+        this._velocity.set(Math.random()<0.5?1:-1*Math.random(), 0, Math.random()<0.5?1:-1*Math.random()).normalize().multiplyScalar(0.6);            
       }
       else if(this._stateMachine._currentState.Name === 'walk' && Date.now() - this._timeLastWalk > 5000) {
         this._stateMachine.SetState('idle');
@@ -205,7 +204,7 @@ export class MonsterSpawner {
         for (const b of this._worldBoundingBoxes) {
           const box = new THREE.Box3().setFromObject(b);
           if(box.containsPoint(this._position)){
-            this._velocity.set(-this._velocity.x, 0, -this._velocity.z);
+            this._velocity.set(-this._velocity.x, 0, -this._velocity.z).normalize().multiplyScalar(0.6);
             this._position = this._previousPosition;
             break;
           }
@@ -226,14 +225,14 @@ export class MonsterSpawner {
 
       if(distanceToPlayer < this._monsterAttackRange.min){
         this._stateMachine.SetState('walk');
-        this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(-0.2);
+        this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(-0.6);
         this._position.add(this._velocity);
         const angle = Math.atan2(this._playerPosition.x - this._position.x, this._playerPosition.z - this._position.z);
         this._rotation.y = angle;
       }
       else if(distanceToPlayer > this._monsterAttackRange.max){
         this._stateMachine.SetState('walk');
-        this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(0.2);
+        this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(0.6);
         this._position.add(this._velocity);
         const angle = Math.atan2(this._playerPosition.x - this._position.x, this._playerPosition.z - this._position.z);
         this._rotation.y = angle;
@@ -243,9 +242,8 @@ export class MonsterSpawner {
         this._rotation.y = angle;
 
         if((this._stateMachine._currentState.Name === 'roar' || this._stateMachine._currentState.Name === 'walk') && Date.now() - this._timeLastRoar > 2500) {
-          //const randomAttack = Math.random() < 0.5 ? 'attack_1' : 'attack_2';
-          const randomAttack = 'attack_1';
-          this._stateMachine.SetState(randomAttack);
+          const randomAttack = Math.random() < 0.5 ? 'attack_1' : 'attack_2';
+          this._stateMachine.SetState('attack_1');
           this._timeLastAttack = Date.now();
           this._monsterState = 'attack';
           this._monsterLastHit = Date.now();
