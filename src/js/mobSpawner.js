@@ -203,7 +203,7 @@ export class MobSpawner {
             mob.currentAction.stop();
             mob.currentAction = mob.walk;
             mob.currentAction.play();
-            mobVelocity.set(-mobVelocity.x, 0, -mobVelocity.z).normalize().multiplyScalar(0.1);
+            mobVelocity.set(Math.random(), 0, Math.random()).normalize().multiplyScalar(0.1);
         }
     
         if (timeDiff > 5000) {
