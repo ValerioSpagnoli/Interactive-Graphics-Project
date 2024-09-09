@@ -38,10 +38,8 @@ class Scene {
         const near = 1.0;
         const far = 1000.0;
         this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-        // this._camera.position.set(150, 200, 300);
-        // this._camera.lookAt(new THREE.Vector3(-44, 0, -100));
-        this._camera.position.set(0, 200, 20);
-        this._camera.lookAt(new THREE.Vector3(0, 0, 20));
+        this._camera.position.set(150, 200, 300);
+        this._camera.lookAt(new THREE.Vector3(-44, 0, -100));
     
         this._scene = new THREE.Scene();
 
