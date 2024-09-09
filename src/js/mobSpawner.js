@@ -180,10 +180,10 @@ export class MobSpawner {
                 mob.currentAction.play();
             }
             if (collision) {
-                mobVelocity.set(-mobVelocity.x, 0, -mobVelocity.z).normalize().multiplyScalar(0.4);
+                mobVelocity.set(-mobVelocity.x, 0, -mobVelocity.z).normalize().multiplyScalar(0.2 + Math.random()*0.3);
             }
             else{
-                mobVelocity.copy(this._playerPosition).sub(mobPosition).normalize().multiplyScalar(0.4);
+                mobVelocity.copy(this._playerPosition).sub(mobPosition).normalize().multiplyScalar(0.2 + Math.random()*0.3);
             }
             const angle = Math.atan2(mobVelocity.x, mobVelocity.z);
             mob.mob.rotation.y = angle;
@@ -203,18 +203,18 @@ export class MobSpawner {
             mob.currentAction.stop();
             mob.currentAction = mob.walk;
             mob.currentAction.play();
-            mobVelocity.set(Math.random(), 0, Math.random()).normalize().multiplyScalar(0.1);
+            mobVelocity.set(Math.random()<0.5?1:-1*Math.random(), 0, Math.random()<0.5?1:-1*Math.random()).normalize().multiplyScalar(0.05 + Math.random()*0.1);
         }
     
         if (timeDiff > 5000) {
-            mobVelocity.set(Math.random(), 0, Math.random()).normalize().multiplyScalar(0.1);
+            mobVelocity.set(Math.random()<0.5?1:-1*Math.random(), 0, Math.random()<0.5?1:-1*Math.random()).normalize().multiplyScalar(0.05 + Math.random()*0.1);            
             mob.time = currentTime;
         }
     
         for (const b of this._worldBoundingBoxes) {
             const box = new THREE.Box3().setFromObject(b);
             if (box.containsPoint(mobPosition)) {
-                mobVelocity.set(-mobVelocity.x, 0, -mobVelocity.z).normalize().multiplyScalar(0.1);
+                mobVelocity.set(-mobVelocity.x, 0, -mobVelocity.z).normalize().multiplyScalar(0.05 + Math.random()*0.1);
                 mob.time = currentTime;
             }
         }

@@ -532,7 +532,7 @@ class MonsterLifeBar {
             const life = document.createElement('div');
             life.style.width = '5px';
             life.style.height = '25px';
-            life.style.backgroundColor = 'rgba(200, 0, 0, 0.8)';
+            life.style.backgroundColor = 'rgba(240, 0, 0, 0.8)';
             life.style.float = 'left';
             this._monsterLifeBar.appendChild(life);
             this._divs.push(life);
