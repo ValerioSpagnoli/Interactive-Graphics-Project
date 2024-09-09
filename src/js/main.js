@@ -5,8 +5,8 @@ import { GUI } from './gui';
 import { PlayerSpawner } from './playerSpawner';
 import { ThirdPersonCamera } from './thirdPersonCamera';
 import { StarsSpawner } from './starsSpawner';
-import { HeartSpawner } from './heartSpawner';
-import { SwordSpawner } from './swordSpawner';
+import { HeartsSpawner } from './heartsSpawner';
+import { SwordsSpawner } from './swordsSpawner';
 import { MobSpawner } from './mobSpawner';
 import { MonsterSpawner } from './monsterSpawner';
 import { ParticleSpawner } from './particleSpwaner';
@@ -129,14 +129,14 @@ class Scene {
     }
 
     _LoadHearts() {
-      this._heartSpawner = new HeartSpawner({
+      this._heartSpawner = new HeartsSpawner({
         scene: this._scene,
         world: this._world,
       });
     }
 
     _LoadSwords() { 
-      this._swordSpawner = new SwordSpawner({
+      this._swordSpawner = new SwordsSpawner({
         scene: this._scene,
         world: this._world,
       });

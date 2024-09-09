@@ -1,13 +1,13 @@
 import * as THREE from 'three'; 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
-export class SwordSpawner {
+export class HeartsSpawner {
     constructor(params) {
         this._params = params;
-        this._swords = [];
+        this._hearts = [];
         this._lastSpawnTime = 0;
-        this._spawnInterval = 20;
-        this._maxSwords = 5;    
+        this._spawnInterval = 18;
+        this._maxHearts = 5;
         this._worldBoundingBoxes = [];
         for (const b of this._params.world.boundingBoxes) {
             this._worldBoundingBoxes.push(b);
@@ -17,12 +17,12 @@ export class SwordSpawner {
     _LoadModels() {
         const loader = new GLTFLoader();
         this._lastSpawnTime = Date.now();
-        loader.load('./models/scene_objects/sword.glb', (gltf) => {
+        loader.load('./models/scene_objects/heart.glb', (gltf) => {
             gltf.scene.traverse(c => {
                 c.castShadow = true;
             });
-            const sword = gltf.scene;
-            sword.scale.set(20, 20, 20);
+            const heart = gltf.scene;
+            heart.scale.set(5, 5, 5);
             
             let randomPos = new THREE.Vector3();
             let found = false;
@@ -51,30 +51,29 @@ export class SwordSpawner {
                 }
             }
 
-            sword.position.set(randomPos.x, randomPos.y, randomPos.z);
-            sword.rotation.x = Math.PI/4;
-            this._params.scene.add(sword);
-            this._swords.push(sword);
+            heart.position.set(randomPos.x, randomPos.y, randomPos.z);
+            this._params.scene.add(heart);
+            this._hearts.push(heart);
         }); 
     }
 
     Update(timeInSeconds) {
-        if(Date.now() - this._lastSpawnTime > this._spawnInterval*1000 && this._swords.length < this._maxSwords) {
+        if(Date.now() - this._lastSpawnTime > this._spawnInterval*1000 && this._hearts.length < this._maxHearts) {
             this._lastSpawnTime = Date.now();
             this._LoadModels();
         }
 
-        this._swords.map(s => {
+        this._hearts.map(s => {
             const rotationSpeed = 1;
-            s.rotation.z += rotationSpeed * timeInSeconds;             
+            s.rotation.y += rotationSpeed * timeInSeconds;             
         });
     }
 
-    get swords() {
-        return this._swords;
+    get hearts() {
+        return this._hearts;
     }
 
-    set swords(value) {
-        this._swords = value;
+    set hearts(value) {
+        this._hearts = value;
     }
 }
