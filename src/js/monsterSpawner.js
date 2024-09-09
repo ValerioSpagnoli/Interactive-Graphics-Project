@@ -6,23 +6,20 @@ export class MonsterSpawner {
     constructor(params) {
         this._params = params;
         this._animations = {};
-        this._stateMachine = new CharacterFSM(
-            new PlayerSpawnerProxy(this._animations)
-        );
         this._velocity = new THREE.Vector3();  
         this._position = new THREE.Vector3();
         this._previousPosition = new THREE.Vector3();
-
+        
         this._worldBoundingBoxes = [];
         for (const b of this._params.world.boundingBoxes) {
-            this._worldBoundingBoxes.push(b);
+          this._worldBoundingBoxes.push(b);
         }
         this._playerPosition = this._params.playerPosition;
-
+        
         this._monsterAttackRange = {'min': 15, 'max': 20};  
         this._monsterAttackTime = this._params.monsterAttackTime;   
         this._LoadModel();
-
+        
         this._timeLastWalk = 0;
         this._timeLastIdle = 0;
         this._timeLastAttack = 0;
@@ -32,6 +29,8 @@ export class MonsterSpawner {
         this._monsterDamage = 2;  
         this._monsterLastHit = 0; 
         this._monsterState = 'roar';
+
+        this._stateMachine = new CharacterFSM(this._animations, this.monsterAttackRange);
     }
 
     get monsterAttackRange() {
@@ -124,8 +123,7 @@ export class MonsterSpawner {
             loader.load('walk.fbx', (a) => { _OnLoad('walk', a); });
             loader.load('idle.fbx', (a) => { _OnLoad('idle', a); });
             loader.load('roar.fbx', (a) => { _OnLoad('roar', a); });
-            loader.load('attack_1.fbx', (a) => { _OnLoad('attack_1', a); });
-            loader.load('attack_2.fbx', (a) => { _OnLoad('attack_2', a); });
+            loader.load('attack.fbx', (a) => { _OnLoad('attack', a); });
             loader.load('death.fbx', (a) => { _OnLoad('death', a); });
         });
 
@@ -155,14 +153,26 @@ export class MonsterSpawner {
       if (!this._stateMachine._currentState) {
         return;
       }
+      const box = new THREE.Box3().setFromObject(this._insideTowers);
+      this._stateMachine.attackPlayer = box.containsPoint(this._playerPosition);
+      this._stateMachine.playerDistance = this._playerPosition.distanceTo(this._position);
+      this._stateMachine.monsterLife = this._monsterLife;
       this._stateMachine._currentState.Update(deltaTime);
 
-      if(this._monsterLife <= 0 && this._monsterState !== 'death'){  
-        this._stateMachine.SetState('death');
-        this._monsterState = 'death';
-      }
-      else{        
-        const box = new THREE.Box3().setFromObject(this._insideTowers);
+      // if(this._monsterLife <= 0 && this._monsterState !== 'death'){  
+      //   this._stateMachine.SetState('death');
+      //   this._monsterState = 'death';
+      // }
+      // else{        
+      //   if(box.containsPoint(this._playerPosition)){
+      //     this.attackPlayer();
+      //   }
+      //   else{
+      //     this.moveMonsterRandomly(deltaTime);
+      //   }
+      // }
+
+      if(this._stateMachine._currentState.Name != 'death'){
         if(box.containsPoint(this._playerPosition)){
           this.attackPlayer();
         }
@@ -178,25 +188,8 @@ export class MonsterSpawner {
 
 
     moveMonsterRandomly(deltaTime) {
-      this._timeLastAttack = 0;
-      this._timeLastRoar = 0;
-
-      if(this._stateMachine._currentState.Name === 'attack_1' || this._stateMachine._currentState.Name === 'attack_2') {
-        this._stateMachine.SetState('idle');
-        this._monsterState = 'idle';
-        this._timeLastIdle = Date.now();
-      }
-
       if(this._stateMachine._currentState.Name === 'idle' && Date.now() - this._timeLastIdle > 5000) {
-        this._stateMachine.SetState('walk');
-        this._monsterState = 'walk';
-        this._timeLastWalk = Date.now();
         this._velocity.set(Math.random()<0.5?1:-1*Math.random(), 0, Math.random()<0.5?1:-1*Math.random()).normalize().multiplyScalar(0.6);            
-      }
-      else if(this._stateMachine._currentState.Name === 'walk' && Date.now() - this._timeLastWalk > 5000) {
-        this._stateMachine.SetState('idle');
-        this._monsterState = 'idle';
-        this._timeLastIdle = Date.now();
       }
 
       if(this._stateMachine._currentState.Name === 'walk'){
@@ -220,18 +213,13 @@ export class MonsterSpawner {
     attackPlayer() {
       const distanceToPlayer = this._playerPosition.distanceTo(this._position);
 
-      if(this._timeLastAttack === 0) this._timeLastAttack = Date.now();
-      if(this._timeLastRoar === 0) this._timeLastRoar = Date.now();
-
       if(distanceToPlayer < this._monsterAttackRange.min){
-        this._stateMachine.SetState('walk');
         this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(-0.6);
         this._position.add(this._velocity);
         const angle = Math.atan2(this._playerPosition.x - this._position.x, this._playerPosition.z - this._position.z);
         this._rotation.y = angle;
       }
       else if(distanceToPlayer > this._monsterAttackRange.max){
-        this._stateMachine.SetState('walk');
         this._velocity.copy(this._playerPosition).sub(this._position).normalize().multiplyScalar(0.6);
         this._position.add(this._velocity);
         const angle = Math.atan2(this._playerPosition.x - this._position.x, this._playerPosition.z - this._position.z);
@@ -240,32 +228,9 @@ export class MonsterSpawner {
       else{ 
         const angle = Math.atan2(this._playerPosition.x - this._position.x, this._playerPosition.z - this._position.z);
         this._rotation.y = angle;
-
-        if((this._stateMachine._currentState.Name === 'roar' || this._stateMachine._currentState.Name === 'walk') && Date.now() - this._timeLastRoar > 2500) {
-          const randomAttack = Math.random() < 0.5 ? 'attack_1' : 'attack_2';
-          this._stateMachine.SetState('attack_1');
-          this._timeLastAttack = Date.now();
-          this._monsterState = 'attack';
-          this._monsterLastHit = Date.now();
-        }
-        else if((this._stateMachine._currentState.Name === 'attack_1' || this._stateMachine._currentState.Name === 'attack_2') && Date.now() - this._timeLastAttack > 2500) {
-          this._stateMachine.SetState('roar');
-          this._timeLastRoar = Date.now();
-          this._monsterState = 'roar';
-        }
       }
 
 
-    }
-}
-
-class PlayerSpawnerProxy {
-    constructor (animations) {
-        this._animations = animations;
-    }
-
-    get animations () {
-        return this._animations;
     }
 }
 
@@ -303,9 +268,17 @@ class FiniteStateMachine {
 };
 
 class CharacterFSM extends FiniteStateMachine {
-    constructor(proxy) {
+    constructor(animations, monsterAttackRange) {
       super();
-      this._proxy = proxy;
+      this._animations = animations;
+      this._monsterAttackRange = monsterAttackRange;
+      this._attackPlayer = false; 
+      this._playerDistance = 100000;
+      this._monsterLife = 100;
+      this._timeLastIdle = 0;
+      this._timeLastWalk = 0;
+      this._timeLastAttack = 0;
+      this._timeLastRoar = 0;
       this._Init();
     }
   
@@ -313,9 +286,32 @@ class CharacterFSM extends FiniteStateMachine {
         this._AddState('idle', IdleState);
         this._AddState('walk', WalkState);
         this._AddState('roar', RoarState);
-        this._AddState('attack_1', Attack1State);
-        this._AddState('attack_2', Attack2State);
+        this._AddState('attack', AttackState);
         this._AddState('death', DeathState);
+    }
+
+    get attackPlayer() {
+        return this._attackPlayer;
+    }
+
+    set attackPlayer(value) {
+        this._attackPlayer = value;
+    }
+
+    get playerDistance() {
+        return this._playerDistance;
+    }
+
+    set playerDistance(value) {
+        this._playerDistance = value;
+    }
+
+    get monsterLife() {
+        return this._monsterLife;
+    }
+
+    set monsterLife(value) {
+        this._monsterLife = value;
     }
 };
 
@@ -340,9 +336,9 @@ class IdleState extends State {
     }
   
     Enter(prevState) {
-      const idleAction = this._parent._proxy._animations['idle'].action;
+      const idleAction = this._parent._animations['idle'].action;
       if (prevState) {
-        const prevAction = this._parent._proxy._animations[prevState.Name].action;
+        const prevAction = this._parent._animations[prevState.Name].action;
         idleAction.time = 0.0;
         idleAction.enabled = true;
         idleAction.setEffectiveTimeScale(1.0);
@@ -358,6 +354,35 @@ class IdleState extends State {
     }
   
     Update(timeElapsed) {
+      if(this._parent._monsterLife <= 0){
+        this._parent.SetState('death');
+        this._parent._monsterState = 'death';
+      }
+      else{
+        if(this._parent._attackPlayer){
+          if(this._parent._playerDistance < this._parent._monsterAttackRange.min || this._parent._playerDistance > this._parent._monsterAttackRange.max){
+            this._parent._timeLastWalk = Date.now();  
+            this._parent.SetState('walk');
+            this._parent._monsterState = 'walk';
+          }
+          else{
+            this._parent._timeLastAttack = Date.now();
+            this._parent.SetState('attack');
+            this._parent._monsterState = 'attack';
+          }
+        }
+        else{
+          if(Date.now() - this._parent._timeLastIdle > 5000){
+            this._parent._timeLastWalk = Date.now();
+            this._parent.SetState('walk');  
+            this._parent._monsterState = 'walk';
+          }
+          else{
+            this._parent.SetState('idle');
+            this._parent._monsterState = 'idle';
+          }
+        }
+      }
     }
 };
 
@@ -371,9 +396,9 @@ class WalkState extends State {
     }
   
     Enter(prevState) {
-      const curAction = this._parent._proxy._animations['walk'].action;
+      const curAction = this._parent._animations['walk'].action;
       if (prevState) {
-        const prevAction = this._parent._proxy._animations[prevState.Name].action;
+        const prevAction = this._parent._animations[prevState.Name].action;
   
         curAction.enabled = true;
   
@@ -397,6 +422,35 @@ class WalkState extends State {
     }
   
     Update(timeElapsed) {  
+      if(this._parent._monsterLife <= 0){
+        this._parent.SetState('death');
+        this._parent._monsterState = 'death';
+      }
+      else{
+        if(this._parent._attackPlayer){
+          if(this._parent._playerDistance < this._parent._monsterAttackRange.min || this._parent._playerDistance > this._parent._monsterAttackRange.max){
+            this._parent._timeLastWalk = Date.now();
+            this._parent.SetState('walk');
+            this._parent._monsterState = 'walk';
+          }
+          else{
+            this._parent._timeLastAttack = Date.now();
+            this._parent.SetState('attack');
+            this._parent._monsterState = 'attack';
+          }
+        }
+        else{
+          if(Date.now() - this._parent._timeLastWalk > 5000){
+            this._parent._timeLastIdle = Date.now();
+            this._parent.SetState('idle');
+            this._parent._monsterState = 'idle';
+          }
+          else{
+            this._parent.SetState('walk');
+            this._parent._monsterState = 'walk';
+          }
+        }
+      }
     }
 };
 
@@ -411,9 +465,9 @@ class RoarState extends State {
   }
 
   Enter(prevState) {
-    const curAction = this._parent._proxy._animations['roar'].action;
+    const curAction = this._parent._animations['roar'].action;
     if (prevState) {
-      const prevAction = this._parent._proxy._animations[prevState.Name].action;
+      const prevAction = this._parent._animations[prevState.Name].action;
 
       curAction.enabled = true;
 
@@ -437,23 +491,52 @@ class RoarState extends State {
   }
 
   Update(timeElapsed) {  
+    if(this._parent._monsterLife <= 0){
+      this._parent.SetState('death');
+      this._parent._monsterState = 'death';
+    }
+    else{
+      if(this._parent._attackPlayer){
+        if(Date.now() - this._parent._timeLastRoar > 2500){
+          if(this._parent._playerDistance < this._parent._monsterAttackRange.min || this._parent._playerDistance > this._parent._monsterAttackRange.max){
+            this._parent._timeLastWalk = Date.now();
+            this._parent.SetState('walk');
+            this._parent._monsterState = 'walk';
+          }
+          else{
+            this._parent._timeLastAttack = Date.now();
+            this._parent.SetState('attack');
+            this._parent._monsterState = 'attack';
+          }
+        }
+        else{
+          this._parent.SetState('roar');
+          this._parent._monsterState = 'roar';
+        }
+      }
+      else{
+        this._parent._timeLastIdle = Date.now();
+        this._parent.SetState('idle');
+        this._parent._monsterState = 'idle';
+      }
+    }
   }
 };
 
 
-class Attack1State extends State {
+class AttackState extends State {
   constructor(parent) {
     super(parent);
   }
 
   get Name() {
-    return 'attack_1';
+    return 'attack';
   }
 
   Enter(prevState) {
-    const curAction = this._parent._proxy._animations['attack_1'].action;
+    const curAction = this._parent._animations['attack'].action;
     if (prevState) {
-      const prevAction = this._parent._proxy._animations[prevState.Name].action;
+      const prevAction = this._parent._animations[prevState.Name].action;
 
       curAction.enabled = true;
 
@@ -477,45 +560,35 @@ class Attack1State extends State {
   }
 
   Update(timeElapsed) {  
-  }
-};
-
-class Attack2State extends State {
-  constructor(parent) {
-    super(parent);
-  }
-
-  get Name() {
-    return 'attack_2';
-  }
-
-  Enter(prevState) {
-    const curAction = this._parent._proxy._animations['attack_2'].action;
-    if (prevState) {
-      const prevAction = this._parent._proxy._animations[prevState.Name].action;
-
-      curAction.enabled = true;
-
-      if (prevState.Name == 'idle') {
-        const ratio = curAction.getClip().duration / prevAction.getClip().duration;
-        curAction.time = prevAction.time * ratio;
-      } else {
-        curAction.time = 0.0;
-        curAction.setEffectiveTimeScale(1.0);
-        curAction.setEffectiveWeight(1.0);
-      }
-
-      curAction.crossFadeFrom(prevAction, 0.5, true);
-      curAction.play();
-    } else {
-      curAction.play();
+    if(this._parent._monsterLife <= 0){
+      this._parent.SetState('death');
+      this._parent._monsterState = 'death';
     }
-  }
-
-  Exit() {
-  }
-
-  Update(timeElapsed) {  
+    else{
+      if(this._parent._attackPlayer){
+        if(Date.now() - this._parent._timeLastAttack > 2500){
+          this._parent._timeLastRoar = Date.now();
+          this._parent.SetState('roar');
+          this._parent._monsterState = 'roar';
+        }
+        else{          
+          if(this._parent._playerDistance < this._parent._monsterAttackRange.min || this._parent._playerDistance > this._parent._monsterAttackRange.max){
+            this._parent._timeLastWalk = Date.now();
+            this._parent.SetState('walk');
+            this._parent._monsterState = 'walk';
+          }
+          else{
+            this._parent.SetState('attack');
+            this._parent._monsterState = 'attack';
+          }
+        }
+      }
+      else{
+        this._parent._timeLastIdle = Date.now();
+        this._parent.SetState('idle');
+        this._parent._monsterState = 'idle';
+      }
+    }
   }
 };
 
@@ -530,9 +603,9 @@ class DeathState extends State {
   }
 
   Enter(prevState) {
-    const curAction = this._parent._proxy._animations['death'].action;
+    const curAction = this._parent._animations['death'].action;
     if (prevState) {
-      const prevAction = this._parent._proxy._animations[prevState.Name].action;
+      const prevAction = this._parent._animations[prevState.Name].action;
 
       curAction.enabled = true;
 
@@ -555,6 +628,10 @@ class DeathState extends State {
   Exit() {
   }
 
-  Update(timeElapsed) {  
+  Update(timeElapsed) { 
+    if(this._parent._monsterLife <= 0){
+      this._parent.SetState('death');
+      this._parent._monsterState = 'death';
+    }  
   }
 }

@@ -370,7 +370,7 @@ class Scene {
       this._monsterState = this._monsterSpawner.monsterState;
       const distanceToMonster = this._playerPosition.distanceTo(this._monsterSpawner.monsterPosition);
       if (distanceToMonster > this._monsterAttackRange.min && distanceToMonster < this._monsterAttackRange.max) {
-        if ((Date.now() - this._monsterSpawner.monsterLastHit) > this._monsterAttackTime && this._monsterState === 'attack') {
+        if ((Date.now() - this._monsterSpawner.monsterLastHit) > this._monsterAttackTime && this._monsterSpawner._stateMachine._currentState.Name === 'attack') {
           this._monsterSpawner.monsterLastHit = new Date().getTime();
           this._currentHitFromMonster += 1;
           this._player.hitFlag = true;
