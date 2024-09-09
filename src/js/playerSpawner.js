@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { CharacterFSM } from './finiteStateMachine';
+import { ParticleSpawner } from './particleSpwaner';
 
 
 export class PlayerSpawner {
@@ -48,7 +48,20 @@ export class PlayerSpawner {
         this._transformed = false;
         this._timeTransformed = 0;
         this._transformationTime = 15000;
-        this._starsTransformationSpawner = new StarsTransformationSpawner(this._params);
+        
+        this._particleSpawnerParams = {
+          scene: this._params.scene,
+          colors: [0xffc812, 0xbd930b, 0xdbb539],
+          radius: {baseRadius: 0.01, randomRadius: 0.5},
+          opacity: {baseOpacity: 1, randomOpacity: 0.2},
+          transparency: false,
+          velocity: {baseVelocity: new THREE.Vector3(-0.01,-0.01,-0.01), randomVelocity: new THREE.Vector3(0.5,0.5,0.5), baseSign: new THREE.Vector3(1,-1,1), randomSign: new THREE.Vector3(true,false,true), update: false},
+          expirationTime: {baseExpirationTime: 2000, randomExpirationTime: 2000},
+          boxX: {baseMin: -100, baseMax: 100, randomMin: 0, randomMax: 0, blockAll: false, visible: false},
+          boxY: {baseMin: 0.1, baseMax: 100, randomMin: 0, randomMax: 10, blockAll: false, visible: false},
+          boxZ: {baseMin: -100, baseMax: 100, randomMin: 0, randomMax: 0, blockAll: false, visible: false},
+        }
+        this._particleSpawner = new ParticleSpawner(this._particleSpawnerParams);
         
         this._LoadModels();
       }
@@ -276,7 +289,7 @@ export class PlayerSpawner {
             this._params.healthBar.addHeart();
           }
         }
-        this._starsTransformationSpawner.createStars({x: this._position.x-10, y: this._position.y, z: this._position.z-10, width: 15, height: 30, depth: 15}, 300);
+        this._particleSpawner.create({x: this._position.x-10, y: this._position.y, z: this._position.z-10, width: 15, height: 30, depth: 15}, 300);
       }
       
       if (this._transformed && Date.now() - this._timeTransformed > this._transformationTime) {
@@ -292,7 +305,7 @@ export class PlayerSpawner {
         }
       }
 
-      this._starsTransformationSpawner.updateStars();
+      this._particleSpawner.update();
     }
 
     Update(timeInSeconds) {
@@ -391,80 +404,3 @@ class PlayerSpawnerInput {
       }
     }
 };
-
-class StarsTransformationSpawner {
-    constructor(params) {
-        this._params = params;  
-        this.scene = this._params.scene;
-        this._stars = [];
-    }
-    
-    createStars(area, amount) {
-        let particles = [];
-        for (let i = 0; i < amount; i++) {
-            const particle = new StarParticle();
-            particle.mesh.position.set(
-                area.x + Math.random() * area.width,
-                area.y + Math.random() * area.height,
-                area.z + Math.random() * area.depth
-            );
-            this.scene.add(particle.mesh);
-            particles.push(particle);
-        }
-        this._stars.push({'particles': particles, 'time': Date.now()});
-    }
-
-    removeStars(particles) {
-        particles.forEach((particle) => {
-            this.scene.remove(particle.mesh);
-        });
-    }   
-    
-    updateStars() {
-        for (let i = 0; i < this._stars.length; i++) {
-            if (Date.now() - this._stars[i].time >= 8000) {
-                this.removeStars(this._stars[i].particles);
-                this._stars.splice(i, 1);
-            }
-            else{
-                this._stars[i].particles.forEach((particle) => {
-                    particle.update();
-                });
-            }
-        }
-    }
-}
-
-class StarParticle {
-    constructor() {
-        this.colors = [0xffc812, 0xbd930b, 0xdbb539];
-        this.mesh = new THREE.Mesh(
-          new THREE.SphereGeometry(Math.random()*0.5 + 0.01, Math.random() * 1 + 5, Math.random() * 1 + 5),
-            new THREE.MeshBasicMaterial({
-                color: this.colors[Math.floor(Math.random() * this.colors.length)],
-                opacity: 1,
-                transparent: false,
-            })
-        );
-        this.mesh.rotation.set(
-            Math.random() * Math.PI * 2,
-            Math.random() * Math.PI * 2,
-            Math.random() * Math.PI * 2
-        );
-        this.velocity = new THREE.Vector3(
-            (Math.random() < 0.5 ? -1 : 1) * Math.random() * 0.5 - 0.05,
-            -Math.random() * 0.5 - 0.05,
-            (Math.random() < 0.5 ? -1 : 1) * Math.random() * 0.5 - 0.05
-        );
-    }
-    
-    update() {
-        if (this.mesh.position.y <= 0.1) {
-            this.mesh.position.y = 0.1;
-            this.mesh.velocity = new THREE.Vector3(0, 0, 0);
-        }
-        else{
-            this.mesh.position.add(this.velocity);
-        }
-    }
-}

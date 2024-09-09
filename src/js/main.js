@@ -9,7 +9,7 @@ import { HeartSpawner } from './heartSpawner';
 import { SwordSpawner } from './swordSpawner';
 import { MobSpawner } from './mobSpawner';
 import { MonsterSpawner } from './monsterSpawner';
-import { BloodSpawner } from './bloodSpawner';
+import { ParticleSpawner } from './particleSpwaner';
 
 
 class Scene {
@@ -66,10 +66,20 @@ class Scene {
         this._monsterDamageNormal = {'easy': 2, 'medium': 2, 'hard': 3};
         this._monsterDamageTransformed = {'easy': 1, 'medium': 1, 'hard': 2};
 
-        this._bloodSpawner = new BloodSpawner({
+        this._bloodSpawnerParams = {
           scene: this._scene,
-        });
-
+          colors: [0x8a2019, 0x870e05, 0x5c0e08],
+          radius: {baseRadius: 0.1, randomRadius: 0.1},
+          opacity: {baseOpacity: 1, randomOpacity: 0},
+          transparency: false,
+          velocity: {baseVelocity: new THREE.Vector3(-0.05,-0.15,-0.05), randomVelocity: new THREE.Vector3(0.5,0.8,0.5), baseSign: new THREE.Vector3(1,-1,1), randomSign: new THREE.Vector3(true,false,true), update: false},
+          expirationTime: {baseExpirationTime: 5000, randomExpirationTime: 2000},
+          boxX: {baseMin: -100, baseMax: 100, randomMin: 0, randomMax: 0, blockAll: false, visible: true},
+          boxY: {baseMin: 0.1, baseMax: 100, randomMin: 0, randomMax: 0, blockAll: true, visible: true},
+          boxZ: {baseMin: -100, baseMax: 100, randomMin: 0, randomMax: 0, blockAll: false, visible: true},
+        }
+        this._bloodSpawner = new ParticleSpawner(this._bloodSpawnerParams);
+      
         this._LoadWorld();
         this._LoadGUI();
         this._LoadStars();
@@ -208,7 +218,7 @@ class Scene {
 
       //* Update blood
       if (this._bloodSpawner && !this._blockGame) {
-        this._bloodSpawner.updateBlood();
+        this._bloodSpawner.update();
       }
 
       //* Update world
@@ -326,15 +336,7 @@ class Scene {
       if(this._currentHitFromMobs === this._mobHitsToDamage[this._difficulty]){
         this._gui._healthBar.removeHeart();
         this._currentHitFromMobs = 0;
-        const area = {
-          x: this._player.position.x,
-          y: this._player.position.y,
-          z: this._player.position.z,
-          width: 5,
-          height: 5,
-          depth: 5,
-        };
-        this._bloodSpawner.createBlood(area, 30);
+        this._bloodSpawner.create({x: this._player.position.x, y: this._player.position.y, z: this._player.position.z, width: 5, height: 5, depth: 5}, 30);
       }
 
       //* Handle attacks on mobs
@@ -352,15 +354,7 @@ class Scene {
           if (distanceToPlayer < this._player.attackRange && !mob.deadFlag && inFront) {
             mob.life -= damage;
             this._lastAttackTime = new Date().getTime();
-            const area = {
-              x: mob.position.x,
-              y: mob.position.y,
-              z: mob.position.z,
-              width: 3,
-              height: 3,
-              depth: 3,
-            };
-            this._bloodSpawner.createBlood(area, 10);
+            this._bloodSpawner.create({x: mob.position.x, y: mob.position.y, z: mob.position.z, width: 3, height: 3, depth: 3}, 10);
           }
         }
       }
@@ -391,15 +385,7 @@ class Scene {
         }
         this._currentHitFromMonster = 0;
 
-        const area = {
-          x: this._player.position.x,
-          y: this._player.position.y,
-          z: this._player.position.z,
-          width: 10,
-          height: 10,
-          depth: 10,
-        };
-        this._bloodSpawner.createBlood(area, 100);
+        this._bloodSpawner.create({x: this._player.position.x, y: this._player.position.y, z: this._player.position.z, width: 10, height: 10, depth: 10}, 100);
       }
 
       //* Handle attacks on monster
@@ -407,15 +393,7 @@ class Scene {
         if (distanceToMonster < this._player.attackRange) {
           this._monsterSpawner.monsterLife -= this._player.damage;
           this._lastAttackTime = new Date().getTime();
-          const area = {
-            x: this._monsterSpawner.monsterPosition.x,
-            y: this._monsterSpawner.monsterPosition.y,
-            z: this._monsterSpawner.monsterPosition.z,
-            width: 10,
-            height: 10,
-            depth: 10,
-          };
-          this._bloodSpawner.createBlood(area, 100);
+          this._bloodSpawner.create({x: this._monsterSpawner.monsterPosition.x, y: this._monsterSpawner.monsterPosition.y, z: this._monsterSpawner.monsterPosition.z, width: 10, height: 10, depth: 10}, 100);
         }
       }
     }

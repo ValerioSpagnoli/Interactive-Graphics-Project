@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-// fire spawner
-import { FireSpawner } from './fireSpawner.js';
+import { ParticleSpawner } from './particleSpwaner';
 
 export class World {
     constructor(params) {
@@ -13,6 +12,21 @@ export class World {
         this._boundingBoxes = [];
         this._boundingBoxesVisible = false;
         this._mixers = [];
+
+        this._particleSpawnerParams = {
+            scene: this._params.scene,
+            colors: [0xed601f, 0xc7460a, 0xc7620a],
+            radius: {baseRadius: 0.1, randomRadius: 0.5},
+            opacity: {baseOpacity: 0.8, randomOpacity: 0.2},
+            transparency: true,
+            velocity: {baseVelocity: new THREE.Vector3(0,0.02,0), randomVelocity: new THREE.Vector3(0.1,0.1,0.1), baseSign: new THREE.Vector3(1,1,1), randomSign: new THREE.Vector3(true,false,true), update: true},
+            expirationTime: {baseExpirationTime: 1000, randomExpirationTime: 2000},
+            boxX: {baseMin: -100, baseMax: 100, randomMin: 0, randomMax: 0, blockAll: false, visible: false},
+            boxY: {baseMin: -100, baseMax: 2, randomMin: 0, randomMax: 10, blockAll: true, visible: false},
+            boxZ: {baseMin: -100, baseMax: 100, randomMin: 0, randomMax: 0, blockAll: false, visible: false},
+          }
+        this._particleSpawner = new ParticleSpawner(this._particleSpawnerParams);
+        
         this._AddFloor();
         this._AddSky();
         this._AddModel();
@@ -237,8 +251,6 @@ export class World {
             gltf.scene.scale.set(5, 5, 5);
             this._params.scene.add(gltf.scene);
         });
-
-        this._fireSpawner = new FireSpawner(this._params);
     }
 
     _AddLights(){
@@ -695,11 +707,11 @@ export class World {
 
 
     update() {
-        this._fireSpawner.createFire({x: -63, y: 38, z: 94, width: 7, height: 4, depth: 7}, 5);
-        this._fireSpawner.createFire({x: 77, y: 38, z: 53, width: 7, height: 4, depth: 7}, 5);
-        this._fireSpawner.createFire({x: -83, y: 38, z: -5, width: 4, height: 4, depth: 8}, 5);
-        this._fireSpawner.createFire({x: -3, y: -1, z: 45, width: 10, height: 10, depth: 10}, 100);
-        this._fireSpawner.updateFire();
+        this._particleSpawner.create({x: -63, y: 38, z: 94, width: 7, height: 4, depth: 7}, 5);
+        this._particleSpawner.create({x: 77, y: 38, z: 53, width: 7, height: 4, depth: 7}, 5);
+        this._particleSpawner.create({x: -83, y: 38, z: -5, width: 4, height: 4, depth: 8}, 5);
+        this._particleSpawner.create({x: -3, y: -1, z: 45, width: 10, height: 10, depth: 10}, 100);
+        this._particleSpawner.update();
     }
 
     get boundingBoxes() {
