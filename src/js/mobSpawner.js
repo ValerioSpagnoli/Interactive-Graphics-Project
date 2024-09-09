@@ -12,7 +12,7 @@ export class MobSpawner {
         }
         this._playerPosition = this._params.playerPosition;
 
-        this._mobAttackDistance = 8;
+        this._mobAttackDistance = 6;
         this._mobAttackTime = this._params.mobAttackTime;
         this._lastSpawnTime = 0;    
         this._minNumberOfMobs = 12;
@@ -79,13 +79,13 @@ export class MobSpawner {
     }
 
     _LoadModel(loader, position){
-        let mob_ = {'mob':null, 'mixer':null, 'walk':null, 'attack':null, 'dead':null, 'currentAction':null, 'velocity':null, 'time':0, 'life':6, 'lastHit':0, 'deadFlag':false, 'deadTime':0, 'position':null, 'rotation':null};    
-        loader.load('./models/mob/blue_demon.glb', (gltf) => {
+        let mob_ = {'mob':null, 'mixer':null, 'walk':null, 'run':null, 'attack':null, 'dead':null, 'currentAction':null, 'velocity':null, 'time':0, 'life':6, 'lastHit':0, 'deadFlag':false, 'deadTime':0, 'position':null, 'rotation':null};    
+        loader.load('./models/mob/skeleton.glb', (gltf) => {
             gltf.scene.traverse(c => {
                 c.castShadow = true;
             });
             const mob = gltf.scene;
-            mob.scale.set(3, 3, 3);
+            mob.scale.set(4, 4, 4);
             mob.position.set(position.x, position.y, position.z);
             this._params.scene.add(mob);
             mob_.mob = mob;
@@ -94,16 +94,20 @@ export class MobSpawner {
             mob_.velocity = new THREE.Vector3(0, 0, 1);
 
             const mixer = new THREE.AnimationMixer(mob);
-            const walk = mixer.clipAction(gltf.animations[11]); // Walk animation
-            const attack = mixer.clipAction(gltf.animations[13]); // Attack animation
-            const dead = mixer.clipAction(gltf.animations[0]); // Death animation
+            const walk = mixer.clipAction(gltf.animations[6]); // Walk animation
+            const run = mixer.clipAction(gltf.animations[5]); // Walk animation
+            const attack = mixer.clipAction(gltf.animations[0]); // Attack animation
+            const dead = mixer.clipAction(gltf.animations[1]); // Death animation
             walk.play();
             
             mob_.walk = walk;
+            mob_.run = run;
             mob_.attack = attack;
             mob_.dead = dead;
             mob_.currentAction = walk;
             mob_.mixer = mixer;
+            this._walkY = mob.position.y-1;
+            this._runY = mob.position.y-1.2;     
 
             this._mobs.push(mob_);
         });
@@ -132,10 +136,10 @@ export class MobSpawner {
                     break;
                 }
             }
-
+            
             if(mob.currentAction !== mob.dead) {
-                if (distanceToPlayer < 60 && !playerInsideBoundingBoxes) {
-                    this.moveMobTowardsPlayer(mob, this._playerPosition);
+                if (distanceToPlayer < 40 && !playerInsideBoundingBoxes) {
+                    this.moveMobTowardsPlayer(mob);
                 } else {
                     this.moveMobRandomly(mob);
                 }
@@ -147,38 +151,44 @@ export class MobSpawner {
         }
     }
 
-    moveMobTowardsPlayer(mob, playerPosition) {
+    moveMobTowardsPlayer(mob) {
         const mobPosition = mob.position;
         const mobVelocity = mob.velocity;
-        const distanceToPlayer = playerPosition.distanceTo(mobPosition);
-        
+        const distanceToPlayer = this._playerPosition.distanceTo(mobPosition);
+
+        let collision = false;
+        for (const b of this._worldBoundingBoxes) {
+            const box = new THREE.Box3().setFromObject(b);
+            if (box.containsPoint(mobPosition)) {
+                collision = true;
+                break;
+            }
+        }
     
-        if (distanceToPlayer < this._mobAttackDistance) {
+        if (distanceToPlayer < this._mobAttackDistance && !collision) {
             if (mob.currentAction !== mob.attack) {
                 mob.currentAction.stop();
                 mob.currentAction = mob.attack; 
                 mob.currentAction.play();
             }
+            mobPosition.y = this._walkY;
         } 
         else {
-            mobVelocity.copy(playerPosition).sub(mobPosition).normalize().multiplyScalar(0.1);
-            const angle = Math.atan2(mobVelocity.x, mobVelocity.z);
-            mob.mob.rotation.y = angle;
-            
-            for (const b of this._worldBoundingBoxes) {
-                const box = new THREE.Box3().setFromObject(b);
-                if (box.containsPoint(mobPosition)) {
-                    mobVelocity.set(-mobVelocity.x, 0, -mobVelocity.z);
-                    mobVelocity.normalize().multiplyScalar(0.1);
-                }
-            }
-            mobPosition.add(mobVelocity);
-    
-            if (mob.currentAction !== mob.walk) {
+            if(mob.currentAction !== mob.run){
                 mob.currentAction.stop();
-                mob.currentAction = mob.walk;
+                mob.currentAction = mob.run;
                 mob.currentAction.play();
             }
+            if (collision) {
+                mobVelocity.set(-mobVelocity.x, 0, -mobVelocity.z).normalize().multiplyScalar(0.4);
+            }
+            else{
+                mobVelocity.copy(this._playerPosition).sub(mobPosition).normalize().multiplyScalar(0.4);
+            }
+            const angle = Math.atan2(mobVelocity.x, mobVelocity.z);
+            mob.mob.rotation.y = angle;
+            mobPosition.add(mobVelocity);
+            mobPosition.y = this._runY;
         }
     }
 
@@ -188,23 +198,29 @@ export class MobSpawner {
         const mobTime = mob.time;
         const currentTime = new Date().getTime();
         const timeDiff = currentTime - mobTime;
+
+        if(mob.currentAction !== mob.walk){
+            mob.currentAction.stop();
+            mob.currentAction = mob.walk;
+            mob.currentAction.play();
+            mobVelocity.set(-mobVelocity.x, 0, -mobVelocity.z).normalize().multiplyScalar(0.1);
+        }
     
         if (timeDiff > 5000) {
-            mobVelocity.set(Math.random() * 2 - 1, 0, Math.random() * 2 - 1);
-            mobVelocity.normalize().multiplyScalar(0.1);
+            mobVelocity.set(Math.random(), 0, Math.random()).normalize().multiplyScalar(0.1);
             mob.time = currentTime;
         }
     
         for (const b of this._worldBoundingBoxes) {
             const box = new THREE.Box3().setFromObject(b);
             if (box.containsPoint(mobPosition)) {
-                mobVelocity.set(-mobVelocity.x, 0, -mobVelocity.z);
-                mobVelocity.normalize().multiplyScalar(0.1);
+                mobVelocity.set(-mobVelocity.x, 0, -mobVelocity.z).normalize().multiplyScalar(0.1);
                 mob.time = currentTime;
             }
         }
     
         mobPosition.add(mobVelocity);
+        mobPosition.y = this._walkY;
         const angle = Math.atan2(mobVelocity.x, mobVelocity.z);
         mob.mob.rotation.y = angle;
     }

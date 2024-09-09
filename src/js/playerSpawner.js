@@ -312,10 +312,10 @@ export class PlayerSpawner {
         if (!this._stateMachine._currentState) return;
         this._stateMachine._currentState.Update(timeInSeconds, this._input);
         
-        this._DeathHandler();
-        this._HitHandler();
-        this._TransformationHandler();
         this._PlayerMovementHandler(timeInSeconds);
+        this._HitHandler();
+        this._DeathHandler();
+        this._TransformationHandler();
 
         if (this._mixer) {
             this._mixer.update(timeInSeconds);
