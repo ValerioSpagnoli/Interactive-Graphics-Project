@@ -159,19 +159,6 @@ export class MonsterSpawner {
       this._stateMachine.monsterLife = this._monsterLife;
       this._stateMachine._currentState.Update(deltaTime);
 
-      // if(this._monsterLife <= 0 && this._monsterState !== 'death'){  
-      //   this._stateMachine.SetState('death');
-      //   this._monsterState = 'death';
-      // }
-      // else{        
-      //   if(box.containsPoint(this._playerPosition)){
-      //     this.attackPlayer();
-      //   }
-      //   else{
-      //     this.moveMonsterRandomly(deltaTime);
-      //   }
-      // }
-
       if(this._stateMachine._currentState.Name != 'death'){
         if(box.containsPoint(this._playerPosition)){
           this.attackPlayer();
