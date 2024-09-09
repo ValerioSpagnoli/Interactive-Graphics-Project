@@ -449,7 +449,7 @@ class Start {
         explanation.style.border = 'solid 4px rgba(0, 0, 155, 0.5)';
         explanation.style.borderRadius = '10px';
         explanation.style.padding = '30px';
-        explanation.innerHTML = '- <b>W A S D</b> to move, <b>Space</b> to attack and <b>Shift</b> to run.<br>- Collect swords to increase the power of your attack and hearts to increase your life.<br>- Collect <b>5 stars</b> to become bigger and stronger.<br>&nbsp&nbsp&nbspThe effect lasts for <b>15 seconds</b>, then you will return to normal size and lose 2 swords.<br>&nbsp&nbsp&nbspThe transformation will give to you full health.<br>- Defeat the monster to win the game';
+        explanation.innerHTML = '- <b>W A S D</b> to move, <b>Space</b> to attack and <b>Shift</b> to run.<br>- Collect swords to increase the power of your attack and hearts to increase your life.<br>- Collect <b>5 stars</b> to become bigger and stronger.<br>&nbsp&nbsp&nbspThe effect lasts for <b>15 seconds</b>, then you will return to normal size and lose 2 swords.<br>&nbsp&nbsp&nbspThe transformation will give to you full health.<br>- Defeat the monster to win the game.';
         this._start.appendChild(explanation);
         
         document.body.appendChild(this._layer);
