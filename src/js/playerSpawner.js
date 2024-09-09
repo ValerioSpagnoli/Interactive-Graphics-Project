@@ -19,9 +19,7 @@ export class PlayerSpawner {
 
         this._animations = {};
         this._input = new PlayerSpawnerInput();
-        this._stateMachine = new CharacterFSM(
-            new PlayerSpawnerProxy(this._animations)
-        );
+        this._stateMachine = new CharacterFSM(this._animations);
 
         this._worldBoundingBoxes = [];
         for (const b of this._params.world.boundingBoxes) {
@@ -320,16 +318,6 @@ export class PlayerSpawner {
         if (this._mixer) {
             this._mixer.update(timeInSeconds);
         }
-    }
-}
-
-class PlayerSpawnerProxy {
-    constructor (animations) {
-        this._animations = animations;
-    }
-
-    get animations () {
-        return this._animations;
     }
 }
 

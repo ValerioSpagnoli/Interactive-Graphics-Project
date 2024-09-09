@@ -33,9 +33,9 @@ class FiniteStateMachine {
 
 
 export class CharacterFSM extends FiniteStateMachine {
-    constructor(proxy) {
+    constructor(animations) {
       super();
-      this._proxy = proxy;
+      this._animations = animations;
       this._Init();
     }
   
@@ -70,9 +70,9 @@ class IdleState extends State {
     }
   
     Enter(prevState) {
-      const idleAction = this._parent._proxy._animations['idle'].action;
+      const idleAction = this._parent._animations['idle'].action;
       if (prevState) {
-        const prevAction = this._parent._proxy._animations[prevState.Name].action;
+        const prevAction = this._parent._animations[prevState.Name].action;
         idleAction.time = 0.0;
         idleAction.enabled = true;
         idleAction.setEffectiveTimeScale(1.0);
@@ -108,9 +108,9 @@ class WalkState extends State {
     }
   
     Enter(prevState) {
-      const curAction = this._parent._proxy._animations['walk'].action;
+      const curAction = this._parent._animations['walk'].action;
       if (prevState) {
-        const prevAction = this._parent._proxy._animations[prevState.Name].action;
+        const prevAction = this._parent._animations[prevState.Name].action;
   
         curAction.enabled = true;
   
@@ -155,9 +155,9 @@ class RunState extends State {
     }
   
     Enter(prevState) {
-      const curAction = this._parent._proxy._animations['run'].action;
+      const curAction = this._parent._animations['run'].action;
       if (prevState) {
-        const prevAction = this._parent._proxy._animations[prevState.Name].action;
+        const prevAction = this._parent._animations[prevState.Name].action;
   
         curAction.enabled = true;
   
@@ -202,9 +202,9 @@ class AttackState_1 extends State {
     }
   
     Enter(prevState) {
-      const curAction = this._parent._proxy._animations['attack_1'].action;
+      const curAction = this._parent._animations['attack_1'].action;
       if (prevState) {
-        const prevAction = this._parent._proxy._animations[prevState.Name].action;
+        const prevAction = this._parent._animations[prevState.Name].action;
   
         curAction.enabled = true;
   
@@ -242,9 +242,9 @@ class AttackState_2 extends State {
   }
 
   Enter(prevState) {
-    const curAction = this._parent._proxy._animations['attack_2'].action;
+    const curAction = this._parent._animations['attack_2'].action;
     if (prevState) {
-      const prevAction = this._parent._proxy._animations[prevState.Name].action;
+      const prevAction = this._parent._animations[prevState.Name].action;
 
       curAction.enabled = true;
 
@@ -282,9 +282,9 @@ class DeathState extends State {
     }
   
     Enter(prevState) {
-      const curAction = this._parent._proxy._animations['death'].action;
+      const curAction = this._parent._animations['death'].action;
       if (prevState) {
-        const prevAction = this._parent._proxy._animations[prevState.Name].action;
+        const prevAction = this._parent._animations[prevState.Name].action;
   
         curAction.enabled = true;
   
