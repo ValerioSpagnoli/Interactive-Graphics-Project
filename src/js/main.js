@@ -341,16 +341,16 @@ class Scene {
 
       //* Handle attacks on mobs
       const damage = this._player.damage;
-      if (this._player._stateMachine._currentState && (this._player._stateMachine._currentState.Name === 'attack_1' || this._player._stateMachine._currentState.Name === 'attack_2') && (Date.now() - this._lastAttackTime) > 1000) {
+      if (this._player._stateMachine._currentState && (this._player._stateMachine._currentState.Name === 'attack_1' || this._player._stateMachine._currentState.Name === 'attack_2') && (Date.now() - this._lastAttackTime) > 800) {
         for (const mob of this._mobs) {
-
+          
           const distanceToPlayer = this._playerPosition.distanceTo(mob.position);
-
-          const player2MobDir = mob.position.clone().sub(this._playerPosition).normalize();
-          const playerDir = this._player.position.clone().sub(this._player.previousPosition).normalize();
-          const dot = playerDir.dot(player2MobDir);
-          const inFront = dot > 0.5;
-
+                    
+          const playerAngle = this._player.rotation.y;
+          const angleOfMob = Math.atan2(mob.position.z - this._playerPosition.z, mob.position.x - this._playerPosition.x);
+          const angleDiff = Math.abs(playerAngle - angleOfMob);
+          const inFront = angleDiff < Math.PI/2;
+          
           if (distanceToPlayer < this._player.attackRange && !mob.deadFlag && inFront) {
             mob.life -= damage;
             this._lastAttackTime = new Date().getTime();
@@ -389,7 +389,7 @@ class Scene {
       }
 
       //* Handle attacks on monster
-      if (this._player._stateMachine._currentState && (this._player._stateMachine._currentState.Name === 'attack_1' || this._player._stateMachine._currentState.Name === 'attack_2') && (Date.now() - this._lastAttackTime) > 1000) {
+      if (this._player._stateMachine._currentState && (this._player._stateMachine._currentState.Name === 'attack_1' || this._player._stateMachine._currentState.Name === 'attack_2') && (Date.now() - this._lastAttackTime) > 800) {
         if (distanceToMonster < this._player.attackRange) {
           this._monsterSpawner.monsterLife -= this._player.damage;
           this._lastAttackTime = new Date().getTime();

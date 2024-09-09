@@ -37,7 +37,7 @@ export class PlayerSpawner {
         this._bigDamage = this._params.powerBar.swords.length*2;
         this._damage = this._normalDamage;
         
-        this._normalAttackRange = 10; 
+        this._normalAttackRange = 15; 
         this._bigAttackRange = 25;
         this._attackRange = this._normalAttackRange;
         
