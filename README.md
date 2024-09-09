@@ -4,22 +4,20 @@
 <img src="media/kill_the_monster.png" alt="drawing" width="700"/>
 </p>
 
-This game has been developed in ```three.js``` as final project of the exam Interactive Graphics.
-
-https://valeriospagnoli.github.io/Interactive-Graphics-Project/
-
-
-<button style="background-color: blue; color: white; padding: 10px; border: none; border-radius: 5px;" 
-onmouseover="this.style.backgroundColor='green';" 
-onmouseout="this.style.backgroundColor='blue';">
-  Hover over me!
-</button>
 
 ## Description
+This game has been developed in ```three.js``` as final project of the exam Interactive Graphics.
+
 You play as a knight, tasked with defeating a powerful monster. In your normal state, you're too weak to win. However, by collecting swords, you can boost your strength. Gather 5 stars to temporarily transform into a larger, more powerful knight, but the transformation lasts only 15 seconds. You can also collect hearts to restore your health.
 
-## How to play
-Only the keyboard is needed:
-- **W A S D** to move,
-- **Space** to attack,
-- **Shift** to run.
+
+<div style="background-color: rgba(255, 255, 255, 0.3); padding: 20px; border-radius: 10px; border: solid 4px black; width: 300px; height: 155px; margin: 0 auto;">
+  <p align="center" style="font-size: 17px;">
+    <br>
+    <b>Click the button to play the game!</b>
+    <br>
+    <a href="https://valeriospagnoli.github.io/Interactive-Graphics-Project/">
+      <img src="media/start.png" alt="drawing" width="100"/>
+    </a>
+  </p>
+</div>
